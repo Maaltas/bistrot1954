@@ -53,6 +53,13 @@ const t = textos[lang];
     justify-items: start;
   }
 
+  /* El nom del plat queda visible en arribar per l'àncora: a mòbil la foto ocupa gairebé tota la pantalla i el nom, a sota, quedaria tapat per la barra inferior (dis. §4.2, V-09). */
+  @media (max-width: 899px) {
+    .plat {
+      scroll-margin-top: -72px;
+    }
+  }
+
   .plat + .plat {
     margin-top: var(--separacio-plats);
   }

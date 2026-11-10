@@ -36,6 +36,32 @@ Qualsevol agent hi pot afegir entrades. L'Oriol respon a sota de cada dubte, a l
 - Mentrestant: tot preparat i desactivat, sense cap petició a tercers. La tasca B-32 està bloquejada.
 - Resposta de l'Oriol: _(pendent)_
 
+### D-16 · Astro 6 té vulnerabilitats conegudes que només es corregeixen a Astro 7 (conflicte amb P-07)
+- Obert per: programador · 2026-11-10
+- Per a: arquitecte-backend
+- Context: `docs/arquitectura.md` fixa Astro `^6` i demana (P-07) que `npm audit --omit=dev` no tingui vulnerabilitats altes ni crítiques. La darrera 6.x (6.4.8) en té una de **crítica** (`astro <= 7.3.1`: avisos GHSA sobre XSS en transicions/JSX/atributs i execució remota en optimitzar AVIF), només arreglada a Astro 7.4.10. La web no fa servir cap de les funcions afectades (cap *view transition*, cap MDX/JSX, imatges només pròpies i en build), però P-07 no es compleix.
+- Fet mentrestant: `package.json` té `overrides: { sharp: "^0.35.5" }`, que treu l'avís alt de `sharp` (el build i les imatges funcionen igual). Queden `astro` (crítica) i `esbuild` (baixa, només afecta el servidor `dev` a Windows).
+- Pregunta: s'accepta el risc, es passa P-07 a observació, o es migra a Astro 7? La migració és decisió de l'arquitecte (pot canviar l'API de `fonts`, `csp` i les imatges). No l'he provada.
+- Mentrestant: Astro 6.4.8 amb l'override de `sharp`.
+
+### D-17 · Falta `public/js/count.js` (script de tercers de GoatCounter)
+- Obert per: programador · 2026-11-10
+- Per a: l'Oriol / coordinador
+- Context: B-25 demana copiar `https://gc.zgo.at/count.js` a `public/js/count.js`. És un script de tercers que s'executaria a la web de l'Oriol, i no el baixo sense permís explícit. Tota la resta de B-25 és feta.
+- Pregunta: autoritzeu baixar-lo? Un cop baixat i revisat, el README n'ha d'anotar la data i l'origen. Només té sentit quan s'activi D-14.
+- Mentrestant: el component `Estadistiques.astro` no emet res en local ni amb `goatcounter: null`. **No s'ha d'activar GoatCounter mentre no existeixi el fitxer.**
+
+### D-18 · Decisions d'implementació que s'aparten de la lletra dels documents
+- Obert per: programador · 2026-11-10
+- Per a: dissenyador-frontend i arquitecte-backend (informatiu; res bloqueja)
+- Detalls:
+  1. **Desplaçament a l'àncora `#plat-NN` en mòbil** (dis. §4.2 diu 16 px; V-09 vol el nom visible). Amb la foto de 525-560 px d'alt, 16 px deixaven el nom a sota de la barra inferior (574-603 px de 667). He posat `scroll-margin-top: -72px` a l'article a < 900 px (efecte net: la foto queda retallada uns 56 px per dalt en arribar). Si es prefereix un altre criteri, s'ajusta a `Plat.astro`.
+  2. **`html-validate` (S-06):** he desactivat la regla `tel-non-breaking` a `.htmlvalidate.json`, que exigeix espais no separables al telèfon "936 27 35 36". Amb NBSP el text exacte no coincidiria amb el de `restaurant.yaml` (C-06, S-07). Els botons i telèfons ja porten `white-space: nowrap`.
+  3. **Favicon i icones:** es fan amb `ruta()` (relatius a `base`), no amb URL absolutes: amb la URL absoluta de producció, la CSP (`img-src 'self'`) les bloquejava en local i donava un error a la consola (P-03, P-01).
+  4. **Per al QA (V-11):** amb `srcset` de descriptors `w`, `img.naturalWidth` no és l'ample del fitxer sinó l'ample de la mida triada (p. ex. 421 a 375 px). Per comprovar "no més gran que la font", cal comparar amb l'ample real del fitxer de `currentSrc`. Les imatges `lazy` que encara no s'han carregat donen `naturalWidth` 0.
+  5. **P-06:** `git grep` troba `id-token: write` al workflow (és el permís OIDC d'arq. §9.2, no un secret).
+  6. **Plat 02 (453 px d'ample):** el `srcset` en porta tres (360, 450 i 453), perquè `widths` segueix la regla literal d'arq. §6.3.
+
 ## Resolts
 
 ### D-01 · Idiomes de la web

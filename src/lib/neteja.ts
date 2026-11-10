@@ -40,9 +40,9 @@ const RE_GRUP_EMOJI_AMB_ESPAIS = new RegExp(`([ \\t]*)(${GRUP_EMOJI})([ \\t]*)`,
 
 const HASHTAG = '(?<![\\p{L}\\p{N}&])#(?=[\\p{L}\\p{N}_]*\\p{L})[\\p{L}\\p{N}_]+';
 const MENCIO = '(?<![\\p{L}\\p{N}_.])@[\\p{L}\\p{N}_]+(?:\\.[\\p{L}\\p{N}_]+)*';
-const TOKEN = `(?:${HASHTAG}|${MENCIO})`;
-const RE_TIRALLONGA = new RegExp(`${TOKEN}(?:(?:\\s|${EMOJI})*${TOKEN})*`, 'gu');
-const RE_TOKEN = new RegExp(TOKEN, 'gu');
+const ELEMENT = `(?:${HASHTAG}|${MENCIO})`;
+const RE_TIRALLONGA = new RegExp(`${ELEMENT}(?:(?:\\s|${EMOJI})*${ELEMENT})*`, 'gu');
+const RE_ELEMENT = new RegExp(ELEMENT, 'gu');
 
 const RE_LLETRA_O_XIFRA = /[\p{L}\p{N}]/u;
 
@@ -79,7 +79,7 @@ function treuHashtagsIMencions(linia: string): string {
       return '';
     }
     // Enmig del text: només es treu el signe, es manté la paraula.
-    return tirallonga.replace(RE_TOKEN, (token) => token.slice(1));
+    return tirallonga.replace(RE_ELEMENT, (token) => token.slice(1));
   });
 }
 

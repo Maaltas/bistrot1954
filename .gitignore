@@ -10,3 +10,6 @@ playwright-report/
 Thumbs.db
 .DS_Store
 .obsidian/
+
+# Captures de pantalla del QA i del programador (es regeneren)
+tests/captures/*.png

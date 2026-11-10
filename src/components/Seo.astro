@@ -4,7 +4,7 @@
  * Totes les URL són absolutes, a partir de <web> = site + base.
  */
 import { altreIdioma } from '../i18n/textos';
-import { urlAbsoluta } from '../lib/entorn';
+import { ruta, urlAbsoluta } from '../lib/entorn';
 import { existeixOg } from '../lib/seo';
 import type { Idioma } from '../lib/idioma';
 
@@ -39,8 +39,8 @@ const textAltOg = 'Bistrot 1954, Carrer Sant Bru, 48, Badalona';
 <title>{title}</title>
 <meta name="description" content={description} />
 {noindex && <meta name="robots" content="noindex" />}
-<link rel="icon" type="image/svg+xml" href={abs('/favicon.svg')} />
-<link rel="apple-touch-icon" href={abs('/apple-touch-icon.png')} />
+<link rel="icon" type="image/svg+xml" href={ruta('/favicon.svg')} />
+<link rel="apple-touch-icon" href={ruta('/apple-touch-icon.png')} />
 {canonical && <link rel="canonical" href={canonical} />}
 {
   rutes && (
