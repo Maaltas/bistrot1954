@@ -32,6 +32,7 @@ export default defineConfig({
   site,
   base,
   output: 'static',
+  compressHTML: true,
   trailingSlash: 'ignore',
   build: { format: 'directory' },
   i18n: {

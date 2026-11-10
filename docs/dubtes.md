@@ -36,14 +36,6 @@ Qualsevol agent hi pot afegir entrades. L'Oriol respon a sota de cada dubte, a l
 - Mentrestant: tot preparat i desactivat, sense cap petició a tercers. La tasca B-32 està bloquejada.
 - Resposta de l'Oriol: _(pendent)_
 
-### D-16 · Astro 6 té vulnerabilitats conegudes que només es corregeixen a Astro 7 (conflicte amb P-07)
-- Obert per: programador · 2026-11-10
-- Per a: arquitecte-backend
-- Context: `docs/arquitectura.md` fixa Astro `^6` i demana (P-07) que `npm audit --omit=dev` no tingui vulnerabilitats altes ni crítiques. La darrera 6.x (6.4.8) en té una de **crítica** (`astro <= 7.3.1`: avisos GHSA sobre XSS en transicions/JSX/atributs i execució remota en optimitzar AVIF), només arreglada a Astro 7.4.10. La web no fa servir cap de les funcions afectades (cap *view transition*, cap MDX/JSX, imatges només pròpies i en build), però P-07 no es compleix.
-- Fet mentrestant: `package.json` té `overrides: { sharp: "^0.35.5" }`, que treu l'avís alt de `sharp` (el build i les imatges funcionen igual). Queden `astro` (crítica) i `esbuild` (baixa, només afecta el servidor `dev` a Windows).
-- Pregunta: s'accepta el risc, es passa P-07 a observació, o es migra a Astro 7? La migració és decisió de l'arquitecte (pot canviar l'API de `fonts`, `csp` i les imatges). No l'he provada.
-- Mentrestant: Astro 6.4.8 amb l'override de `sharp`.
-
 ### D-17 · Falta `public/js/count.js` (script de tercers de GoatCounter)
 - Obert per: programador · 2026-11-10
 - Per a: l'Oriol / coordinador
@@ -176,3 +168,21 @@ Qualsevol agent hi pot afegir entrades. L'Oriol respon a sota de cada dubte, a l
   - **A ≥ 900 px:** no va sota les tres columnes. Fa servir la graella dels plats: les dades van una sota l'altra a la columna de 400 px i la presentació va a la columna de text (36rem), a la mateixa altura. Així queda alineada amb les històries, i la primera foto continua per sobre de y = 720 px a 1280×800.
   - **Criteris:** V-05 reescrit (a 375×667 es veuen el nom, les dades i la presentació; la primera foto queda a y < 800 px; a 1280×800, a y < 720 px). V-29 inclou l'ordre de l'obertura. Nou criteri V-30 per a l'estil i la posició. Tasca F-09 actualitzada.
 - **Resolt 2026-11-10.**
+
+### D-16 · Astro 6 té vulnerabilitats conegudes que només es corregeixen a Astro 7 (conflicte amb P-07)
+- Obert per: programador · 2026-11-10
+- Per a: arquitecte-backend
+- Context: `docs/arquitectura.md` fixava Astro `^6` i demana (P-07) que `npm audit --omit=dev` no tingui vulnerabilitats altes ni crítiques. La darrera 6.x (6.4.8) en té una de **crítica** (`astro <= 7.3.1`: avisos GHSA sobre XSS en transicions/JSX/atributs, execució remota en optimitzar AVIF i *bypass* del `base`), només arreglada a Astro 7.4.10. També n'hi ha una de baixa a `esbuild`, que només afecta el servidor `dev` a Windows. Mentrestant, `package.json` porta `overrides: { sharp: "^0.35.5" }`.
+- Pregunta: s'accepta el risc, es passa P-07 a observació, o es migra a Astro 7?
+- **Resolt 2026-11-10 (arquitecte): es migra a Astro `^7.4.10`, i P-07 es manté.** Motius:
+  - la branca 6 no rebrà més correccions;
+  - un dels avisos afecta el `base`, que ara sí que fem servir;
+  - acceptar una crítica buidaria el criteri P-07.
+
+  Segons la guia oficial de migració a la v7, l'impacte és petit:
+  - Vite 8 (Vitest `^5`);
+  - un compilador en Rust més estricte amb l'HTML mal format;
+  - `compressHTML`, que passa a `'jsx'`: es fixa a `true` per conservar els espais;
+  - Node ≥ 22.23.4, que el Node 26 local i el de GitHub Actions ja compleixen.
+
+  La guia no indica canvis a les tipografies, la CSP, les imatges, `base`, i18n ni sitemap; ho confirmen els tests. La baixa d'`esbuild` s'accepta com a observació, i l'`override` de `sharp` es treu si deixa de caldre. Canvis a `docs/arquitectura.md`: §0, §2.1, §2.4, §5.3, §10.4 i P-07. La implementació és la tasca nova **B-33**, i B-30 s'ha de tornar a mesurar després.

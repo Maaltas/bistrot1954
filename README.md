@@ -5,11 +5,11 @@ Web de presentació del Bistrot 1954 (Carrer Sant Bru, 48, Badalona). Cada plat 
 - **En local:** `http://localhost:4321/bistrot1954/` (català) i `http://localhost:4321/bistrot1954/es/` (castellà). `http://localhost:4321/` sense `/bistrot1954/` no és la web.
 - **Publicada (quan l'Oriol ho activi):** `https://maaltas.github.io/bistrot1954/`.
 
-És una web estàtica feta amb [Astro](https://astro.build) 6. La decisió de cada peça és a `docs/arquitectura.md` i l'aspecte, a `docs/disseny-frontend.md`.
+És una web estàtica feta amb [Astro](https://astro.build) 7. La decisió de cada peça és a `docs/arquitectura.md` i l'aspecte, a `docs/disseny-frontend.md`.
 
 ## Requisits i Node a Windows
 
-- Node.js 22.12 o més nou (`.node-version` fixa la 26.13.0).
+- Node.js 22.23.4 o més nou (`.node-version` fixa la 26.13.0).
 - Si la terminal no troba `node`:
   - Git Bash: `export PATH="/c/Program Files/nodejs:$PATH"`
   - PowerShell: `$env:Path = "C:\Program Files\nodejs;" + $env:Path`

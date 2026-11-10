@@ -13,7 +13,7 @@ Versió 2 · 2026-11-10 · autor: arquitecte-backend
 | Tema | Decisió |
 |---|---|
 | Tipus de web | Estàtica, generada en temps de build. Sense servidor, sense base de dades i sense JavaScript propi obligatori. |
-| Framework | Astro 6 (sortida `static`), TypeScript estricte, CSS propi amb custom properties. |
+| Framework | Astro 7, com a mínim 7.4.10 (sortida `static`), TypeScript estricte, CSS propi amb custom properties. La versió 6 té vulnerabilitats crítiques sense correcció (D-16, §2.1). |
 | Fonts de contingut | `contingut/plats.json` (recopilador) + `contingut/seleccio.yaml` (Oriol) + `contingut/restaurant.yaml` (Oriol) + `contingut/imatges/`. |
 | Idiomes | Català a `/` (per defecte) i castellà a `/es/` (confirmat, D-01). Cada història es mostra en l'idioma original del caption; **mai es tradueix**. |
 | Regla de contingut | Neteja automàtica, determinista i testejada (§3.3). S'aplica també al text de presentació de l'Oriol (§4.3.2). Cap text escrit a mà ni generat amb IA. |
@@ -64,19 +64,30 @@ flowchart LR
 
 | Peça | Versió | Per què |
 |---|---|---|
-| Node.js | ≥ 22.12 (local: 26.13 LTS) | Requisit d'Astro 6. `.node-version` (26.13.0) fixa la versió local; el workflow de GitHub Actions fa servir Node 26 (§9.2). |
-| Astro | ^6 (`output: 'static'`) | Genera HTML estàtic amb zero JS per defecte; porta `<Picture>` amb sharp (AVIF/WebP i `srcset`), rutes i18n, API de tipografies que les **descarrega i autoallotja** en build, API de CSP amb hashes, i integració de sitemap. És el que necessitem sense afegir res més. |
+| Node.js | ≥ 22.23.4 (local: 26.13 LTS) | Requisit d'Astro 7.4.10. `.node-version` (26.13.0) fixa la versió local; el workflow de GitHub Actions fa servir Node 26 (§9.2). |
+| Astro | `^7.4.10` (`output: 'static'`) | Genera HTML estàtic amb zero JS per defecte; porta `<Picture>` amb sharp (AVIF/WebP i `srcset`), rutes i18n, API de tipografies que les **descarrega i autoallotja** en build, API de CSP amb hashes, i integració de sitemap. És el que necessitem sense afegir res més. |
 | TypeScript | estricte (`astro/tsconfigs/strict`) | Errors de model de dades detectats abans de publicar. |
 | sharp | la que porti Astro | Servei d'imatges per defecte d'Astro. Té binaris precompilats per a Windows x64; no cal compilar res. |
-| `@astrojs/sitemap` | compatible amb Astro 6 | Sitemap amb alternates `hreflang`. |
+| `@astrojs/sitemap` | `^3.7` (provada amb Astro 7) | Sitemap amb alternates `hreflang`. |
 | `yaml` | ^2 | Llegir `seleccio.yaml` i `restaurant.yaml` (YAML permet comentaris, més amable per editar a mà que JSON). |
 | `astro/zod` | Zod 4 (inclòs a Astro) | Validació dels tres fitxers de contingut amb missatges clars. |
 | `@astrojs/check` + `typescript` | dev | `astro check` abans de cada build. |
-| Vitest | dev | Tests unitaris de la neteja i de la detecció d'idioma. |
+| Vitest | dev, `^5` | Tests unitaris de la neteja i de la detecció d'idioma. Ha de ser una versió que accepti Vite 8 (el d'Astro 7). |
 | `@playwright/test`, `@axe-core/playwright`, `html-validate` | dev | Infraestructura per al QA (el programador les instal·la; el QA només escriu tests a `tests/qa/`). Lighthouse s'executa amb `npx`. |
 | `@fontsource/alegreya`, `@fontsource/alegreya-sans` | dev | Només per generar `public/og.jpg` en local (§6.6). La web fa servir les tipografies que descarrega l'API d'Astro, no aquests paquets. |
 | CSS | propi | Fitxers CSS i estils d'Astro amb custom properties que reprodueixen els tokens de `docs/disseny-frontend.md`. Sense Tailwind ni biblioteques de components. |
 | Framework de UI | cap | No hi ha React, Vue ni similars. Si el disseny necessita alguna interacció, JS vanilla dins del pressupost de §11. |
+
+**Per què Astro 7 i no 6 (D-16, 2026-11-10).** Totes les versions d'Astro fins a la 7.3.1 tenen una vulnerabilitat crítica: diversos avisos GHSA d'XSS (`renderHTMLElement`, `transition:*`, View Transitions, JSX/MDX), d'execució remota en optimitzar AVIF i de *bypass* del `base`. Només està corregida a la 7.4.10, i la branca 6 no rebrà més correccions.
+
+La web no fa servir les funcions de risc més clar: és estàtica, sense *view transitions* ni MDX, i les imatges són pròpies i es processen en build. Tot i així, l'avís que afecta el `base` toca una peça que ara sí que fem servir. A més, acceptar una crítica deixaria P-07 sense sentit i ens deixaria en una branca sense manteniment.
+
+La migració té poc impacte, segons la guia oficial de pas a la v7:
+- **Vite 8.** `?raw` i `import.meta.glob` no canvien. Cal Vitest 5.
+- **Compilador en Rust.** És més estricte: les etiquetes sense tancar i les imbricacions invàlides (un `<div>` dins d'un `<p>`) donen error. És una millora, i s'han de corregir si n'hi ha.
+- **`compressHTML`.** El valor per defecte passa a `'jsx'`, que pot treure espais entre elements en línia. Es fixa `compressHTML: true` per mantenir el comportament d'Astro 6 (§2.4).
+- **Sense canvis.** La guia no indica canvis a les tipografies, la CSP, `astro:assets`, `base`, i18n ni sitemap. Es comprova amb els tests i amb els criteris de §11.
+- **Sense efecte.** No fem servir res del que la v7 elimina o mou: `@astrojs/db`, `astro:transitions`, `getContainerRenderer`, plugins de remark/rehype ni `src/fetch.ts`.
 
 ### 2.2 Alternatives descartades
 
@@ -133,6 +144,8 @@ flowchart LR
 - `fonts`: Alegreya (400 i 700) i Alegreya Sans (500), segons `docs/disseny-frontend.md` §5.2, amb proveïdor Google, `subsets: ['latin']` (§6.7).
 - `base` segons la taula anterior, i `trailingSlash: 'ignore'`. Amb `base`, Astro continua generant els fitxers a l'arrel de `dist/` (`dist/index.html`, `dist/es/index.html`…); és GitHub Pages qui els serveix sota `/bistrot1954/`.
 - `prefetch` i *view transitions* desactivats (són JS que no necessitem).
+- `compressHTML: true`, explícit. És el comportament d'Astro 6: conserva un espai entre elements en línia, com ara "Veure la publicació a Instagram" i el text afegit per a lectors de pantalla (§2.1).
+- No s'activa cap opció `experimental` que no calgui. Si Astro 7 ja té estable alguna API que l'arquitectura feia servir com a experimental (tipografies, CSP), es fa servir la forma estable.
 
 ---
 
@@ -823,7 +836,7 @@ Ruta = ruta lògica (com la fan servir aquest document i el disseny). URL real =
 | `comprova` | `npm run pendents && npm test && npm run build` | abans de publicar; també l'executa el workflow (§9.2) |
 | `og` | `node scripts/genera-og.mjs` | regenera `public/og.jpg` (§6.6); només en local i quan canvien el nom, la cuina o l'adreça |
 
-`package.json` declara `"engines": { "node": ">=22.12.0" }`. `pendents` sempre acaba amb codi 0, perquè és informatiu i no ha d'aturar el workflow.
+`package.json` declara `"engines": { "node": ">=22.23.4" }` (requisit d'Astro 7.4.10). `pendents` sempre acaba amb codi 0, perquè és informatiu i no ha d'aturar el workflow.
 
 ### 5.4 Avís legal i privacitat: contingut
 
@@ -1136,7 +1149,7 @@ jobs:
 - **El pany `PUBLICAR`.** És una **variable** del repositori (Settings → Secrets and variables → Actions → Variables), no un secret. Mentre no existeixi o no valgui `si`, cada `push` comprova i construeix la web però **no publica res**. Així l'Oriol decideix quan es publica, encara que el repositori ja existeixi.
 - **Sense secrets.** El desplegament s'autentica amb el testimoni OIDC temporal de GitHub (`id-token: write`).
 - **Sense `.nojekyll`.** No cal: el desplegament per artefacte no passa per Jekyll i `_astro/` es publica tal qual.
-- **Node.** Si `withastro/action` no accepta Node 26, es posa `24` (també compatible amb Astro 6) i s'anota a `docs/dubtes.md`.
+- **Node.** Si `withastro/action` no accepta Node 26, es posa `24` (també compatible amb Astro 7, si és ≥ 24 i compleix `engines`) i s'anota a `docs/dubtes.md`.
 
 ### 9.3 Adreça i HTTPS (sense domini propi)
 
@@ -1210,7 +1223,7 @@ Els captions i el text de presentació són text extern. **Mai s'insereixen com 
 
 ### 10.3 Content Security Policy (per meta)
 
-- **On va.** GitHub Pages no permet capçaleres (§9.6). Tota la CSP va a la `<meta http-equiv="Content-Security-Policy">` que genera l'API de CSP d'Astro 6 (`security.csp`), que en build calcula els hashes dels scripts i estils en línia. Si la versió instal·lada encara té l'API com a experimental, s'activa com digui la seva documentació.
+- **On va.** GitHub Pages no permet capçaleres (§9.6). Tota la CSP va a la `<meta http-equiv="Content-Security-Policy">` que genera l'API de CSP d'Astro (`security.csp`), que en build calcula els hashes dels scripts i estils en línia. Si la versió instal·lada encara té l'API com a experimental, s'activa com digui la seva documentació.
 - **Directives mínimes:** `default-src 'self'`, `img-src 'self' data:`, `font-src 'self'`, `script-src 'self'` + hashes, `style-src 'self'` + hashes, `connect-src 'self'`, `base-uri 'self'`, `form-action 'none'` i `object-src 'none'`. Si Astro no posa `'self'` per defecte a `script-src`, s'afegeix a `scriptDirective.resources` (cal per a `/js/count.js`).
 - **Excepció única,** només en un build de publicació i amb `estadistiques.goatcounter` ≠ `null`: `connect-src 'self' https://<codi>.goatcounter.com`. Res més, perquè `count.js` s'autoallotja i ja queda cobert per `'self'` (§10.6).
 - **Prohibit a la meta:** `frame-ancestors`, `report-uri`, `report-to` i `sandbox`. No hi funcionen i generen avisos a la consola.
@@ -1221,7 +1234,12 @@ Els captions i el text de presentació són text extern. **Mai s'insereixen com 
 ### 10.4 Dependències
 
 - `package-lock.json` versionat; la instal·lació fa servir `npm ci`.
-- `npm audit --omit=dev`, sense vulnerabilitats altes ni crítiques abans de publicar.
+- `npm audit --omit=dev`, sense vulnerabilitats altes ni crítiques abans de publicar. La política és **actualitzar, no acceptar el risc**.
+  - Si una alta o crítica té correcció, s'actualitza, encara que calgui canviar de versió major (com en el pas d'Astro 6 a 7, D-16).
+  - Si encara no en té, s'obre un dubte a `docs/dubtes.md` i no es publica fins que es resolgui.
+- **Versions mínimes:** `astro` ≥ 7.4.10.
+- **`overrides` de `package.json`:** només si `npm audit` els necessita després d'actualitzar Astro. L'`override` de `sharp` (`^0.35.5`) de la implementació amb Astro 6 es treu si Astro 7.4.10 (que ja demana `sharp ^0.35.4`) passa l'auditoria sense ell.
+- **Vulnerabilitats baixes o moderades** que només afecten eines de desenvolupament (per exemple, la d'`esbuild` al servidor `dev` a Windows): s'accepten i s'anoten com a observació. No arriben mai a la web publicada, que és estàtica.
 - Les dependències d'execució es redueixen a Astro, el sitemap i `yaml`.
 - Les de dev inclouen les de §2.1, sense `wrangler`.
 
@@ -1330,7 +1348,7 @@ Condicions de mesura:
 | P-04 | `set:html` només surt al component de JSON-LD (cerca a `src/`). |
 | P-05 | Cada pàgina porta, dins del `<head>`: (a) una sola `<meta http-equiv="Content-Security-Policy">` amb les directives de §10.3, sense `'unsafe-inline'` a `script-src` i sense `frame-ancestors`; `connect-src` només inclou `goatcounter.com` en un build de publicació amb codi; (b) `<meta name="referrer" content="strict-origin-when-cross-origin">`. No existeixen `public/_headers` ni `wrangler.jsonc`. |
 | P-06 | Cap secret: cap `.env` versionat; `git grep -niE "(api[_-]?key\|secret\|token\|password)\s*[:=]"` no troba res fora de `docs/` i `node_modules/`. |
-| P-07 | `npm audit --omit=dev`: 0 vulnerabilitats altes o crítiques. |
+| P-07 | `npm audit --omit=dev`: 0 vulnerabilitats altes o crítiques, i `astro` ≥ 7.4.10 a `package-lock.json`. Les baixes i moderades que només afecten eines de desenvolupament s'anoten com a observació (§10.4). |
 | P-08 | Producció: `http://maaltas.github.io/bistrot1954/` redirigeix a `https://maaltas.github.io/bistrot1954/`, i `…/bistrot1954` (sense barra) a `…/bistrot1954/`. Hi ha capçaleres que GitHub Pages no permet (§9.6): `X-Frame-Options`, `Permissions-Policy` i memòria cau llarga. Si falten, igual que els diagnòstics de Lighthouse que en depenen, s'anoten com a **observació** i no com a incidència. |
 
 ### SEO
@@ -1375,7 +1393,7 @@ Condicions de mesura:
 16. **Una sola pàgina.** N'hi ha prou amb una pàgina per idioma (8-30 plats). Les pàgines de detall serien contingut prim.
 17. **Trànsit.** Menys de 50 plats i menys de 10.000 visites al mes: els límits de GitHub Pages i de GoatCounter sobren.
 18. **Visitants.** La majoria arriben amb mòbil des d'Instagram, des d'Espanya. Lighthouse en mode mòbil n'és una mesura representativa.
-19. **Node a GitHub Actions.** `withastro/action` accepta Node 26; si no, es fa servir Node 24 (§9.2).
+19. **Node a GitHub Actions.** `withastro/action` accepta Node 26; si no, es fa servir Node 24 (§9.2). Les dues versions compleixen el mínim d'Astro 7.4.10 (≥ 22.23.4).
 20. **Navegador per al QA.** Hi ha Chrome a l'equip per a Lighthouse (el fa servir el recopilador); Playwright s'instal·la el seu Chromium, que també fa servir `npm run og`.
 
 ---

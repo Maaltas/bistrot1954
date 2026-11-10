@@ -22,7 +22,8 @@ Definides a `docs/arquitectura.md`, versió 2 (abreujat "arq."), que incorpora l
   - les dependències d'arq. §2.1, incloses les de dev per al QA i `@fontsource/alegreya` i `@fontsource/alegreya-sans`, i sense `wrangler`.
 
   Verificació: `npm ci` acaba sense errors a PowerShell i a Git Bash.
-  - Nota: Fet: Astro 6.4.8; `npm ci` OK a PowerShell. `package.json` porta `overrides: { sharp: ^0.35.5 }` per les vulnerabilitats de sharp (vegeu D-16).
+  - Nota: Fet: Astro 6.4.8; `npm ci` OK a PowerShell. Migrat a Astro 7.4.10 per D-16 (B-33); ja no hi ha cap `override`.
+  - Nota de l'arquitecte (2026-11-10): l'arquitectura passa a Astro `^7.4.10` per D-16. La migració és la tasca B-33.
 
 - [x] **B-03** · Afegir els scripts npm d'arq. §5.3 (`dev`, `build`, `preview`, `test`, `pendents`, `comprova`, `og`), portables a `cmd.exe`; `pendents` acaba sempre amb codi 0. Verificació: `npm run build` amb una pàgina buida genera `dist/index.html`.
 - [x] **B-04** · Crear `contingut/restaurant.yaml` amb el contingut exacte d'arq. §4.3.1: `web_url: null`, telèfon, horari, Google Maps, presentació literal amb els emojis, `estadistiques.goatcounter: null` i avís legal de demostració. Verificació: el fitxer és idèntic al d'arq. §4.3.1, inclòs l'apòstrof `’` de "d’aquí".
@@ -142,8 +143,25 @@ Definides a `docs/arquitectura.md`, versió 2 (abreujat "arq."), que incorpora l
   Ha de dir clarament que en local la web és a `http://localhost:4321/bistrot1954/` i que, publicada, serà a `https://maaltas.github.io/bistrot1954/`. Verificació: seguint-lo des de zero en una PowerShell nova, la web arrenca a `http://localhost:4321/bistrot1954/`.
   - Nota: Fet: `README.md`. L'activació de GoatCounter inclou baixar `count.js` a mà (vegeu B-25).
 
-- [ ] **B-30** · Comprovar els criteris d'arq. §11 (T, C, R, P, S, A) en el build local i, els marcats "publicació", en un build de publicació, abans de passar al QA. Anotar en aquesta tasca les puntuacions de Lighthouse i els pesos. Verificació: tots els criteris aplicables es compleixen.
-  - **Parcial (no marcada):** tots els criteris aplicables es compleixen excepte **P-07** (`npm audit --omit=dev`: 1 crítica a `astro`, només arreglada a Astro 7; vegeu D-16). Mesures al build local (Lighthouse mòbil amb Edge, `/` i `/es/`): Performance 100, Accessibility 100, Best Practices 100, SEO 100; LCP 1,8 s, CLS 0, TBT 0 ms; càrrega inicial 217 KiB. Pesos: HTML 27 KB, CSS 11,8 KB, JS 0, tipografies 60 KB (2 fitxers), imatge més gran 43 KB, `og.jpg` 37 KB. S-06 (`html-validate`): 0 errors, amb la regla `tel-non-breaking` desactivada a `.htmlvalidate.json` (D-18). Build sense cap avís `[contingut]`.
+- [x] **B-33** · **Migrar a Astro 7.4.x (D-16).** Es fa abans de tancar B-30; el número no segueix l'ordre perquè s'ha afegit després. Passos (arq. §2.1, §2.4, §5.3, §10.4):
+  1. `astro` a `^7.4.10`; `@astrojs/sitemap`, `@astrojs/check` i Vitest a versions compatibles amb Astro 7 i Vite 8 (Vitest `^5`).
+  2. `engines.node` a `>=22.23.4`.
+  3. `compressHTML: true` a `astro.config.mjs`.
+  4. Si Astro 7 ja té estables les API de tipografies o de CSP, fer servir la forma estable.
+  5. Corregir els errors del compilador en Rust (etiquetes sense tancar, imbricació invàlida), si n'hi ha.
+  6. Treure l'`override` de `sharp` si `npm audit` passa sense ell.
+  7. Comprovar que no hi ha cap ús d'APIs eliminades a la v7.
+
+  No tocar res més.
+
+  Verificació:
+  - `npm ci`, `npm test` i `npm run build` en verd, i build sense avisos `[contingut]`;
+  - `npm audit --omit=dev` amb 0 altes i crítiques (P-07); només s'accepta la baixa d'`esbuild`, si encara hi és, com a observació;
+  - la sortida no canvia respecte de la versió 6: tornen a passar els criteris C-01 a C-10, T-04, T-05, T-07, R-08, R-09, P-05 i S-01 a S-08, i els textos de `[data-historia]` i dels botons conserven els espais.
+  - Nota (fet 2026-11-10): `astro@7.4.10` amb Vite 8.3.7 i Vitest 5.1.0 (cap altre canvi de versió: `@astrojs/sitemap` 3.7.4 i `@astrojs/check` 0.9.12 ja eren compatibles). `engines.node` a `>=22.23.4`, `compressHTML: true` explícit i `override` de `sharp` tret. No ha calgut tocar cap `.astro`: el compilador nou no s'ha queixat de cap HTML, i les API de tipografies i CSP ja eren les estables. `npm audit --omit=dev`: **0 vulnerabilitats** (també ha desaparegut la baixa d'`esbuild`). Build, `astro check` (0/0/0), 140 tests, `html-validate` i els meus checks sobre `dist/` en verd. El `<body>` de les 5 pàgines és idèntic al de la versió 6 (només canvien els identificadors d'àmbit del CSS, l'ordre de les declaracions CSS minificades i un hash d'estil menys a la CSP); els espais de "Veure la publicació a Instagram" i del telèfon es conserven. A 375 i 1280 px es compleixen els mateixos criteris visuals que abans.
+
+- [x] **B-30** · Comprovar els criteris d'arq. §11 (T, C, R, P, S, A) en el build local i, els marcats "publicació", en un build de publicació, abans de passar al QA. **Cal tornar-ho a mesurar després de B-33.** Anotar en aquesta tasca les puntuacions de Lighthouse i els pesos. Verificació: tots els criteris aplicables es compleixen.
+  - **Fet (re-mesurat després de B-33, 2026-11-10):** tots els criteris locals aplicables es compleixen, també P-07 (`npm audit --omit=dev`: 0 vulnerabilitats; `astro` 7.4.10). Lighthouse mòbil amb Edge, build local, `/` i `/es/`: Performance 100, Accessibility 100, Best Practices 100, SEO 100; LCP 1,8 s, CLS 0, TBT 0 ms; càrrega inicial 190 KiB. Pesos: HTML 27 KB, CSS 11,7 KB (2 fitxers), JS 0, tipografies 60 KB (2 fitxers), imatge més gran 43 KB, `og.jpg` 37 KB. S-06 (`html-validate`): 0 errors, amb la regla `tel-non-breaking` desactivada a `.htmlvalidate.json` (D-18). Build sense cap avís `[contingut]`. Build de publicació (`CI=true`): canonical, `hreflang`, OG i JSON-LD amb `https://maaltas.github.io/bistrot1954/`, sense avís `[entorn]` i amb l'avís esperat de l'avís legal de demostració; sense GoatCounter si el codi és `null`. Els criteris "publicació" que depenen d'estar en línia (T-05 a producció, P-01, P-02 i P-08 en producció, S-01 a S-05 en producció) queden per a B-31.
 
 - [ ] **B-31** · **BLOQUEJADA (D-13 a `docs/dubtes.md`)** · Activar la publicació quan l'Oriol doni el vistiplau final, seguint els passos d'arq. §9.4:
   - crear el repositori públic `Maaltas/bistrot1954` i fer-hi `push`;
