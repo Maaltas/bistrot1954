@@ -1,0 +1,30 @@
+---
+/** Història d'un plat (arq. §3.3 P1-P4, §4.5). El `lang` només es posa si difereix del de la pàgina. */
+import type { Historia } from '../lib/contingut';
+import type { Idioma } from '../lib/idioma';
+import Paragrafs from './Paragrafs.astro';
+
+interface Props {
+  historia: Historia;
+  paginaLang: Idioma;
+}
+const { historia, paginaLang } = Astro.props;
+---
+<div class="historia" data-historia lang={historia.lang !== paginaLang ? historia.lang : undefined}>
+  <Paragrafs paragrafs={historia.paragrafs} />
+</div>
+
+<style>
+  .historia {
+    max-width: var(--mesura);
+    font-size: var(--mida-text);
+    line-height: var(--interlineat-text);
+    text-wrap: pretty;
+    overflow-wrap: anywhere;
+    text-align: left;
+  }
+
+  .historia :global(p + p) {
+    margin-top: 0.75em;
+  }
+</style>

@@ -1,0 +1,11 @@
+---
+/**
+ * Paràgrafs de text (arq. §3.3 P4): un <p> per paràgraf i <br> entre línies.
+ * El text s'insereix com a text (Astro l'escapa), mai com a HTML (arq. §10.2).
+ */
+interface Props {
+  paragrafs: string[][];
+}
+const { paragrafs } = Astro.props;
+---
+{paragrafs.map((linies) => <p>{linies.map((linia, i) => <Fragment>{i > 0 && <br />}{linia}</Fragment>)}</p>)}

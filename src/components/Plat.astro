@@ -1,0 +1,159 @@
+---
+/**
+ * Article d'un plat (dis. §4; ganxos d'arq. §4.5). Ordre al DOM: nom, foto, història, enllaç.
+ * L'ordre visual el decideix la graella, sense canviar l'ordre de lectura ni el del focus.
+ */
+import type { Plat } from '../lib/contingut';
+import type { Idioma } from '../lib/idioma';
+import { textos } from '../i18n/textos';
+import ImatgePlat from './ImatgePlat.astro';
+import Historia from './Historia.astro';
+
+interface Props {
+  plat: Plat;
+  lang: Idioma;
+  primera?: boolean;
+}
+const { plat, lang, primera = false } = Astro.props;
+const nom = plat.nom[lang];
+const historia = plat.historia[lang];
+const senseFoto = plat.imatge === null;
+const t = textos[lang];
+---
+<article id={plat.id} data-plat-id={plat.id} class:list={['plat', { 'plat--sense-foto': senseFoto }]}>
+  <h3 class="plat__nom" lang={nom.lang !== lang ? nom.lang : undefined}>{nom.text}</h3>
+  {
+    !senseFoto && (
+      <div class="plat__foto">
+        <ImatgePlat imatge={plat.imatge} alt={nom.text} primera={primera} />
+      </div>
+    )
+  }
+  {
+    historia && (
+      <div class="plat__historia">
+        <Historia historia={historia} paginaLang={lang} />
+      </div>
+    )
+  }
+  <a class="plat__enllac" href={plat.urlPost} rel="noopener">
+    {senseFoto ? t.enllacPlatSenseFoto : t.enllacPlat}<span class="nomes-lectors">: {nom.text}</span>
+  </a>
+</article>
+
+<style>
+  .plat {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      'foto'
+      'nom'
+      'historia'
+      'enllac';
+    justify-items: start;
+  }
+
+  .plat + .plat {
+    margin-top: var(--separacio-plats);
+  }
+
+  .plat__foto {
+    grid-area: foto;
+    width: 100%;
+    max-width: var(--foto);
+  }
+
+  .plat__nom {
+    grid-area: nom;
+    margin-top: var(--espai-5);
+    font-weight: 700;
+    font-size: var(--mida-plat);
+    line-height: var(--interlineat-plat);
+    color: var(--cobalt);
+    text-wrap: balance;
+    overflow-wrap: anywhere;
+  }
+
+  .plat__historia {
+    grid-area: historia;
+    margin-top: var(--espai-3);
+    width: 100%;
+  }
+
+  .plat__enllac {
+    grid-area: enllac;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    margin-top: var(--espai-4);
+    font-family: var(--tipus-sans);
+    font-weight: 500;
+    font-size: var(--mida-ui);
+    line-height: var(--interlineat-ui);
+  }
+
+  /* Variant sense foto: el nom és el bloc visual (dis. §4.3). */
+  .plat--sense-foto .plat__nom {
+    grid-area: foto;
+    display: flex;
+    align-items: flex-end;
+    width: 100%;
+    max-width: var(--foto);
+    min-height: 192px;
+    margin-top: 0;
+    padding: var(--espai-7) var(--espai-5);
+    background: var(--cobalt);
+    color: var(--porcellana);
+    font-size: var(--mida-titol);
+    line-height: 1.1;
+    border-radius: var(--radi-cap);
+  }
+
+  .plat--sense-foto .plat__historia {
+    margin-top: var(--espai-5);
+  }
+
+  /* Mòbil estret: la foto (o el bloc) va a sang. */
+  @media (max-width: 400px) {
+    .plat__foto,
+    .plat--sense-foto .plat__nom {
+      width: calc(100% + 2 * var(--marge));
+      max-width: none;
+      margin-inline: calc(-1 * var(--marge));
+    }
+  }
+
+  /* Escriptori: foto a l'esquerra (400 px) i columna de text de 36rem a la dreta (dis. §4.2). */
+  @media (min-width: 900px) {
+    .plat {
+      grid-template-columns: var(--foto) minmax(0, var(--mesura));
+      grid-template-rows: auto auto auto 1fr;
+      grid-template-areas:
+        'foto nom'
+        'foto historia'
+        'foto enllac'
+        'foto .';
+      column-gap: var(--espai-9);
+    }
+
+    .plat__foto {
+      position: sticky;
+      top: var(--espai-10);
+      align-self: start;
+    }
+
+    .plat__nom {
+      margin-top: 0;
+    }
+
+    .plat--sense-foto .plat__nom {
+      align-self: start;
+      aspect-ratio: 5 / 7;
+      padding: var(--espai-7);
+    }
+
+    .plat--sense-foto .plat__historia {
+      margin-top: 0;
+    }
+  }
+</style>

@@ -1,0 +1,100 @@
+---
+/** Portada: obertura, plats i on som, en l'idioma indicat. La fan servir `/` (ca) i `/es/` (es). */
+import Base from '../layouts/Base.astro';
+import BarraSuperior from './BarraSuperior.astro';
+import BarraInferior from './BarraInferior.astro';
+import Obertura from './Obertura.astro';
+import Plat from './Plat.astro';
+import OnSom from './OnSom.astro';
+import Peu from './Peu.astro';
+import { getPlats, getRestaurant } from '../lib/contingut';
+import { urlAbsoluta, urlWeb } from '../lib/entorn';
+import type { Idioma } from '../lib/idioma';
+import { RUTES } from '../lib/rutes';
+import { existeixOg, jsonLdRestaurant, metaPortada } from '../lib/seo';
+import { textos } from '../i18n/textos';
+
+interface Props {
+  lang: Idioma;
+}
+const { lang } = Astro.props;
+const t = textos[lang];
+const restaurant = getRestaurant();
+const plats = getPlats();
+const meta = metaPortada(restaurant, lang);
+
+const site = import.meta.env.SITE;
+const base = import.meta.env.BASE_URL;
+const jsonLd = jsonLdRestaurant(restaurant, lang, {
+  web: urlWeb(site, base),
+  imatge: existeixOg() ? urlAbsoluta('/og.jpg', site, base) : null,
+});
+---
+<Base
+  lang={lang}
+  title={meta.title}
+  description={meta.description}
+  rutes={RUTES.portada}
+  jsonLd={jsonLd}
+  saltar={{ href: '#plats', text: t.saltar }}
+>
+  <header>
+    <BarraSuperior lang={lang} pagina="portada" restaurant={restaurant} />
+    <Obertura lang={lang} restaurant={restaurant} />
+  </header>
+  <main>
+    <section id="plats" class="plats" aria-labelledby="plats-titol">
+      <div class="contenidor">
+        <h2 id="plats-titol" class="plats__titol">{t.titolPlats}</h2>
+        <p class="plats__intro">{t.introPlats}</p>
+        <div class="plats__llista">
+          {plats.map((plat, i) => <Plat plat={plat} lang={lang} primera={i === 0} />)}
+        </div>
+      </div>
+    </section>
+    <OnSom lang={lang} restaurant={restaurant} />
+  </main>
+  <Peu lang={lang} pagina="portada" restaurant={restaurant} />
+  <BarraInferior lang={lang} restaurant={restaurant} />
+</Base>
+
+<style>
+  .plats {
+    padding-top: 28px;
+    padding-bottom: var(--separacio-plats);
+  }
+
+  .plats__titol {
+    font-weight: 700;
+    font-size: var(--mida-titol);
+    line-height: var(--interlineat-titol);
+    color: var(--cobalt);
+  }
+
+  .plats__intro {
+    margin-top: var(--espai-3);
+    font-family: var(--tipus-sans);
+    font-weight: 500;
+    font-size: var(--mida-ui);
+    line-height: var(--interlineat-ui);
+    color: var(--acer);
+  }
+
+  .plats__llista {
+    margin-top: var(--espai-6);
+  }
+
+  @media (min-width: 900px) {
+    .plats {
+      padding-top: var(--espai-9);
+    }
+
+    .plats__intro {
+      font-size: 1.25rem;
+    }
+
+    .plats__llista {
+      margin-top: var(--espai-8);
+    }
+  }
+</style>

@@ -1,6 +1,8 @@
 /**
  * Metadades i dades estructurades (arq. §7). Només fan servir dades confirmades de restaurant.yaml.
  */
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
 import type { Restaurant } from './contingut';
 import type { Idioma } from './idioma';
 import { altreIdioma } from '../i18n/textos';
@@ -124,4 +126,9 @@ export function jsonLdRestaurant(restaurant: Restaurant, idioma: Idioma, opcions
 /** Serialitza el JSON-LD escapant `<` perquè no es pugui tancar l'etiqueta <script>. */
 export function serialitzaJsonLd(dades: unknown): string {
   return JSON.stringify(dades, null, 2).replace(/</g, '\\u003c');
+}
+
+/** Existeix `public/og.jpg`? (el build sempre s'executa des de l'arrel del projecte). */
+export function existeixOg(): boolean {
+  return existsSync(join(process.cwd(), 'public', 'og.jpg'));
 }

@@ -1,0 +1,83 @@
+---
+/** Peu: nom, Instagram, avís legal i selector d'idioma, amb la línia superior (dis. §3.5). */
+import type { Restaurant } from '../lib/contingut';
+import type { Idioma } from '../lib/idioma';
+import { ruta } from '../lib/entorn';
+import { RUTES, type Pagina } from '../lib/rutes';
+import { textos } from '../i18n/textos';
+import SelectorIdioma from './SelectorIdioma.astro';
+
+interface Props {
+  lang: Idioma;
+  pagina: Pagina;
+  restaurant: Restaurant;
+}
+const { lang, pagina, restaurant } = Astro.props;
+const t = textos[lang];
+---
+<footer class="peu sobre-cobalt">
+  <div class="contenidor">
+    <div class="peu__dins">
+      <p class="peu__nom">{restaurant.nom}</p>
+      <ul class="peu__enllacos">
+        <li><a class="peu__enllac" href={restaurant.instagram} rel="noopener">{t.instagram}</a></li>
+        <li><a class="peu__enllac" href={ruta(RUTES.legal[lang])}>{t.avisLegal}</a></li>
+      </ul>
+      <SelectorIdioma lang={lang} pagina={pagina} class="peu__idioma" />
+    </div>
+  </div>
+</footer>
+
+<style>
+  .peu {
+    padding-top: var(--espai-4);
+    padding-bottom: calc(var(--barra-alt) + var(--espai-4) + env(safe-area-inset-bottom));
+    font-family: var(--tipus-sans);
+    font-weight: 500;
+    font-size: var(--mida-petita);
+    line-height: var(--interlineat-petita);
+  }
+
+  .peu__dins {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--espai-1);
+    padding-top: var(--espai-4);
+    border-top: 1px solid var(--linia-peu);
+  }
+
+  .peu__nom {
+    font-family: var(--tipus-serif);
+    font-weight: 700;
+    font-size: var(--mida-ui);
+  }
+
+  .peu__enllac,
+  .peu :global(.peu__idioma) {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-size: var(--mida-petita);
+  }
+
+  /* Mòbil apaïsat: la barra inferior no és fixa i no cal reservar-li espai. */
+  @media (max-height: 479px) {
+    .peu {
+      padding-bottom: var(--espai-4);
+    }
+  }
+
+  @media (min-width: 900px) {
+    .peu {
+      padding-bottom: var(--espai-7);
+    }
+
+    .peu__dins {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--espai-7);
+    }
+  }
+</style>

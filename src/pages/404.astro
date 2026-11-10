@@ -1,0 +1,63 @@
+---
+/**
+ * Pàgina 404 bilingüe (dis. §3.6, arq. §5.2). GitHub Pages la serveix per a qualsevol ruta inexistent,
+ * per això els enllaços són absoluts (amb `base`) i no porta cap recurs relatiu.
+ */
+import Base from '../layouts/Base.astro';
+import { getRestaurant } from '../lib/contingut';
+import { ruta } from '../lib/entorn';
+import { RUTES } from '../lib/rutes';
+import { textos404 } from '../i18n/textos';
+
+const restaurant = getRestaurant();
+---
+<Base
+  lang="ca"
+  title={`${textos404.ca.missatge} · ${restaurant.nom}`}
+  description={`${textos404.ca.missatge} ${textos404.es.missatge}`}
+  noindex
+  senseEstadistiques
+>
+  <div class="franja" aria-hidden="true"></div>
+  <main class="contenidor pagina">
+    <p class="marca">{restaurant.nom}</p>
+    <h1 class="missatge" lang="ca">{textos404.ca.missatge}</h1>
+    <p><a href={ruta(RUTES.portada.ca)} lang="ca">{textos404.ca.enllac}</a></p>
+    <p class="missatge" lang="es">{textos404.es.missatge}</p>
+    <p><a href={ruta(RUTES.portada.es)} lang="es">{textos404.es.enllac}</a></p>
+  </main>
+</Base>
+
+<style>
+  .franja {
+    height: var(--espai-4);
+    background: var(--cobalt);
+  }
+
+  .pagina {
+    padding-block: var(--espai-7) var(--espai-9);
+  }
+
+  .marca {
+    font-weight: 700;
+    font-size: var(--mida-titol);
+    line-height: var(--interlineat-titol);
+    color: var(--cobalt);
+  }
+
+  .missatge {
+    margin-top: var(--espai-7);
+    font-weight: 700;
+    font-size: var(--mida-plat);
+    line-height: var(--interlineat-plat);
+  }
+
+  .pagina a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-family: var(--tipus-sans);
+    font-weight: 500;
+    font-size: var(--mida-ui);
+  }
+</style>

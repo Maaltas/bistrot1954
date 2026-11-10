@@ -1,0 +1,38 @@
+name: Publica la web
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  # Sempre: comprova i construeix (fa també de CI).
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: withastro/action@v6
+        with:
+          node-version: 26
+          build-cmd: npm run comprova # pendents + tests + astro check + build
+
+  # Només quan l'Oriol activa la publicació: variable PUBLICAR = si (docs/arquitectura.md §9.4).
+  deploy:
+    needs: build
+    if: github.ref == 'refs/heads/main' && vars.PUBLICAR == 'si'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

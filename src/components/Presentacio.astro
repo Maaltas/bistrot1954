@@ -1,0 +1,31 @@
+---
+/** Text de presentació del restaurant (arq. §4.3.2): literal de l'Oriol, sense emojis. */
+import type { Historia } from '../lib/contingut';
+import type { Idioma } from '../lib/idioma';
+import Paragrafs from './Paragrafs.astro';
+
+interface Props {
+  presentacio: Historia;
+  paginaLang: Idioma;
+}
+const { presentacio, paginaLang } = Astro.props;
+---
+<div class="presentacio" data-presentacio lang={presentacio.lang !== paginaLang ? presentacio.lang : undefined}>
+  <Paragrafs paragrafs={presentacio.paragrafs} />
+</div>
+
+<style>
+  .presentacio {
+    max-width: var(--mesura);
+    font-size: var(--mida-text);
+    line-height: var(--interlineat-text);
+    color: var(--porcellana);
+    text-wrap: pretty;
+    overflow-wrap: anywhere;
+    text-align: left;
+  }
+
+  .presentacio :global(p + p) {
+    margin-top: 0.75em;
+  }
+</style>

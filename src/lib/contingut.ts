@@ -95,7 +95,7 @@ const textBilingueSchema = z.object({
 const restaurantSchema = z
   .object({
     nom: z.string().min(1),
-    web_url: z.string().url().nullable(),
+    web_url: z.url().nullable(),
     adreca: z.object({
       carrer: z.string().min(1),
       codi_postal: z.string().min(1),
@@ -103,7 +103,7 @@ const restaurantSchema = z
       provincia: z.string().min(1),
       pais: z.string().length(2),
     }),
-    instagram: z.string().url(),
+    instagram: z.url(),
     presentacio: textBilingueSchema.nullable().optional(),
     cuina: textBilingueSchema.nullable().optional(),
     telefon: z
@@ -111,7 +111,7 @@ const restaurantSchema = z
       .regex(/^\+34 \d{3} \d{2} \d{2} \d{2}$/, { error: 'ha de ser "+34 XXX XX XX XX"' })
       .nullable()
       .optional(),
-    google_maps_url: z.string().url().nullable().optional(),
+    google_maps_url: z.url().nullable().optional(),
     horari: z.array(franjaSchema).nullable().optional(),
     preu: z.string().nullable().optional(),
     estadistiques: z
@@ -178,7 +178,7 @@ export interface Plat {
   dataPublicacio: string | null;
 }
 
-export interface Restaurant extends Omit<RestaurantDades, 'presentacio'> {
+export interface Restaurant extends Omit<RestaurantDades, 'presentacio' | 'estadistiques'> {
   presentacio: Record<Idioma, Historia | null>;
   telefonVisible: string | null;
   telefonEnllac: string | null;

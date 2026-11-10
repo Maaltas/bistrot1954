@@ -1,0 +1,57 @@
+---
+/** Barra d'accions inferior (< 900 px): "Com arribar" (secundari) i "Trucar" (principal, a la dreta). Dis. §3.1, §8. */
+import type { Restaurant } from '../lib/contingut';
+import type { Idioma } from '../lib/idioma';
+import { textos } from '../i18n/textos';
+
+interface Props {
+  lang: Idioma;
+  restaurant: Restaurant;
+}
+const { lang, restaurant } = Astro.props;
+const t = textos[lang];
+const tel = restaurant.telefonEnllac;
+---
+<nav class="barra-inferior" aria-label={t.accionsNom}>
+  {
+    tel ? (
+      <>
+        <a class="boto boto--secundari" href={restaurant.mapaUrl}>{t.comArribar}</a>
+        <a class="boto boto--principal" href={tel}>{t.trucarCurt}</a>
+      </>
+    ) : (
+      <a class="boto boto--principal" href={restaurant.mapaUrl}>{t.comArribar}</a>
+    )
+  }
+</nav>
+
+<style>
+  .barra-inferior {
+    position: fixed;
+    inset: auto 0 0 0;
+    z-index: 50;
+    display: flex;
+    gap: var(--espai-3);
+    padding: var(--espai-3) var(--espai-5) calc(var(--espai-3) + env(safe-area-inset-bottom));
+    background: var(--porcellana);
+    box-shadow: var(--ombra-barra);
+  }
+
+  .barra-inferior .boto {
+    flex: 1 1 0;
+  }
+
+  /* Mòbil apaïsat o zoom gran: deixa de ser fixa i es queda al final de la pàgina. */
+  @media (max-height: 479px) {
+    .barra-inferior {
+      position: static;
+      box-shadow: 0 -1px 0 var(--linia-barra);
+    }
+  }
+
+  @media (min-width: 900px) {
+    .barra-inferior {
+      display: none;
+    }
+  }
+</style>

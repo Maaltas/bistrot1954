@@ -1,0 +1,16 @@
+---
+/** Enllaç a la pàgina equivalent de l'altre idioma (dis. §8). */
+import { ruta } from '../lib/entorn';
+import type { Idioma } from '../lib/idioma';
+import { RUTES, type Pagina } from '../lib/rutes';
+import { altreIdioma, textos } from '../i18n/textos';
+
+interface Props {
+  lang: Idioma;
+  pagina: Pagina;
+  class?: string;
+}
+const { lang, pagina, class: classe } = Astro.props;
+const altre = altreIdioma(lang);
+---
+<a class:list={['idioma', classe]} href={ruta(RUTES[pagina][altre])} hreflang={altre} lang={altre}>{textos[lang].idiomaAlternatiu}</a>

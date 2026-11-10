@@ -1,0 +1,124 @@
+---
+/**
+ * Obertura (#inici): vora cobalt amb el nom gran, les dades del restaurant i el text de presentació (dis. §3.2).
+ * Ordre: nom, dades (cuina, adreça, horari), presentació.
+ */
+import type { Restaurant } from '../lib/contingut';
+import type { Idioma } from '../lib/idioma';
+import { cuinaDe } from '../lib/seo';
+import { formataHorari } from '../i18n/textos';
+import Presentacio from './Presentacio.astro';
+import SelectorIdioma from './SelectorIdioma.astro';
+
+interface Props {
+  lang: Idioma;
+  restaurant: Restaurant;
+}
+const { lang, restaurant } = Astro.props;
+const cuina = cuinaDe(restaurant, lang);
+const horari = formataHorari(restaurant.horari, lang);
+const presentacio = restaurant.presentacio[lang];
+const { adreca } = restaurant;
+---
+<section id="inici" class="obertura sobre-cobalt">
+  <div class="contenidor">
+    <div class="obertura__idioma">
+      <SelectorIdioma lang={lang} pagina="portada" />
+    </div>
+    <h1 class="obertura__nom">{restaurant.nom}</h1>
+    <div class="obertura__cos">
+      <ul class="obertura__dades">
+        {cuina && <li>{cuina}</li>}
+        <li>
+          <address class="obertura__adreca"><span class="obertura__carrer">{adreca.carrer}</span><span class="obertura__coma">, </span><span class="obertura__poble">{adreca.codi_postal} {adreca.municipi}</span></address>
+        </li>
+        {horari.map((linia) => <li>{linia}</li>)}
+      </ul>
+      {presentacio && <div class="obertura__presentacio"><Presentacio presentacio={presentacio} paginaLang={lang} /></div>}
+    </div>
+  </div>
+</section>
+
+<style>
+  .obertura {
+    padding-bottom: var(--espai-7);
+  }
+
+  .obertura__idioma {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: var(--espai-2);
+  }
+
+  .obertura__nom {
+    margin-top: var(--espai-2);
+    padding-bottom: 0.08em;
+    font-weight: 700;
+    font-size: var(--mida-marca);
+    line-height: var(--interlineat-marca);
+    letter-spacing: -0.01em;
+    font-variant-numeric: oldstyle-nums;
+    text-wrap: balance;
+    color: var(--porcellana);
+  }
+
+  .obertura__cos {
+    margin-top: var(--espai-4);
+  }
+
+  .obertura__dades {
+    font-family: var(--tipus-sans);
+    font-weight: 500;
+    font-size: var(--mida-ui);
+    line-height: var(--interlineat-ui);
+    font-variant-numeric: lining-nums tabular-nums;
+  }
+
+  .obertura__adreca {
+    font-style: normal;
+  }
+
+  .obertura__presentacio {
+    margin-top: var(--espai-6);
+  }
+
+  @media (min-width: 900px) {
+    .obertura {
+      padding-top: var(--barra-sup-alt);
+      padding-bottom: var(--espai-8);
+    }
+
+    .obertura__idioma {
+      display: none;
+    }
+
+    .obertura__nom {
+      margin-top: var(--espai-7);
+    }
+
+    .obertura__cos {
+      display: grid;
+      grid-template-columns: var(--foto) minmax(0, var(--mesura));
+      column-gap: var(--espai-9);
+      align-items: start;
+      margin-top: var(--espai-7);
+    }
+
+    .obertura__dades {
+      font-size: 1.25rem;
+    }
+
+    .obertura__carrer,
+    .obertura__poble {
+      display: block;
+    }
+
+    .obertura__coma {
+      display: none;
+    }
+
+    .obertura__presentacio {
+      margin-top: 0;
+    }
+  }
+</style>

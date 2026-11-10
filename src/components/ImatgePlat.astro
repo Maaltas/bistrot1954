@@ -1,0 +1,58 @@
+---
+/**
+ * Foto d'un plat (arq. §6.3-§6.5): <Picture> AVIF + WebP + JPEG dins d'una finestra 5:7 ancorada
+ * a dalt a l'esquerra (disseny §6.2, opció A). Sense retall al build. Cap sortida si no hi ha imatge.
+ */
+import { Picture } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import { calculaWidths } from '../lib/imatges';
+
+interface Props {
+  imatge: ImageMetadata | null;
+  alt: string;
+  /** La primera foto de la pàgina és prioritària; les altres es carreguen en diferit. */
+  primera?: boolean;
+}
+const { imatge, alt, primera = false } = Astro.props;
+---
+{
+  imatge && (
+    <div class="foto">
+      <Picture
+        src={imatge}
+        alt={alt}
+        formats={['avif', 'webp']}
+        fallbackFormat="jpg"
+        widths={calculaWidths(imatge.width)}
+        sizes="(min-width: 400px) 450px, 112.5vw"
+        quality={60}
+        loading={primera ? 'eager' : 'lazy'}
+        fetchpriority={primera ? 'high' : undefined}
+        decoding="async"
+      />
+    </div>
+  )
+}
+
+<style>
+  .foto {
+    width: 100%;
+    aspect-ratio: 5 / 7;
+    overflow: hidden;
+    background: var(--aigualit);
+    border-radius: var(--radi-cap);
+  }
+
+  .foto :global(picture) {
+    display: block;
+  }
+
+  /* Es veu el rectangle de dalt a l'esquerra (fins al 88,9 % × 93,3 %): queden fora la fletxa del carrusel
+     i els punts d'Instagram. Mai més gran que la mida real de la font. */
+  .foto :global(img) {
+    display: block;
+    width: 112.5%;
+    max-width: none;
+    height: auto;
+  }
+</style>

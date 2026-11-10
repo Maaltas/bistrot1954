@@ -1,0 +1,155 @@
+---
+/** Avís legal i privacitat (arq. §4.3.3, §5.4; dis. §3.7). Amb `demostracio: true`, les dades porten la marca de dada fictícia. */
+import Base from '../layouts/Base.astro';
+import BarraSuperior from './BarraSuperior.astro';
+import BarraInferior from './BarraInferior.astro';
+import Peu from './Peu.astro';
+import { getRestaurant } from '../lib/contingut';
+import type { Idioma } from '../lib/idioma';
+import { RUTES } from '../lib/rutes';
+import { metaLegal } from '../lib/seo';
+import { legal } from '../i18n/legal';
+import { textos } from '../i18n/textos';
+
+interface Props {
+  lang: Idioma;
+}
+const { lang } = Astro.props;
+const restaurant = getRestaurant();
+const t = textos[lang];
+const l = legal[lang];
+const meta = metaLegal(restaurant, lang);
+const { avis_legal: avis, adreca } = restaurant;
+const demo = avis.demostracio;
+
+const dadesTitular = [
+  { etiqueta: l.etiquetes.titular, valor: avis.titular },
+  { etiqueta: l.etiquetes.nif, valor: avis.nif },
+  { etiqueta: l.etiquetes.domicili, valor: avis.domicili },
+  { etiqueta: l.etiquetes.email, valor: avis.email },
+];
+const adrecaEstabliment = `${adreca.carrer}, ${adreca.codi_postal} ${adreca.municipi}`;
+---
+<Base lang={lang} title={meta.title} description={meta.description} rutes={RUTES.legal} noindex={demo}>
+  <header>
+    <BarraSuperior lang={lang} pagina="legal" restaurant={restaurant} />
+  </header>
+  <main class="legal">
+    <div class="contenidor">
+      <div class="legal__cos">
+        <h1 class="legal__titol">{l.titol}</h1>
+        {demo && <p class="legal__avis" role="note">{t.avisDemostracio}</p>}
+
+        <h2>{l.titularTitol}</h2>
+        <dl class="legal__dades">
+          {
+            dadesTitular.map((dada) => (
+              <div>
+                <dt>{dada.etiqueta}</dt>
+                <dd>
+                  {demo ? (
+                    <>
+                      <span data-dada-ficticia>{dada.valor}</span> <span class="legal__marca">{t.dadaFicticia}</span>
+                    </>
+                  ) : (
+                    dada.valor
+                  )}
+                </dd>
+              </div>
+            ))
+          }
+          <div>
+            <dt>{l.etiquetes.nomComercial}</dt>
+            <dd>{restaurant.nom}</dd>
+          </div>
+          <div>
+            <dt>{l.etiquetes.establiment}</dt>
+            <dd>{adrecaEstabliment}</dd>
+          </div>
+        </dl>
+
+        <h2>{l.privacitatTitol}</h2>
+        <p>{l.privacitatSenseGaletes}</p>
+        <p>{l.privacitatHosting}</p>
+        {restaurant.estadistiques && <p>{l.privacitatEstadistiques}</p>}
+        <p>{l.privacitatEnllacos}</p>
+
+        <h2>{l.contingutTitol}</h2>
+        <p>{l.contingutText}</p>
+      </div>
+    </div>
+  </main>
+  <Peu lang={lang} pagina="legal" restaurant={restaurant} />
+  <BarraInferior lang={lang} restaurant={restaurant} />
+</Base>
+
+<style>
+  .legal {
+    padding-block: var(--espai-7) var(--espai-9);
+  }
+
+  .legal__cos {
+    max-width: var(--mesura);
+    font-size: var(--mida-text);
+    line-height: var(--interlineat-text);
+    overflow-wrap: anywhere;
+  }
+
+  .legal__titol {
+    font-weight: 700;
+    font-size: var(--mida-titol);
+    line-height: var(--interlineat-titol);
+    color: var(--cobalt);
+  }
+
+  .legal__avis {
+    margin-block: var(--espai-6);
+    padding: var(--espai-4) var(--espai-5);
+    background: var(--aigualit);
+    border-left: 4px solid var(--cobalt);
+    border-radius: var(--radi-cap);
+    font-family: var(--tipus-sans);
+    font-weight: 500;
+    font-size: var(--mida-ui);
+    line-height: var(--interlineat-ui);
+    color: var(--tinta);
+  }
+
+  .legal__cos h2 {
+    margin-top: var(--espai-8);
+    margin-bottom: var(--espai-3);
+    font-weight: 700;
+    font-size: var(--mida-plat);
+    line-height: var(--interlineat-plat);
+    color: var(--cobalt);
+  }
+
+  .legal__cos p + p {
+    margin-top: 0.75em;
+  }
+
+  .legal__dades div + div {
+    margin-top: var(--espai-3);
+  }
+
+  .legal__dades dt {
+    font-weight: 700;
+  }
+
+  .legal__dades dd {
+    margin: 0;
+  }
+
+  .legal__marca {
+    font-family: var(--tipus-sans);
+    font-weight: 500;
+    font-size: var(--mida-ui);
+    color: var(--acer);
+  }
+
+  @media (min-width: 900px) {
+    .legal {
+      padding-top: calc(var(--barra-sup-alt) + var(--espai-8));
+    }
+  }
+</style>

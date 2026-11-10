@@ -1,0 +1,10 @@
+---
+/** Dades estructurades (arq. §7.3). L'únic `set:html` permès: el JSON té `<` escapat. */
+import { serialitzaJsonLd } from '../lib/seo';
+
+interface Props {
+  dades: unknown;
+}
+const { dades } = Astro.props;
+---
+<script is:inline type="application/ld+json" set:html={serialitzaJsonLd(dades)} />

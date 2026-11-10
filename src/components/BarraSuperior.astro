@@ -1,0 +1,116 @@
+---
+/**
+ * Barra superior (dis. §3.1, §8). Fixa a ≥ 900 px, cobalt, amb les accions.
+ * A les pàgines legals, a < 900 px es veu com una franja amb el nom i el selector d'idioma.
+ */
+import type { Restaurant } from '../lib/contingut';
+import type { Idioma } from '../lib/idioma';
+import { ruta } from '../lib/entorn';
+import { RUTES, type Pagina } from '../lib/rutes';
+import { textos } from '../i18n/textos';
+import SelectorIdioma from './SelectorIdioma.astro';
+
+interface Props {
+  lang: Idioma;
+  pagina: Pagina;
+  restaurant: Restaurant;
+}
+const { lang, pagina, restaurant } = Astro.props;
+const t = textos[lang];
+const esPortada = pagina === 'portada';
+---
+<nav class:list={['barra-superior', 'sobre-cobalt', { 'barra-superior--legal': !esPortada }]} aria-label={t.navegacioNom}>
+  <div class="contenidor barra-superior__dins">
+    {
+      esPortada ? (
+        <ul class="barra-superior__seccions">
+          <li><a href="#plats">{t.navPlats}</a></li>
+          <li><a href="#on-som">{t.navOnSom}</a></li>
+        </ul>
+      ) : (
+        <a class="barra-superior__nom" href={ruta(RUTES.portada[lang])}>{restaurant.nom}</a>
+      )
+    }
+    <div class="barra-superior__accions">
+      <SelectorIdioma lang={lang} pagina={pagina} />
+      <a class="boto boto--secundari barra-superior__boto" href={restaurant.mapaUrl}>{t.comArribar}</a>
+      {
+        restaurant.telefonEnllac && restaurant.telefonVisible && (
+          <a class="boto boto--principal barra-superior__boto" href={restaurant.telefonEnllac}>
+            {t.trucarLlarg(restaurant.telefonVisible)}
+          </a>
+        )
+      }
+    </div>
+  </div>
+</nav>
+
+<style>
+  .barra-superior {
+    display: none;
+  }
+
+  /* Pàgines legals en mòbil: franja de 56 px amb el nom i el selector d'idioma. */
+  .barra-superior--legal {
+    display: block;
+  }
+
+  .barra-superior__dins {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--espai-6);
+    min-height: 56px;
+  }
+
+  .barra-superior__seccions {
+    display: flex;
+    gap: var(--espai-6);
+  }
+
+  .barra-superior__seccions a,
+  .barra-superior__nom {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-family: var(--tipus-sans);
+    font-weight: 500;
+    font-size: var(--mida-ui);
+    line-height: var(--interlineat-ui);
+  }
+
+  .barra-superior__nom {
+    font-family: var(--tipus-serif);
+    font-weight: 700;
+    font-size: var(--mida-plat);
+  }
+
+  .barra-superior__accions {
+    display: flex;
+    align-items: center;
+    gap: var(--espai-4);
+  }
+
+  .barra-superior__boto {
+    display: none;
+    min-height: 44px;
+  }
+
+  @media (min-width: 900px) {
+    .barra-superior {
+      display: block;
+      position: fixed;
+      inset: 0 0 auto 0;
+      z-index: 50;
+      height: var(--barra-sup-alt);
+    }
+
+    .barra-superior__dins {
+      height: 100%;
+    }
+
+    .barra-superior__boto {
+      display: inline-flex;
+    }
+  }
+</style>

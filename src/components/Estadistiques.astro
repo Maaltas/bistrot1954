@@ -1,0 +1,11 @@
+---
+/**
+ * Estadístiques de visites amb GoatCounter (arq. §10.6): només en un build de publicació i amb codi.
+ * En qualsevol altre cas, no emet res. El script s'autoallotja (public/js/count.js).
+ */
+import { getRestaurant } from '../lib/contingut';
+import { ruta } from '../lib/entorn';
+
+const { estadistiques } = getRestaurant();
+---
+{estadistiques && <script is:inline async data-goatcounter={estadistiques.endpoint} src={ruta('/js/count.js')} />}

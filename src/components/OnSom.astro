@@ -1,0 +1,138 @@
+---
+/** Secció "On som" (#on-som): adreça, com arribar, horari i telèfon (dis. §3.4, §8, §9.3). */
+import type { Restaurant } from '../lib/contingut';
+import type { Idioma } from '../lib/idioma';
+import { formataHorari, textos } from '../i18n/textos';
+
+interface Props {
+  lang: Idioma;
+  restaurant: Restaurant;
+}
+const { lang, restaurant } = Astro.props;
+const t = textos[lang];
+const horari = formataHorari(restaurant.horari, lang);
+const { adreca } = restaurant;
+---
+<section id="on-som" class="on-som sobre-cobalt" aria-labelledby="on-som-titol">
+  <div class="contenidor on-som__dins">
+    <div class="on-som__esquerra">
+      <h2 id="on-som-titol" class="on-som__titol">{t.titolOnSom}</h2>
+      <address class="on-som__adreca">
+        <span>{adreca.carrer}</span>
+        <span>{adreca.codi_postal} {adreca.municipi}</span>
+      </address>
+      <a class="boto boto--secundari on-som__boto" href={restaurant.mapaUrl}>{t.comArribar}</a>
+    </div>
+    <div class="on-som__dreta">
+      {
+        horari.length > 0 && (
+          <div class="on-som__bloc">
+            <h3 class="on-som__subtitol">{t.subtitolHorari}</h3>
+            {horari.map((linia) => <p class="on-som__dada">{linia}</p>)}
+          </div>
+        )
+      }
+      {
+        restaurant.telefonEnllac && restaurant.telefonVisible && (
+          <div class="on-som__bloc">
+            <h3 class="on-som__subtitol">{t.subtitolTelefon}</h3>
+            <p class="on-som__telefon">{restaurant.telefonVisible}</p>
+            <a class="boto boto--principal on-som__boto" href={restaurant.telefonEnllac}>
+              <span class="on-som__curt">{t.trucarCurt}</span>
+              <span class="on-som__llarg">{t.trucarLlarg(restaurant.telefonVisible)}</span>
+            </a>
+          </div>
+        )
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .on-som {
+    padding-block: 56px;
+  }
+
+  .on-som__titol {
+    font-weight: 700;
+    font-size: var(--mida-titol);
+    line-height: var(--interlineat-titol);
+  }
+
+  .on-som__adreca {
+    margin-top: var(--espai-4);
+    margin-bottom: var(--espai-5);
+    font-style: normal;
+    font-size: var(--mida-adreca);
+    line-height: var(--interlineat-adreca);
+    font-variant-numeric: lining-nums tabular-nums;
+  }
+
+  .on-som__adreca span {
+    display: block;
+  }
+
+  .on-som__boto {
+    width: 100%;
+  }
+
+  .on-som__dreta {
+    margin-top: 40px;
+  }
+
+  .on-som__bloc + .on-som__bloc {
+    margin-top: var(--espai-7);
+  }
+
+  .on-som__subtitol {
+    font-weight: 700;
+    font-size: var(--mida-plat);
+    line-height: var(--interlineat-plat);
+  }
+
+  .on-som__dada {
+    font-size: var(--mida-text);
+    line-height: var(--interlineat-text);
+    font-variant-numeric: lining-nums tabular-nums;
+  }
+
+  .on-som__telefon {
+    margin-bottom: var(--espai-4);
+    font-size: var(--mida-adreca);
+    line-height: var(--interlineat-adreca);
+    font-variant-numeric: lining-nums tabular-nums;
+  }
+
+  .on-som__llarg {
+    display: none;
+  }
+
+  @media (min-width: 900px) {
+    .on-som {
+      padding-block: var(--espai-9);
+    }
+
+    .on-som__dins {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      column-gap: var(--espai-9);
+      align-items: start;
+    }
+
+    .on-som__dreta {
+      margin-top: 0;
+    }
+
+    .on-som__boto {
+      width: auto;
+    }
+
+    .on-som__curt {
+      display: none;
+    }
+
+    .on-som__llarg {
+      display: inline;
+    }
+  }
+</style>

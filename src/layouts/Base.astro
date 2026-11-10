@@ -1,0 +1,41 @@
+---
+/**
+ * Estructura comuna de totes les pàgines: <head> (SEO, tipografies, estils), enllaç per saltar,
+ * contingut i estadístiques (dis. §2, arq. §7, §10.6).
+ */
+import { Font } from 'astro:assets';
+import '../styles/tokens.css';
+import '../styles/global.css';
+import Seo from '../components/Seo.astro';
+import JsonLd from '../components/JsonLd.astro';
+import Estadistiques from '../components/Estadistiques.astro';
+import type { Idioma } from '../lib/idioma';
+
+interface Props {
+  lang: Idioma;
+  title: string;
+  description: string;
+  rutes?: Record<Idioma, string>;
+  noindex?: boolean;
+  jsonLd?: unknown;
+  /** Enllaç per saltar al contingut principal (primer element enfocable). */
+  saltar?: { href: string; text: string };
+  /** Les pàgines sense estadístiques (la 404). */
+  senseEstadistiques?: boolean;
+}
+const { lang, title, description, rutes, noindex, jsonLd, saltar, senseEstadistiques = false } = Astro.props;
+---
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <Seo lang={lang} title={title} description={description} rutes={rutes} noindex={noindex} />
+    <Font cssVariable="--font-alegreya" preload={[{ weight: 400, style: 'normal', subset: 'latin' }]} />
+    <Font cssVariable="--font-alegreya-sans" />
+    {jsonLd && <JsonLd dades={jsonLd} />}
+  </head>
+  <body>
+    {saltar && <a class="salta" href={saltar.href}>{saltar.text}</a>}
+    <slot />
+    {!senseEstadistiques && <Estadistiques />}
+  </body>
+</html>

@@ -14,7 +14,7 @@ Definides a `docs/arquitectura.md`, versió 2 (abreujat "arq."), que incorpora l
   - **en local es prova a `http://localhost:4321/bistrot1954/`** (`npm run dev` o `npm run preview`);
   - les rutes `/`, `/es/`… d'aquestes tasques són relatives a la base.
 
-- [ ] **B-01** · Inicialitzar git a l'arrel (`git init`, branca `main`) amb el `.gitignore` d'arq. §10.1 (inclou `.obsidian/`) i `.gitattributes` amb `* text=auto eol=lf` (arq. §2.3). No afegir cap remot. Verificació: `git status` no llista `node_modules/`, `dist/`, `.astro/`, `.env` ni `.obsidian/`; `git remote -v` no mostra res.
+- [x] **B-01** · Inicialitzar git a l'arrel (`git init`, branca `main`) amb el `.gitignore` d'arq. §10.1 (inclou `.obsidian/`) i `.gitattributes` amb `* text=auto eol=lf` (arq. §2.3). No afegir cap remot. Verificació: `git status` no llista `node_modules/`, `dist/`, `.astro/`, `.env` ni `.obsidian/`; `git remote -v` no mostra res.
 - [ ] **B-02** · Crear el projecte Astro 6 a l'arrel sense plantilla d'exemple, amb:
   - `package.json` amb `engines` (arq. §5.3);
   - `.node-version` = `26.13.0`;
@@ -23,8 +23,8 @@ Definides a `docs/arquitectura.md`, versió 2 (abreujat "arq."), que incorpora l
 
   Verificació: `npm ci` acaba sense errors a PowerShell i a Git Bash.
 - [ ] **B-03** · Afegir els scripts npm d'arq. §5.3 (`dev`, `build`, `preview`, `test`, `pendents`, `comprova`, `og`), portables a `cmd.exe`; `pendents` acaba sempre amb codi 0. Verificació: `npm run build` amb una pàgina buida genera `dist/index.html`.
-- [ ] **B-04** · Crear `contingut/restaurant.yaml` amb el contingut exacte d'arq. §4.3.1: `web_url: null`, telèfon, horari, Google Maps, presentació literal amb els emojis, `estadistiques.goatcounter: null` i avís legal de demostració. Verificació: el fitxer és idèntic al d'arq. §4.3.1, inclòs l'apòstrof `’` de "d’aquí".
-- [ ] **B-05** · Crear `contingut/seleccio.yaml` amb el contingut inicial exacte d'arq. §3.2 (8 plats). Verificació: cada `id` existeix a `contingut/plats.json`.
+- [x] **B-04** · Crear `contingut/restaurant.yaml` amb el contingut exacte d'arq. §4.3.1: `web_url: null`, telèfon, horari, Google Maps, presentació literal amb els emojis, `estadistiques.goatcounter: null` i avís legal de demostració. Verificació: el fitxer és idèntic al d'arq. §4.3.1, inclòs l'apòstrof `’` de "d’aquí".
+- [x] **B-05** · Crear `contingut/seleccio.yaml` amb el contingut inicial exacte d'arq. §3.2 (8 plats). Verificació: cada `id` existeix a `contingut/plats.json`.
 - [ ] **B-06** · Crear `src/lib/entorn.ts` i configurar `astro.config.mjs` segons arq. §2.4. Ha d'incloure:
   - build local o de publicació (`CI`);
   - `site` i `base`: per defecte `https://maaltas.github.io` + `/bistrot1954`; a GitHub Actions, derivats de `GITHUB_REPOSITORY_OWNER` i `GITHUB_REPOSITORY`; amb `web_url`, aquest valor + `/`;
@@ -40,13 +40,13 @@ Definides a `docs/arquitectura.md`, versió 2 (abreujat "arq."), que incorpora l
     - `GITHUB_REPOSITORY_OWNER="Maaltas"` + `GITHUB_REPOSITORY="Maaltas/bistrot1954"` → `https://maaltas.github.io` + `/bistrot1954`, sense avís;
     - `"Altre/prova"` → `https://altre.github.io` + `/prova`, amb avís;
     - amb `web_url` → `base` `/`.
-- [ ] **B-07** · Implementar `src/lib/contingut.ts`: lectura amb `?raw`, esquemes Zod d'arq. §4.1-§4.3 (incloses les regles de `telefon`, `horari`, `presentacio`, `estadistiques` i `avis_legal` d'arq. §4.3.3) i errors i avisos en català d'arq. §3.1. Verificació (test unitari):
+- [x] **B-07** · Implementar `src/lib/contingut.ts`: lectura amb `?raw`, esquemes Zod d'arq. §4.1-§4.3 (incloses les regles de `telefon`, `horari`, `presentacio`, `estadistiques` i `avis_legal` d'arq. §4.3.3) i errors i avisos en català d'arq. §3.1. Verificació (test unitari):
   - `plats.json` i `restaurant.yaml` reals validen;
   - un JSON trencat dona un error amb el nom del fitxer;
   - amb `demostracio: true` i `nif: "B12345678"`, error.
-- [ ] **B-08** · Implementar `netejaCaption()` a `src/lib/neteja.ts`: passos N1-N7 d'arq. §3.3, funció pura, amb les llistes `SIGNATURA` i de frases promocionals exactament com a l'arquitectura. Verificació: la cobreixen els tests de B-10.
-- [ ] **B-09** · Implementar `assignaIdiomes()` a `src/lib/idioma.ts`: passos I1-I5 d'arq. §3.3, amb `PARAULES_CA` i `PARAULES_ES` exactament com a l'arquitectura. Verificació: per als 8 captions reals, l'ordre detectat coincideix amb la taula d'arq. §3.4.2.
-- [ ] **B-10** · Tests Vitest a `tests/unit/`:
+- [x] **B-08** · Implementar `netejaCaption()` a `src/lib/neteja.ts`: passos N1-N7 d'arq. §3.3, funció pura, amb les llistes `SIGNATURA` i de frases promocionals exactament com a l'arquitectura. Verificació: la cobreixen els tests de B-10.
+- [x] **B-09** · Implementar `assignaIdiomes()` a `src/lib/idioma.ts`: passos I1-I5 d'arq. §3.3, amb `PARAULES_CA` i `PARAULES_ES` exactament com a l'arquitectura. Verificació: per als 8 captions reals, l'ordre detectat coincideix amb la taula d'arq. §3.4.2.
+- [x] **B-10** · Tests Vitest a `tests/unit/`:
   - crear `tests/fixtures/historia-esperada.json` (arq. §3.4.3) i `tests/fixtures/presentacio-esperada.json` (arq. §4.3.2), copiats **literalment**;
   - un test per plat real (8);
   - els casos E1-E15 d'arq. §3.4.4;
@@ -54,12 +54,12 @@ Definides a `docs/arquitectura.md`, versió 2 (abreujat "arq."), que incorpora l
   - l'invariant de paraules d'arq. §3.5.2.
 
   Verificació: `npm test` en verd.
-- [ ] **B-11** · Validar `nom` com a fragment del caption (o amb `nom_confirmat: true`) i `idiomes` segons la llargada (arq. §3.2, §3.3 I5). Verificació: un test amb un nom que no és al caption fa fallar la validació amb un missatge que diu l'`id`.
+- [x] **B-11** · Validar `nom` com a fragment del caption (o amb `nom_confirmat: true`) i `idiomes` segons la llargada (arq. §3.2, §3.3 I5). Verificació: un test amb un nom que no és al caption fa fallar la validació amb un missatge que diu l'`id`.
 - [ ] **B-12** · Resoldre les imatges amb `import.meta.glob` (`jpg`, `jpeg`, `png`, `webp`) i l'ordre de prioritat d'arq. §6.2, amb els avisos d'arq. §3.1 (sense imatge; menys de 400 px). Verificació:
   - amb les 8 captures actuals (`plat-0N.jpeg`), el build no mostra cap avís d'imatge;
   - un test unitari amb un glob buit dona exactament 8 avisos "sense imatge";
   - un altre amb una imatge de 300 px dona l'avís de mida.
-- [ ] **B-13** · Muntar `getPlats()` i `getRestaurant()` amb el model d'arq. §4.4: fallback d'idioma P2, presentació neta, `telefonVisible`, `telefonEnllac`, `mapaUrl` i `estadistiques`. Verificació (test):
+- [x] **B-13** · Muntar `getPlats()` i `getRestaurant()` amb el model d'arq. §4.4: fallback d'idioma P2, presentació neta, `telefonVisible`, `telefonEnllac`, `mapaUrl` i `estadistiques`. Verificació (test):
   - `plat-03` té `historia.ca.paragrafs[0][0]` que comença per "El pastís de formatge" i `historia.es.lang === 'es'`;
   - `telefonEnllac === 'tel:+34936273536'` i `telefonVisible === '936 27 35 36'`;
   - `presentacio.ca` coincideix amb la fixture.
@@ -77,7 +77,7 @@ Definides a `docs/arquitectura.md`, versió 2 (abreujat "arq."), que incorpora l
   - cada pàgina té un `[data-presentacio]` dins de `#inici` (C-09);
   - tots els enllaços interns i recursos porten `base` (T-07 d'arq. §11).
 - [ ] **B-17** · Crear la pàgina `src/pages/404.astro`, bilingüe, amb `noindex` i enllaços absoluts fets amb `ruta()` (arq. §5.2). Verificació: amb `npm run preview`, `http://localhost:4321/bistrot1954/no-existeix/` i `…/bistrot1954/es/no-existeix/` responen 404 amb aquesta pàgina, amb estils, i els seus enllaços porten a `/bistrot1954/` i `/bistrot1954/es/` (T-04).
-- [ ] **B-18** · Implementar `src/lib/contacte.ts` (arq. §8): trucar, mapa i Instagram, només per als camps no nuls. Verificació (test):
+- [x] **B-18** · Implementar `src/lib/contacte.ts` (arq. §8): trucar, mapa i Instagram, només per als camps no nuls. Verificació (test):
   - `tel:+34936273536` i text "936 27 35 36";
   - el mapa és `https://maps.app.goo.gl/UHYpDrqhtGuyBX5SA`;
   - amb `telefon: null` no surt cap `tel:`;

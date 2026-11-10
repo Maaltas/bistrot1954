@@ -16,6 +16,7 @@ const codiGoatcounter = restaurant.estadistiques?.goatcounter ?? null;
 
 // CSP per meta (arq. §10.3). L'única excepció és el recompte de GoatCounter, només en un build de
 // publicació i amb codi.
+/** @type {`connect-src${string}`} */
 const connectSrc =
   publicacio && codiGoatcounter ? `connect-src 'self' https://${codiGoatcounter}.goatcounter.com` : "connect-src 'self'";
 
@@ -81,4 +82,5 @@ export default defineConfig({
     },
   ],
   prefetch: false,
+  markdown: { syntaxHighlight: false },
 });

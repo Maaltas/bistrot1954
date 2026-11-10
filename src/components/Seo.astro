@@ -1,0 +1,73 @@
+---
+/**
+ * <head>: title, description, canonical, hreflang, Open Graph, Twitter, referrer i robots (arq. §6.6, §7, §10.3).
+ * Totes les URL són absolutes, a partir de <web> = site + base.
+ */
+import { altreIdioma } from '../i18n/textos';
+import { urlAbsoluta } from '../lib/entorn';
+import { existeixOg } from '../lib/seo';
+import type { Idioma } from '../lib/idioma';
+
+interface Props {
+  lang: Idioma;
+  title: string;
+  description: string;
+  /** Rutes lògiques de la pàgina en cada idioma; sense elles no hi ha canonical, hreflang ni Open Graph (404). */
+  rutes?: Record<Idioma, string>;
+  noindex?: boolean;
+}
+const { lang, title, description, rutes, noindex = false } = Astro.props;
+
+const site = import.meta.env.SITE;
+const base = import.meta.env.BASE_URL;
+const abs = (ruta: string) => urlAbsoluta(ruta, site, base);
+
+const hiHaOg = existeixOg();
+if (!hiHaOg && !(globalThis as Record<string, unknown>).__avisOgMostrat) {
+  (globalThis as Record<string, unknown>).__avisOgMostrat = true;
+  console.warn("[contingut] falta public/og.jpg: no s'emet og:image");
+}
+
+const altre = altreIdioma(lang);
+const canonical = rutes ? abs(rutes[lang]) : null;
+const locales = { ca: 'ca_ES', es: 'es_ES' } as const;
+const textAltOg = 'Bistrot 1954, Carrer Sant Bru, 48, Badalona';
+---
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="referrer" content="strict-origin-when-cross-origin" />
+<title>{title}</title>
+<meta name="description" content={description} />
+{noindex && <meta name="robots" content="noindex" />}
+<link rel="icon" type="image/svg+xml" href={abs('/favicon.svg')} />
+<link rel="apple-touch-icon" href={abs('/apple-touch-icon.png')} />
+{canonical && <link rel="canonical" href={canonical} />}
+{
+  rutes && (
+    <>
+      <link rel="alternate" hreflang="ca" href={abs(rutes.ca)} />
+      <link rel="alternate" hreflang="es" href={abs(rutes.es)} />
+      <link rel="alternate" hreflang="x-default" href={abs(rutes.ca)} />
+      <meta property="og:type" content="website" />
+      <meta property="og:site_name" content="Bistrot 1954" />
+      <meta property="og:title" content={title} />
+      <meta property="og:description" content={description} />
+      <meta property="og:url" content={canonical} />
+      <meta property="og:locale" content={locales[lang]} />
+      <meta property="og:locale:alternate" content={locales[altre]} />
+      {hiHaOg && (
+        <>
+          <meta property="og:image" content={abs('/og.jpg')} />
+          <meta property="og:image:width" content="1200" />
+          <meta property="og:image:height" content="630" />
+          <meta property="og:image:type" content="image/jpeg" />
+          <meta property="og:image:alt" content={textAltOg} />
+        </>
+      )}
+      <meta name="twitter:card" content={hiHaOg ? 'summary_large_image' : 'summary'} />
+      <meta name="twitter:title" content={title} />
+      <meta name="twitter:description" content={description} />
+      {hiHaOg && <meta name="twitter:image" content={abs('/og.jpg')} />}
+    </>
+  )
+}
