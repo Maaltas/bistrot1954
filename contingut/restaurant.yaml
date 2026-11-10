@@ -1,0 +1,36 @@
+# Dades del restaurant que surten a la web.
+# REGLA: només dades confirmades per l'Oriol. Un camp amb null no surt enlloc.
+nom: Bistrot 1954
+web_url: null                        # D-13. Sense domini propi: la web va a https://maaltas.github.io/bistrot1954/
+adreca:
+  carrer: Carrer Sant Bru, 48
+  codi_postal: "08911"
+  municipi: Badalona
+  provincia: Barcelona
+  pais: ES
+instagram: https://www.instagram.com/bistrot1954/
+presentacio:                         # D-12. Text literal de l'Oriol: no es retoca. La web en treu els emojis.
+  ca: |-
+    Aquí prima el confort, el menjar sense presses i el gust pel que és d’aquí. 🔥🍽️
+    Des dels entrants fins als postres, a Bistrot 1954 tenim una missió: que surtis per la porta pensant en quan tornaràs.
+  es: |-
+    Aquí prima el confort, la comida sin prisas y el gusto por lo de aquí. 🔥🍽️
+    Desde los entrantes hasta los postres, en Bistrot 1954 tenemos una misión: que salgas por la puerta pensando en cuándo volverás.
+cuina:                               # D-06
+  ca: Cuina mediterrània
+  es: Cocina mediterránea
+telefon: "+34 936 27 35 36"          # D-02. Únic canal de reserva: el botó "Trucar"
+google_maps_url: https://maps.app.goo.gl/UHYpDrqhtGuyBX5SA   # D-10
+horari:                              # D-03. Dies: dl dt dc dj dv ds dg
+  - dies: [dl, dt, dc, dj, dv, ds]
+    obre: "20:00"
+    tanca: "23:00"
+preu: null                           # D-03: sense preu
+estadistiques:
+  goatcounter: null                  # D-14. Codi del compte de GoatCounter, quan l'Oriol el creï
+avis_legal:                          # D-05. DADES DE DEMOSTRACIÓ, FICTÍCIES.
+  demostracio: true                  # Abans d'obrir la web de debò: dades reals i demostracio: false.
+  titular: "Empresa Fictícia de Demostració, S.L."
+  nif: "B00000000"
+  domicili: "Carrer de l'Exemple, 0, 00000 Població Fictícia"
+  email: "avis-legal@example.com"

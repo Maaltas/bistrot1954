@@ -1,0 +1,250 @@
+/*
+ * Estils base (docs/disseny-frontend.md §5, §7): fons, text, enllaços, focus, botons, selecció,
+ * classe només per a lectors de pantalla i regles de moviment.
+ * Cap color en hexadecimal: tot surt de tokens.css.
+ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: light;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  /* Les barres fixes no han de tapar el destí d'una àncora ni l'element enfocat (WCAG 2.4.11). */
+  scroll-padding-top: 16px;
+  scroll-padding-bottom: 88px;
+}
+
+@media (min-width: 900px) {
+  html {
+    scroll-padding-top: 88px;
+    scroll-padding-bottom: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+body {
+  margin: 0;
+  background: var(--porcellana);
+  color: var(--tinta);
+  font-family: var(--tipus-serif);
+  font-weight: 400;
+  font-size: var(--mida-text);
+  line-height: var(--interlineat-text);
+  text-transform: none;
+}
+
+h1,
+h2,
+h3,
+p,
+ul,
+ol {
+  margin: 0;
+}
+
+ul,
+ol {
+  padding: 0;
+  list-style: none;
+}
+
+img,
+picture {
+  display: block;
+  max-width: 100%;
+}
+
+::selection {
+  background: var(--cobalt);
+  color: var(--porcellana);
+}
+
+/* Enllaços: sempre subratllats (cap informació depèn només del color). */
+a {
+  color: var(--cobalt);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  transition: text-decoration-thickness var(--transicio), color var(--transicio);
+}
+
+@media (hover: hover) {
+  a:hover {
+    text-decoration-thickness: 2px;
+  }
+}
+
+/* Anell de focus: 3 px, separat 3 px, seguint la forma de l'element. */
+:focus-visible {
+  outline: var(--focus-gruix) solid var(--color-focus);
+  outline-offset: var(--focus-separacio);
+}
+
+.sobre-cobalt {
+  --color-focus: var(--porcellana);
+  background: var(--cobalt);
+  color: var(--porcellana);
+}
+
+.sobre-cobalt a {
+  color: var(--porcellana);
+}
+
+/* Text només per a lectors de pantalla. */
+.nomes-lectors {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Contenidor central. */
+.contenidor {
+  width: 100%;
+  max-width: var(--contenidor);
+  margin-inline: auto;
+  padding-inline: var(--marge);
+}
+
+/* Enllaç per saltar: fora de la vista fins que rep el focus. */
+.salta {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  padding: var(--espai-3) var(--espai-5);
+  background: var(--porcellana);
+  color: var(--cobalt);
+  font-family: var(--tipus-sans);
+  font-weight: 500;
+  font-size: var(--mida-ui);
+  line-height: var(--interlineat-ui);
+  transform: translateY(-120%);
+}
+
+.salta:focus-visible {
+  transform: none;
+  outline-color: var(--cobalt);
+  outline-offset: -3px;
+}
+
+/* ---------------------------------------------------------------------------
+ * Botons (§7, §8). Forma de càpsula, mínim 44 px d'alt.
+ * Principal: "Trucar". Secundari: "Com arribar".
+ * ------------------------------------------------------------------------- */
+.boto {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 var(--espai-6);
+  border: 2px solid transparent;
+  border-radius: var(--radi-boto);
+  font-family: var(--tipus-sans);
+  font-weight: 500;
+  font-size: var(--mida-ui);
+  line-height: var(--interlineat-ui);
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color var(--transicio),
+    border-color var(--transicio),
+    color var(--transicio);
+}
+
+.boto:active {
+  transform: translateY(1px);
+}
+
+/* Sobre porcellana */
+.boto--principal {
+  background: var(--cobalt);
+  border-color: var(--cobalt);
+  color: var(--porcellana);
+}
+
+.boto--secundari {
+  background: transparent;
+  border-color: var(--cobalt);
+  color: var(--cobalt);
+}
+
+@media (hover: hover) {
+  .boto--principal:hover {
+    background: var(--cobalt-fosc);
+    border-color: var(--cobalt-fosc);
+  }
+
+  .boto--secundari:hover {
+    background: var(--aigualit);
+  }
+}
+
+/* Sobre cobalt */
+.sobre-cobalt .boto--principal {
+  background: var(--porcellana);
+  border-color: var(--porcellana);
+  color: var(--cobalt);
+}
+
+.sobre-cobalt .boto--secundari {
+  background: transparent;
+  border-color: var(--porcellana);
+  color: var(--porcellana);
+}
+
+@media (hover: hover) {
+  .sobre-cobalt .boto--principal:hover {
+    background: var(--aigualit);
+    border-color: var(--aigualit);
+  }
+
+  .sobre-cobalt .boto--secundari:hover {
+    background: var(--cobalt-fosc);
+  }
+}
+
+/* Enllaç de canvi d'idioma */
+.idioma {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-family: var(--tipus-sans);
+  font-weight: 500;
+  font-size: var(--mida-ui);
+  line-height: var(--interlineat-ui);
+}
+
+/* ---------------------------------------------------------------------------
+ * Moviment reduït (§7): sense transicions, sense desplaçament en prémer.
+ * ------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0s !important;
+    animation-duration: 0s !important;
+    scroll-behavior: auto !important;
+  }
+
+  .boto:active {
+    transform: none;
+  }
+}

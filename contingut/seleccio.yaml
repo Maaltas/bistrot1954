@@ -1,0 +1,38 @@
+# Quins posts de contingut/plats.json surten a la web, en quin ordre i amb quin nom.
+# - L'ordre d'aquesta llista és l'ordre de la web.
+# - nom: copia'l tal qual del caption (només pots posar la primera lletra en majúscula).
+# - Per amagar un plat sense esborrar-lo, afegeix-hi:  amagat: true
+# - Els posts que no són plats, simplement no els posis aquí.
+plats:
+  - id: plat-01
+    nom:
+      ca: "Tagliatelle amb safrà, mantega i tonyina"
+      es: "Tagliatelle con azafrán, mantequilla y atún"
+  - id: plat-02
+    nom:
+      ca: "Figues i foie"
+      es: "Higos y foie"
+  - id: plat-03
+    nom:
+      ca: "Pastís de formatge"
+      es: "Pastel de queso"
+  - id: plat-04
+    nom:
+      ca: "Calamars a l'andalusa"
+      es: "Calamares a la andaluza"
+  - id: plat-05
+    nom:
+      ca: "Steak tartar"
+      es: "Steak tartar"
+  - id: plat-06
+    nom:
+      ca: "Croqueta de sípia en la seva tinta"
+      es: "Croqueta de sepia en su tinta"
+  - id: plat-07
+    nom:
+      ca: "Ous ferrats amb bolets o amb pernil"
+      es: "Huevos fritos con setas o con jamón"
+  - id: plat-08
+    nom:
+      ca: "Pa de full, mantega fumada, anxova '000'"
+      es: "Hojaldre, mantequilla ahumada, anchoa '000'"
