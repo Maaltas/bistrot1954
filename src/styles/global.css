@@ -167,23 +167,45 @@ a {
   border-top: var(--filet-senzill);
 }
 
-/* Títol de secció amb un filet senzill de 48 px a cada costat. */
+/*
+ * Títol de secció ("Els nostres plats", "On som"). A < 600 px, el filet senzill de 48 px va SOTA el títol
+ * (12 px), centrat: amb un filet a cada costat el títol no hi cabria a 375 px. A ≥ 600 px, als costats.
+ */
 .titol-filets {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--espai-4);
   font-size: var(--mida-titol);
   line-height: var(--interlineat-titol);
+  text-wrap: balance;
 }
 
-.titol-filets::before,
 .titol-filets::after {
   content: '';
-  flex: none;
+  display: block;
   width: 48px;
   height: 0;
+  margin: var(--espai-3) auto 0;
   border-top: var(--filet-senzill);
+}
+
+@media (min-width: 600px) {
+  .titol-filets {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--espai-4);
+  }
+
+  .titol-filets::before {
+    content: '';
+    flex: none;
+    width: 48px;
+    height: 0;
+    border-top: var(--filet-senzill);
+  }
+
+  .titol-filets::after {
+    flex: none;
+    margin: 0;
+  }
 }
 
 /* ---------------------------------------------------------------------------
