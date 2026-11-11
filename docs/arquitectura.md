@@ -24,7 +24,7 @@ Versió 2 · 2026-11-10 · autor: arquitecte-backend
 | Imatges | Les 8 captures de ~450×600 px són definitives (D-09). sharp genera AVIF + WebP + JPEG a 360 px i a l'ample real de la font. La finestra rodona (disseny v2 "La carta") es fa amb CSS, sense retall en el build (§6.3). La primera foto és prioritària i la resta es carreguen en diferit. |
 | Imatge per compartir | Sempre `public/og.jpg`, tipogràfica, de 1200×630 px (§6.6). Mai una foto de plat. |
 | Contacte | "Trucar" (`tel:+34936273536`) és l'única crida de reserva. "Com arribar" porta a la fitxa de Google Maps, i també hi ha l'enllaç a Instagram (§8). |
-| Hosting | GitHub Pages, publicat amb GitHub Actions en fer `git push` a `main`, des del repositori públic `Maaltas/bistrot1954`. Adreça: `https://maaltas.github.io/bistrot1954/`, amb `base: '/bistrot1954'` i sense domini propi (D-13). **La publicació està bloquejada** fins que l'Oriol doni el vistiplau final; fins aleshores no es crea el repositori (§9.4, D-13). |
+| Hosting | GitHub Pages, publicat amb GitHub Actions en fer `git push` a `main`, des del repositori públic `Maaltas/bistrot1954`. Adreça: `https://maaltas.github.io/bistrot1954/`, amb `base: '/bistrot1954'` i sense domini propi (D-13). **Publicada** el 2026-11-11 amb el vistiplau de l'Oriol. Cada `push` a `main` el fa el coordinador quan l'Oriol l'aprova (§9.4, D-13). |
 | Cost | 0 €: repositori públic i sense domini. Un domini propi seria una opció futura (§9.3). |
 | Privacitat | Cap galeta ni res desat al navegador. L'única petició a tercers permesa és el comptador de GoatCounter, sense galetes, quan l'Oriol l'activi (§10.6, D-14). |
 
@@ -1183,7 +1183,7 @@ Sense backend, sense formularis i sense mapes incrustats. Per decisió de l'Orio
 
 ### 9.2 Workflow: `.github/workflows/publica.yml`
 
-El programador el deixa preparat, però **no crea cap repositori remot ni fa cap `push`** (D-13). Especificació, amb les versions vigents a la guia oficial d'Astro el 2026-11-10 (si n'hi ha de més noves, es fan servir les que indiqui la guia quan s'implementi):
+El workflow està actiu al repositori `Maaltas/bistrot1954` des del 2026-11-11 (§9.4). El programador el manté, però **no fa cap `push`**: cada `push` a `main` el fa el coordinador quan l'Oriol l'aprova (D-13). Especificació, amb les versions vigents a la guia oficial d'Astro el 2026-11-10 (si n'hi ha de més noves, es fan servir les que indiqui la guia quan s'implementi):
 
 ```yaml
 name: Publica la web
@@ -1241,9 +1241,18 @@ jobs:
   - configurar el domini a Settings → Pages i als DNS del registrador, segons la documentació de GitHub;
   - avisar que les URL antigues de `maaltas.github.io/bistrot1954/` canvien.
 
-### 9.4 Activar la publicació (BLOQUEJAT fins que l'Oriol doni el vistiplau final, D-13)
+### 9.4 Estat de la publicació: publicada (D-13, 2026-11-11)
 
-Fins aleshores no es crea el repositori. Passos, en ordre. Els fa l'Oriol, o Claude Code quan l'Oriol li ho demani explícitament:
+**La web és publicada** a `https://maaltas.github.io/bistrot1954/`, amb el vistiplau de l'Oriol (D-13):
+- repositori públic `Maaltas/bistrot1954`, amb una sola branca remota, `main`;
+- remot `origin` = `https://github.com/Maaltas/bistrot1954.git`;
+- Pages amb Source = GitHub Actions i variable `PUBLICAR = si`.
+
+La branca `propostes-disseny` és només local i no es puja.
+
+**Cada `push` a `main`** (és a dir, cada publicació nova, §9.5) **el fa el coordinador quan l'Oriol l'aprova.** Cap altre agent no fa `push`.
+
+Passos que es van seguir per activar-la (només com a referència, per si mai cal tornar-ho a fer):
 
 1. Crear el repositori públic `bistrot1954` al compte `Maaltas`, buit (sense README ni llicència).
 2. Pujar el projecte: `git remote add origin https://github.com/Maaltas/bistrot1954.git` + `git push -u origin main`. El workflow s'executa, però només construeix.
@@ -1291,7 +1300,7 @@ Si algun dia calguessin aquestes capçaleres, l'opció és posar Cloudflare (pla
   - El desplegament fa servir el testimoni OIDC temporal de GitHub (§9.2).
   - El codi de GoatCounter és públic per naturalesa (surt a l'HTML de la web) i va a `restaurant.yaml`.
   - `PUBLICAR` és una variable, no un secret.
-- **Repositori públic.** El repositori serà probablement públic (§9.1): res del que s'hi versiona pot ser privat, i `docs/` i `.claude/` també es veuran.
+- **Repositori públic.** El repositori `Maaltas/bistrot1954` és públic (§9.1, §9.4). Res del que s'hi versiona pot ser privat, i `docs/` i `.claude/` també es veuen. Només es puja `main`; la branca `propostes-disseny` és només local.
 - **`.gitignore`:** `node_modules/`, `dist/`, `.astro/`, `.env`, `.env.*` (excepte `.env.example`), `test-results/`, `playwright-report/`, `*.log`, `Thumbs.db`, `.DS_Store`, `.obsidian/` (configuració local de l'editor de l'Oriol).
 - **Secrets futurs.** Si algun dia cal un secret (per exemple, el token de l'API d'Instagram de §3.7), va **només** als secrets de GitHub Actions, es documenta a `.env.example` sense valor i no s'escriu mai en cap fitxer versionat ni a `docs/`.
 - **Workflow.** Només accions oficials (`actions/*`, `withastro/action`), amb la versió major fixada, i els permisos de §9.2.
@@ -1385,7 +1394,7 @@ Condicions de mesura:
 | T-03 | `npm test` passa i inclou els 8 captions reals (fixture de §3.4.3), els casos E1-E15 de §3.4.4 i la presentació en tots dos idiomes (fixture de §4.3.2). |
 | T-04 | `npm run preview` serveix amb codi 200 `http://localhost:4321/bistrot1954/`, `…/bistrot1954/es/`, `…/bistrot1954/avis-legal/` i `…/bistrot1954/es/aviso-legal/`. `…/bistrot1954/no-existeix/` i `…/bistrot1954/es/no-existeix/` responen 404 amb el contingut de la pàgina 404, i els seus enllaços porten a `/bistrot1954/` i `/bistrot1954/es/`. |
 | T-05 | En el build local i en el de publicació, canonicals, `hreflang`, `og:url`, `og:image`, sitemap, robots i JSON-LD fan servir `https://maaltas.github.io/bistrot1954/`. No hi ha `dist/CNAME`. Amb `$env:GITHUB_REPOSITORY_OWNER="Maaltas"; $env:GITHUB_REPOSITORY="Maaltas/bistrot1954"` i `CI` definit, el resultat és el mateix i sense cap avís `[entorn]`. |
-| T-06 | `.github/workflows/publica.yml` existeix i és YAML vàlid. A més: el job `deploy` té la condició `vars.PUBLICAR == 'si'`; els permisos són els de §9.2; no fa servir cap `secrets.*`; el repositori local no té cap remot configurat. |
+| T-06 | Estat publicat (D-13, 2026-11-11). Comprovacions: (a) `.github/workflows/publica.yml` existeix i és YAML vàlid; (b) el job `deploy` té la condició `vars.PUBLICAR == 'si'`; (c) els permisos són els de §9.2; (d) el workflow no fa servir cap `secrets.*`; (e) el remot `origin` apunta a `https://github.com/Maaltas/bistrot1954.git` i no n'hi ha cap altre (`git remote -v`); (f) al remot només hi ha la branca `main` (`git ls-remote --heads origin`). La branca `propostes-disseny` és només local i no s'ha de pujar mai. |
 | T-07 | `base` aplicat a tot. A tots els fitxers `dist/**/*.html`, cap atribut `href`, `src`, `srcset`, `content` (de metes amb URL) ni `action` comença per `/` sense continuar amb `bistrot1954/`. Les úniques excepcions són els enllaços externs (`https://…`, `tel:`). En navegar per totes les pàgines de `http://localhost:4321/bistrot1954/`, hi ha 0 respostes 404, excepte les rutes inexistents provades a T-04. |
 | T-08 | Sense maquetes de propostes (D-19): a `main` no existeixen `src/propostes/` ni `src/pages/propostes/`; no hi ha `dist/propostes/`; `astro.config.mjs` només declara EB Garamond i Jost; i `dist/` no conté tipografies de cap altra família (disseny V-32). |
 

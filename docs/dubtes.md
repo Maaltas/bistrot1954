@@ -4,7 +4,7 @@ Qualsevol agent hi pot afegir entrades. L'Oriol respon a sota de cada dubte, a l
 
 ## Oberts
 
-### D-13 · Publicació: adreça, repositori de GitHub i activació
+### D-13 · Publicació: adreça, repositori de GitHub i activació · ✅ RESOLT 2026-11-11 (vegeu el final)
 - Obert per: arquitecte-backend · 2026-11-10
 - Per a: l'Oriol
 - Context: la web queda preparada per publicar-se a GitHub Pages. Cada `git push` construirà la web, però no es publicarà fins que s'activi la variable `PUBLICAR`. Els passos són a `docs/arquitectura.md` §9.4.
@@ -24,8 +24,16 @@ Qualsevol agent hi pot afegir entrades. L'Oriol respon a sota de cada dubte, a l
   - en local, la web es prova a `http://localhost:4321/bistrot1954/`.
 
   `bistrot1954.cat` queda només com a opció futura (§9.3).
-- **Pendent:** només **quan es publica**, és a dir, el vistiplau final per crear el repositori `Maaltas/bistrot1954`, fer-hi `push` i activar `PUBLICAR`.
-- Mentrestant: tot en local. El workflow queda preparat però no publica; la tasca B-31 està bloquejada.
+- ~~**Pendent:** només **quan es publica**, és a dir, el vistiplau final per crear el repositori `Maaltas/bistrot1954`, fer-hi `push` i activar `PUBLICAR`.~~
+- **Resposta final de l'Oriol (al xat, 2026-11-11):** «Sí, publica-la». És el vistiplau final per publicar.
+- **Resolució (coordinador, 2026-11-11):** amb aquest vistiplau i amb la sessió de GitHub CLI iniciada per l'Oriol, s'ha fet això:
+  - s'ha creat el repositori **públic** `Maaltas/bistrot1954`;
+  - s'ha activat Pages amb Source = GitHub Actions i s'ha posat la variable `PUBLICAR = si`;
+  - s'ha afegit el remot `origin` i s'ha fet `push` **només de `main`** (`3be3b58`). La branca `propostes-disseny` no s'ha pujat.
+  
+  El workflow "Publica la web" ha acabat bé. `https://maaltas.github.io/bistrot1954/`, `/es/` i els avisos legals responen 200, la 404 respon 404, i els 56 recursos (imatges, tipografies, CSS) responen 200. Els commits porten el correu `noreply` de GitHub.
+  
+  **A partir d'ara, el remot `origin` és esperat.** Cada publicació nova (`git push` a `main`) la fa el coordinador quan l'Oriol l'aprova.
 
 ### D-14 · Estadístiques: compte de GoatCounter
 - Obert per: arquitecte-backend · 2026-11-10
