@@ -217,6 +217,15 @@ describe('plats i restaurant reals (B-13)', () => {
     expect(plat.historia.es?.paragrafs[0]?.[0]).toMatch(/^El pastel de queso/);
   });
 
+  it('N8 (B-37): plat-01 i plat-02 ja no comencen pel nom; plat-03 el conserva a mitja frase', () => {
+    const primera = (id: string, idioma: 'ca' | 'es') => plats.find((p) => p.id === id)!.historia[idioma]!.paragrafs[0]![0];
+    expect(primera('plat-01', 'ca')).toBe("Pasta que s'acaba a la paella, amb el color del safrà i la tonyina per sobre.");
+    expect(primera('plat-01', 'es')).toBe('Pasta que se termina en la sartén, con el color del azafrán y el atún por encima.');
+    expect(primera('plat-02', 'ca')).toMatch(/^Dolç, untuós/);
+    expect(primera('plat-02', 'es')).toMatch(/^Dulce, untuoso/);
+    expect(primera('plat-03', 'ca')).toMatch(/^El pastís de formatge/);
+  });
+
   it('les històries de tots els plats coincideixen amb la fixture', () => {
     for (const plat of plats) {
       for (const idioma of ['ca', 'es'] as const) {

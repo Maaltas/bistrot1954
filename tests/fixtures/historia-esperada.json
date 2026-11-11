@@ -1,11 +1,11 @@
 {
   "plat-01": {
-    "ca": "Tagliatelle amb safrà, mantega i tonyina\nPasta que s'acaba a la paella, amb el color del safrà i la tonyina per sobre.\nUna explosió de tardor a la taula de Bistrot 1954",
-    "es": "Tagliatelle con azafrán, mantequilla y atún\nPasta que se termina en la sartén, con el color del azafrán y el atún por encima.\nUna explosión de otoño en la mesa de Bistrot 1954"
+    "ca": "Pasta que s'acaba a la paella, amb el color del safrà i la tonyina per sobre.\nUna explosió de tardor a la taula de Bistrot 1954",
+    "es": "Pasta que se termina en la sartén, con el color del azafrán y el atún por encima.\nUna explosión de otoño en la mesa de Bistrot 1954"
   },
   "plat-02": {
-    "ca": "Figues i foie: dolç, untuós i amb una brillantor que atrau totes les mirades a la taula\nUn entrant de temporada que enamora.",
-    "es": "Higos y foie: dulce, untuoso y con un brillo que atrae todas las miradas en la mesa\nUn entrante de temporada que enamora."
+    "ca": "Dolç, untuós i amb una brillantor que atrau totes les mirades a la taula\nUn entrant de temporada que enamora.",
+    "es": "Dulce, untuoso y con un brillo que atrae todas las miradas en la mesa\nUn entrante de temporada que enamora."
   },
   "plat-03": {
     "ca": "El pastís de formatge és un clàssic que tothom coneix. Per això no es pot dissimular: o està fet amb calma i bons ingredients, o es nota. El nostre, amb melmelada de fruits vermells casolana, porta conquistant als nostres clients des de que vam obrir.",
@@ -20,15 +20,15 @@
     "es": "Nuestro steak tartar es histórico. Carne de Cal Tomàs, cortada a cuchillo, con patatas fritas. Hay cosas que no hay que tocar."
   },
   "plat-06": {
-    "ca": "Croqueta de sípia en la seva tinta. Sovint la diferència entre una croqueta i una bona croqueta és la matèria primera. I unes bones mans a la cuina.",
-    "es": "Croqueta de sepia en su tinta. A menudo, la diferencia entre una croqueta y una buena croqueta es la materia prima. Y buenas manos en la cocina."
+    "ca": "Sovint la diferència entre una croqueta i una bona croqueta és la matèria primera. I unes bones mans a la cuina.",
+    "es": "A menudo, la diferencia entre una croqueta y una buena croqueta es la materia prima. Y buenas manos en la cocina."
   },
   "plat-07": {
     "ca": "Fregir un ou bé té la seva ciència. Afegir-hi els ingredients adequats, també. Ous ferrats amb bolets o amb pernil: sembla fàcil fins que el proves fet amb ofici.",
     "es": "Freír un huevo bien tiene su ciencia. Añadirle los ingredientes adecuados, también. Huevos fritos con setas o con jamón: parece fácil hasta que lo pruebas hecho con oficio."
   },
   "plat-08": {
-    "ca": "Pa de full, mantega fumada, anxova '000'. Tres coses ben triades que fan un plat perfecte per començar.",
-    "es": "Hojaldre, mantequilla ahumada, anchoa '000'. Tres cosas bien elegidas que hacen un plato perfecto para empezar."
+    "ca": "Tres coses ben triades que fan un plat perfecte per començar.",
+    "es": "Tres cosas bien elegidas que hacen un plato perfecto para empezar."
   }
 }

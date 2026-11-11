@@ -1,31 +1,46 @@
 import { describe, expect, it } from 'vitest';
-import { netejaCaption } from '../../src/lib/neteja';
-import { esSubsequencia, historiaDe, historiaEsperada, paraules, posts } from './ajuda';
+import { netejaCaption, treuNomInicial } from '../../src/lib/neteja';
+import { esSubsequencia, historiaDe, historiaEsperada, noms, paraules, posts } from './ajuda';
 
-describe('captions reals de plats.json (fixture de arq. §3.4.3)', () => {
+describe('captions reals de plats.json (N1-N8, fixture de arq. §3.4.3)', () => {
   it('hi ha 8 posts', () => {
     expect(posts).toHaveLength(8);
   });
 
   for (const post of posts) {
     it(`${post.id}: la història neta coincideix amb la fixture, en català i en castellà`, () => {
-      const historia = historiaDe(post.caption);
+      const historia = historiaDe(post.caption, undefined, noms[post.id]);
       expect(historia.ca).toBe(historiaEsperada[post.id]?.ca);
       expect(historia.es).toBe(historiaEsperada[post.id]?.es);
       expect(historia.avisos).toEqual([]);
     });
 
     it(`${post.id}: invariant de paraules (la història és una subseqüència del caption)`, () => {
-      const historia = historiaDe(post.caption);
+      const historia = historiaDe(post.caption, undefined, noms[post.id]);
       const original = paraules(post.caption);
       for (const text of [historia.ca, historia.es]) {
         expect(text).not.toBeNull();
-        expect(esSubsequencia(paraules(text as string), original)).toBe(true);
+        // Única excepció (N8): la primera paraula no distingeix la caixa de la seva primera lletra.
+        const publicades = paraules(text as string);
+        if (!original.includes(publicades[0]!)) publicades[0] = publicades[0]!.charAt(0).toLowerCase() + publicades[0]!.slice(1);
+        expect(esSubsequencia(publicades, original)).toBe(true);
+      }
+    });
+
+    it(`${post.id}: la història no comença pel nom del plat (N8, arq. §3.5.4)`, () => {
+      const historia = historiaDe(post.caption, undefined, noms[post.id]);
+      for (const idioma of ['ca', 'es'] as const) {
+        const nom = (noms[post.id]![idioma] ?? noms[post.id]!.ca).toLowerCase().replace(/[’‘]/g, "'");
+        const text = (historia[idioma] as string).toLowerCase().replace(/[’‘]/g, "'");
+        if (text.startsWith(nom)) {
+          const resta = text.slice(nom.length);
+          expect(resta === '' || !/^(?:\s*[.:;!?…\n]|\s+[—–]\s)/.test(resta)).toBe(true);
+        }
       }
     });
 
     it(`${post.id}: no queda cap hashtag, menció ni emoji`, () => {
-      const historia = historiaDe(post.caption);
+      const historia = historiaDe(post.caption, undefined, noms[post.id]);
       for (const text of [historia.ca, historia.es]) {
         expect(text).not.toMatch(/[#@]/);
         expect(text).not.toMatch(/\p{Extended_Pictographic}/u);
@@ -123,6 +138,75 @@ describe("casos límit (entrades sintètiques d'arq. §3.4.4)", () => {
 
   it("E13 · HTML al caption: la neteja manté el text tal qual (el component l'escapa)", () => {
     expect(historiaDe('Pa amb <script>alert(1)</script> i oli.').ca).toBe('Pa amb <script>alert(1)</script> i oli.');
+  });
+});
+
+describe("N8 · nom del plat a l'inici de la història (casos E16-E23 d'arq. §3.4.4)", () => {
+  const amb = (caption: string, nom: string) => historiaDe(caption, undefined, { ca: nom }).ca;
+
+  it("E16 · el nom i l'emoji que el separa del text", () => {
+    expect(amb("Pa amb tomàquet 🍅 Fet a casa amb tomàquet de l'hort.", 'Pa amb tomàquet')).toBe(
+      "Fet a casa amb tomàquet de l'hort.",
+    );
+  });
+
+  it('E17 · nom i dos punts: majúscula inicial', () => {
+    expect(amb('Figues i foie: dolç i untuós.', 'Figues i foie')).toBe('Dolç i untuós.');
+  });
+
+  it('E18 · si no queda res, la història és null (P1)', () => {
+    expect(amb('Figues i foie 🍂', 'Figues i foie')).toBeNull();
+  });
+
+  it('E19 · el nom va seguit d’una paraula: es deixa', () => {
+    expect(amb('Croqueta de sípia en la seva tinta és la reina de la casa.', 'Croqueta de sípia en la seva tinta')).toBe(
+      'Croqueta de sípia en la seva tinta és la reina de la casa.',
+    );
+  });
+
+  it('E20 · no distingeix majúscules', () => {
+    expect(amb('FIGUES I FOIE. Un entrant de temporada.', 'Figues i foie')).toBe('Un entrant de temporada.');
+  });
+
+  it('E21 · després del nom hi ha una lletra: es deixa', () => {
+    expect(amb('Figues i foies amb mel.', 'Figues i foie')).toBe('Figues i foies amb mel.');
+  });
+
+  it('E22 · la coma no és un separador', () => {
+    expect(amb('Steak tartar, tallat a ganivet.', 'Steak tartar')).toBe('Steak tartar, tallat a ganivet.');
+  });
+
+  it('E23 · el nom no és al començament', () => {
+    expect(amb('El pastís de formatge és un clàssic.', 'Pastís de formatge')).toBe('El pastís de formatge és un clàssic.');
+  });
+
+  it('un guió llarg amb espais als dos costats és un separador; sense espais, no', () => {
+    expect(amb('Figues i foie — dolç.', 'Figues i foie')).toBe('Dolç.');
+    expect(amb('Figues i foie—dolç.', 'Figues i foie')).toBe('Figues i foie—dolç.');
+  });
+
+  it('l’apòstrof tipogràfic es compara com el recte', () => {
+    expect(amb('Calamars a l’andalusa. Es demanen per compartir.', "Calamars a l'andalusa")).toBe('Es demanen per compartir.');
+  });
+
+  it('només es treu una vegada i al començament del primer paràgraf', () => {
+    expect(amb('Sopa. Sopa. Bona.', 'Sopa')).toBe('Sopa. Bona.');
+    expect(amb('Un plat.\n\nSopa. Bona.', 'Sopa')).toBe('Un plat.\n\nSopa. Bona.');
+  });
+
+  it('cada idioma fa servir el seu nom, i nom.ca si no en té', () => {
+    const caption = 'Higos y foie: dulce y untuoso.\n\nFigues i foie: dolç i untuós.';
+    expect(historiaDe(caption, undefined, { ca: 'Figues i foie', es: 'Higos y foie' })).toMatchObject({
+      ca: 'Dolç i untuós.',
+      es: 'Dulce y untuoso.',
+    });
+    expect(historiaDe(caption, undefined, { ca: 'Figues i foie' }).es).toBe('Higos y foie: dulce y untuoso.');
+  });
+
+  it('no modifica l’entrada', () => {
+    const entrada = [['Sopa. Bona.']];
+    treuNomInicial(entrada, 'Sopa', 'ca');
+    expect(entrada).toEqual([['Sopa. Bona.']]);
   });
 });
 
