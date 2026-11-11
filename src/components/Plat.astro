@@ -1,11 +1,10 @@
 ---
 /**
- * Article d'un plat (dis. §4; ganxos d'arq. §4.5). Ordre al DOM: nom, foto, història, enllaç.
- * L'ordre visual (foto, nom, història, enllaç) el fa l'ordre de flex, sense canviar l'ordre de lectura ni el del focus.
+ * Article d'un plat (dis. §4; ganxos d'arq. §4.5). Ordre al DOM: nom, foto, història. Sense enllaç al post (canvi del 2026-11-11).
+ * L'ordre visual (foto, nom, història) el fa l'ordre de flex, sense canviar l'ordre de lectura ni el del focus.
  */
 import type { Plat } from '../lib/contingut';
 import type { Idioma } from '../lib/idioma';
-import { textos } from '../i18n/textos';
 import ImatgePlat from './ImatgePlat.astro';
 import Historia from './Historia.astro';
 
@@ -18,7 +17,6 @@ const { plat, lang, primera = false } = Astro.props;
 const nom = plat.nom[lang];
 const historia = plat.historia[lang];
 const senseFoto = plat.imatge === null;
-const t = textos[lang];
 ---
 <article id={plat.id} data-plat-id={plat.id} class:list={['plat', { 'plat--sense-foto': senseFoto }]}>
   <h3 class="plat__nom" lang={nom.lang !== lang ? nom.lang : undefined}>{nom.text}</h3>
@@ -36,9 +34,6 @@ const t = textos[lang];
       </div>
     )
   }
-  <a class="plat__enllac" href={plat.urlPost} rel="noopener">
-    {senseFoto ? t.enllacPlatSenseFoto : t.enllacPlat}<span class="nomes-lectors">: {nom.text}</span>
-  </a>
 </article>
 
 <style>
@@ -80,18 +75,6 @@ const t = textos[lang];
     order: 3;
     width: 100%;
     margin-top: var(--espai-3);
-  }
-
-  .plat__enllac {
-    order: 4;
-    display: inline-flex;
-    align-items: center;
-    min-height: 44px;
-    margin-top: var(--espai-4);
-    font-family: var(--tipus-sans);
-    font-weight: 500;
-    font-size: var(--mida-ui);
-    line-height: var(--interlineat-ui);
   }
 
   /* Sense foto: nom sense marge superior i cap cercle buit (dis. §4.3). */

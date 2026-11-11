@@ -44,20 +44,23 @@ describe('Paragrafs i E13 (B-15)', () => {
 });
 
 describe('Plat: variants (F-13, F-14, P1, P2)', () => {
-  it('sense foto: cap <img>, enllaç "Veure la foto a Instagram" i classe de bloc', async () => {
+  it('sense foto: cap <img>, cap enllaç i la història és present', async () => {
     const html = await contenidor.renderToString(Plat, {
       props: { plat: plat('Pa amb tomàquet i oli.\n\nPan con tomate y aceite.'), lang: 'ca' },
     });
     expect(html).not.toContain('<img');
     expect(html).toContain('plat--sense-foto');
-    expect(html).toContain('Veure la foto a Instagram');
+    expect(html).not.toContain('<a ');
+    expect(html).not.toContain('Instagram');
     expect(html).toContain('data-historia');
   });
 
-  it('sense història (E2): cap [data-historia] i l\'enllaç és present', async () => {
+  it('sense història (E2): cap [data-historia] ni cap enllaç; només el nom', async () => {
     const html = await contenidor.renderToString(Plat, { props: { plat: plat('#Bistrot1954 #tapes'), lang: 'ca' } });
     expect(html).not.toContain('data-historia');
-    expect(html).toContain('href="https://www.instagram.com/p/ABC123/"');
+    expect(html).not.toContain('<a ');
+    expect(html).not.toContain('instagram.com');
+    expect(html).toContain('Plat de prova');
   });
 
   it('un caption només en castellà a la pàgina catalana porta lang="es" (P2)', async () => {
@@ -67,8 +70,9 @@ describe('Plat: variants (F-13, F-14, P1, P2)', () => {
     expect(html).toMatch(/data-historia[^>]*lang="es"/);
   });
 
-  it("l'enllaç porta el nom del plat només per a lectors de pantalla", async () => {
-    const html = await contenidor.renderToString(Plat, { props: { plat: plat('#x'), lang: 'es', primera: true } });
-    expect(html).toMatch(/Ver la foto en Instagram<span class="nomes-lectors[^"]*"[^>]*>: Plat de prova<\/span>/);
+  it('V-34: cap article conté cap element a, encara que el plat tingui urlPost', async () => {
+    const html = await contenidor.renderToString(Plat, { props: { plat: plat('Pa amb tomàquet i oli.\n\nPan con tomate y aceite.'), lang: 'es', primera: true } });
+    expect(html).not.toMatch(/<a[\s>]/);
+    expect(html).not.toContain('ABC123');
   });
 });
