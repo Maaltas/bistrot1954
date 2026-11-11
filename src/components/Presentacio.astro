@@ -1,5 +1,5 @@
 ---
-/** Text de presentació del restaurant (arq. §4.3.2): literal de l'Oriol, sense emojis. */
+/** Text de presentació del restaurant (arq. §4.3.2): literal de l'Oriol, sense emojis. Centrat (dis. §3.2). */
 import type { Historia } from '../lib/contingut';
 import type { Idioma } from '../lib/idioma';
 import Paragrafs from './Paragrafs.astro';
@@ -16,16 +16,23 @@ const { presentacio, paginaLang } = Astro.props;
 
 <style>
   .presentacio {
-    max-width: var(--mesura);
-    font-size: var(--mida-text);
+    max-width: var(--mesura-curta);
+    margin-inline: auto;
+    font-size: var(--mida-presentacio);
     line-height: var(--interlineat-text);
-    color: var(--porcellana);
+    color: var(--tinta);
+    text-align: center;
     text-wrap: pretty;
     overflow-wrap: anywhere;
-    text-align: left;
   }
 
   .presentacio :global(p + p) {
-    margin-top: 0.75em;
+    margin-top: 0.6em;
+  }
+
+  @media (min-width: 900px) {
+    .presentacio {
+      max-width: var(--mesura);
+    }
   }
 </style>

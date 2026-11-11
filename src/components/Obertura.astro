@@ -1,7 +1,7 @@
 ---
 /**
- * Obertura (#inici): vora cobalt amb el nom gran, les dades del restaurant i el text de presentació (dis. §3.2).
- * Ordre: nom, dades (cuina, adreça, horari), presentació.
+ * Obertura (#inici): la capçalera de la carta (dis. §3.2). Ordre: selector, nom, filet doble, cuina,
+ * presentació, horari, adreça, filet doble.
  */
 import type { Restaurant } from '../lib/contingut';
 import type { Idioma } from '../lib/idioma';
@@ -20,22 +20,20 @@ const horari = formataHorari(restaurant.horari, lang);
 const presentacio = restaurant.presentacio[lang];
 const { adreca } = restaurant;
 ---
-<section id="inici" class="obertura sobre-cobalt">
+<section id="inici" class="obertura">
   <div class="contenidor">
     <div class="obertura__idioma">
       <SelectorIdioma lang={lang} pagina="portada" />
     </div>
     <h1 class="obertura__nom">{restaurant.nom}</h1>
-    <div class="obertura__cos">
-      <ul class="obertura__dades">
-        {cuina && <li>{cuina}</li>}
-        <li>
-          <address class="obertura__adreca"><span class="obertura__carrer">{adreca.carrer}</span><span class="obertura__coma">, </span><span class="obertura__poble">{adreca.codi_postal} {adreca.municipi}</span></address>
-        </li>
-        {horari.map((linia) => <li>{linia}</li>)}
-      </ul>
-      {presentacio && <div class="obertura__presentacio"><Presentacio presentacio={presentacio} paginaLang={lang} /></div>}
+    <div class="filet-doble obertura__filet" aria-hidden="true"></div>
+    {cuina && <p class="obertura__cuina">{cuina}</p>}
+    {presentacio && <div class="obertura__presentacio"><Presentacio presentacio={presentacio} paginaLang={lang} /></div>}
+    <div class="obertura__dades">
+      <div class="obertura__horari">{horari.map((linia) => <p>{linia}</p>)}</div>
+      <address class="obertura__adreca"><span class="obertura__carrer">{adreca.carrer}</span><span class="obertura__coma">, </span><span class="obertura__poble">{adreca.codi_postal} {adreca.municipi}</span></address>
     </div>
+    <div class="filet-doble obertura__filet obertura__filet--final" aria-hidden="true"></div>
   </div>
 </section>
 
@@ -51,40 +49,62 @@ const { adreca } = restaurant;
   }
 
   .obertura__nom {
-    margin-top: var(--espai-2);
-    padding-bottom: 0.08em;
-    font-weight: 700;
+    margin-top: var(--espai-4);
     font-size: var(--mida-marca);
     line-height: var(--interlineat-marca);
-    letter-spacing: -0.01em;
-    font-variant-numeric: oldstyle-nums;
     text-wrap: balance;
-    color: var(--porcellana);
   }
 
-  .obertura__cos {
-    margin-top: var(--espai-4);
+  .obertura__filet {
+    margin-top: var(--espai-3);
   }
 
-  .obertura__dades {
+  .obertura__cuina {
+    margin-top: var(--espai-3);
     font-family: var(--tipus-sans);
     font-weight: 500;
     font-size: var(--mida-ui);
     line-height: var(--interlineat-ui);
-    font-variant-numeric: lining-nums tabular-nums;
-  }
-
-  .obertura__adreca {
-    font-style: normal;
+    color: var(--fum);
   }
 
   .obertura__presentacio {
     margin-top: var(--espai-6);
   }
 
+  .obertura__dades {
+    margin-top: var(--espai-6);
+    font-family: var(--tipus-sans);
+    font-weight: 500;
+    font-size: var(--mida-ui);
+    line-height: var(--interlineat-ui-llarg);
+    color: var(--tinta);
+  }
+
+  .obertura__adreca {
+    margin-top: var(--espai-1);
+  }
+
+  .obertura__horari {
+    text-wrap: balance;
+  }
+
+  .obertura__carrer,
+  .obertura__poble {
+    display: block;
+  }
+
+  .obertura__coma {
+    display: none;
+  }
+
+  .obertura__filet--final {
+    margin-top: var(--espai-6);
+  }
+
   @media (min-width: 900px) {
     .obertura {
-      padding-top: var(--barra-sup-alt);
+      padding-top: calc(var(--barra-sup-alt) + var(--espai-9));
       padding-bottom: var(--espai-8);
     }
 
@@ -93,32 +113,43 @@ const { adreca } = restaurant;
     }
 
     .obertura__nom {
-      margin-top: var(--espai-7);
+      margin-top: 0;
     }
 
-    .obertura__cos {
-      display: grid;
-      grid-template-columns: var(--foto) minmax(0, var(--mesura));
-      column-gap: var(--espai-9);
-      align-items: start;
-      margin-top: var(--espai-7);
+    .obertura__filet {
+      width: 220px;
     }
 
     .obertura__dades {
-      font-size: 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: var(--espai-7);
+      font-size: 1.125rem;
+    }
+
+    .obertura__horari {
+      padding-right: var(--espai-7);
+    }
+
+    .obertura__adreca {
+      margin-top: 0;
+      padding-block: var(--espai-1);
+      padding-left: var(--espai-7);
+      border-left: var(--filet-doble);
     }
 
     .obertura__carrer,
     .obertura__poble {
-      display: block;
+      display: inline;
     }
 
     .obertura__coma {
-      display: none;
+      display: inline;
     }
 
-    .obertura__presentacio {
-      margin-top: 0;
+    .obertura__filet--final {
+      margin-top: var(--espai-7);
     }
   }
 </style>

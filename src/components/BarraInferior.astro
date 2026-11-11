@@ -1,5 +1,8 @@
 ---
-/** Barra d'accions inferior (< 900 px): "Com arribar" (secundari) i "Trucar" (principal, a la dreta). Dis. §3.1, §8. */
+/**
+ * Barra d'accions inferior (< 900 px): "Com arribar" (secundari, esquerra) i "Trucar" (principal, dreta).
+ * Fons paper, filet doble or a dalt, sense ombra (dis. §3.1, §8).
+ */
 import type { Restaurant } from '../lib/contingut';
 import type { Idioma } from '../lib/idioma';
 import { textos } from '../i18n/textos';
@@ -32,9 +35,10 @@ const tel = restaurant.telefonEnllac;
     z-index: 50;
     display: flex;
     gap: var(--espai-3);
-    padding: var(--espai-3) var(--espai-5) calc(var(--espai-3) + env(safe-area-inset-bottom));
-    background: var(--porcellana);
-    box-shadow: var(--ombra-barra);
+    /* 72 px d'alçada total: 3 px de filet + 9 px + 48 px de botó + 12 px, més l'àrea segura. */
+    padding: 9px var(--espai-5) calc(var(--espai-3) + env(safe-area-inset-bottom));
+    background: var(--paper);
+    border-top: var(--filet-doble);
   }
 
   .barra-inferior .boto {
@@ -45,7 +49,6 @@ const tel = restaurant.telefonEnllac;
   @media (max-height: 479px) {
     .barra-inferior {
       position: static;
-      box-shadow: 0 -1px 0 var(--linia-barra);
     }
   }
 

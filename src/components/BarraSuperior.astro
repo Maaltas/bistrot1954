@@ -1,7 +1,8 @@
 ---
 /**
- * Barra superior (dis. §3.1, §8). Fixa a ≥ 900 px, cobalt, amb les accions.
- * A les pàgines legals, a < 900 px es veu com una franja amb el nom i el selector d'idioma.
+ * Barra superior (dis. §3.1, §8). Fixa a ≥ 900 px: fons paper de 64 px amb filet doble or a baix.
+ * A les pàgines legals, a l'esquerra hi ha "Bistrot 1954" en cursiva (enllaç a l'inici) i, a < 900 px, es veu
+ * com una franja no fixa de 56 px amb el nom i el selector d'idioma, i un filet doble a sota.
  */
 import type { Restaurant } from '../lib/contingut';
 import type { Idioma } from '../lib/idioma';
@@ -19,13 +20,13 @@ const { lang, pagina, restaurant } = Astro.props;
 const t = textos[lang];
 const esPortada = pagina === 'portada';
 ---
-<nav class:list={['barra-superior', 'sobre-cobalt', { 'barra-superior--legal': !esPortada }]} aria-label={t.navegacioNom}>
+<nav class:list={['barra-superior', { 'barra-superior--legal': !esPortada }]} aria-label={t.navegacioNom}>
   <div class="contenidor barra-superior__dins">
     {
       esPortada ? (
         <ul class="barra-superior__seccions">
-          <li><a href="#plats">{t.navPlats}</a></li>
-          <li><a href="#on-som">{t.navOnSom}</a></li>
+          <li><a class="barra-superior__enllac" href="#plats">{t.navPlats}</a></li>
+          <li><a class="barra-superior__enllac" href="#on-som">{t.navOnSom}</a></li>
         </ul>
       ) : (
         <a class="barra-superior__nom" href={ruta(RUTES.portada[lang])}>{restaurant.nom}</a>
@@ -48,9 +49,11 @@ const esPortada = pagina === 'portada';
 <style>
   .barra-superior {
     display: none;
+    background: var(--paper);
+    border-bottom: var(--filet-doble);
   }
 
-  /* Pàgines legals en mòbil: franja de 56 px amb el nom i el selector d'idioma. */
+  /* Pàgines legals en mòbil: franja de 56 px (no fixa) amb el nom i el selector d'idioma. */
   .barra-superior--legal {
     display: block;
   }
@@ -61,6 +64,8 @@ const esPortada = pagina === 'portada';
     justify-content: space-between;
     gap: var(--espai-6);
     min-height: 56px;
+    max-width: calc(var(--contenidor) + 2 * var(--marge));
+    text-align: left;
   }
 
   .barra-superior__seccions {
@@ -68,8 +73,8 @@ const esPortada = pagina === 'portada';
     gap: var(--espai-6);
   }
 
-  .barra-superior__seccions a,
-  .barra-superior__nom {
+  /* Enllaços de navegació: sense subratllar; el subratllat surt amb hover i focus. */
+  .barra-superior__enllac {
     display: inline-flex;
     align-items: center;
     min-height: 44px;
@@ -77,12 +82,29 @@ const esPortada = pagina === 'portada';
     font-weight: 500;
     font-size: var(--mida-ui);
     line-height: var(--interlineat-ui);
+    text-decoration: none;
+  }
+
+  .barra-superior__enllac:hover,
+  .barra-superior__enllac:focus-visible {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
   }
 
   .barra-superior__nom {
-    font-family: var(--tipus-serif);
-    font-weight: 700;
-    font-size: var(--mida-plat);
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-style: italic;
+    font-size: var(--mida-subtitol);
+    line-height: var(--interlineat-subtitol);
+    text-decoration: none;
+  }
+
+  .barra-superior__nom:hover,
+  .barra-superior__nom:focus-visible {
+    text-decoration: underline;
   }
 
   .barra-superior__accions {
@@ -107,6 +129,7 @@ const esPortada = pagina === 'portada';
 
     .barra-superior__dins {
       height: 100%;
+      min-height: 0;
     }
 
     .barra-superior__boto {
