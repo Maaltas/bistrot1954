@@ -1,6 +1,6 @@
 # Web del Bistrot 1954
 
-Web de presentació del Bistrot 1954 (Carrer Sant Bru, 48, Badalona). Cada plat surt amb la seva foto i la història que en va publicar el restaurant a Instagram, **sense retocar-la**.
+Web de presentació del Bistrot 1954 (Carrer Sant Bru, 48, Badalona). Cada plat surt amb la seva foto, el seu nom i la història que en va publicar el restaurant a Instagram, **sense retocar-la**. Els plats no enllacen al seu post; només hi ha l'enllaç al compte d'Instagram, al peu.
 
 - **En local:** `http://localhost:4321/bistrot1954/` (català) i `http://localhost:4321/bistrot1954/es/` (castellà). `http://localhost:4321/` sense `/bistrot1954/` no és la web.
 - **Publicada (quan l'Oriol ho activi):** `https://maaltas.github.io/bistrot1954/`.
@@ -58,7 +58,7 @@ Altres operacions: per **amagar** un plat, `amagat: true`; per **canviar l'ordre
 
 ### La regla de contingut
 
-La història de cada plat surt **exclusivament** del caption. La neteja (`src/lib/neteja.ts`) només treu hashtags, @mencions, emojis, espais sobrants, frases purament promocionals i el bloc fix de signatura. Mai reescriu, resumeix, tradueix ni afegeix res. Cada història es mostra en l'idioma original; la pàgina catalana mostra la part catalana del caption i la castellana, la castellana.
+La història de cada plat surt **exclusivament** del caption. La neteja (`src/lib/neteja.ts`) només treu hashtags, @mencions, emojis, espais sobrants, frases purament promocionals, el bloc fix de signatura i el nom del plat quan encapçala la història (pas N8, regla de l'Oriol: la història no repeteix el nom, que ja surt com a títol; si el nom queda a mitja frase, es deixa). Mai reescriu, resumeix, tradueix ni afegeix res. Cada història es mostra en l'idioma original; la pàgina catalana mostra la part catalana del caption i la castellana, la castellana.
 
 ## Imatge per compartir (`npm run og`)
 
