@@ -1,7 +1,7 @@
 ---
 /**
  * Pàgina 404 bilingüe (dis. §3.6, arq. §5.2). GitHub Pages la serveix per a qualsevol ruta inexistent,
- * per això els enllaços són absoluts (amb `base`) i no porta cap recurs relatiu.
+ * per això els enllaços són absoluts (amb `base`) i no porta cap recurs relatiu. Sense barres ni fotos.
  */
 import Base from '../layouts/Base.astro';
 import { getRestaurant } from '../lib/contingut';
@@ -18,46 +18,59 @@ const restaurant = getRestaurant();
   noindex
   senseEstadistiques
 >
-  <div class="franja" aria-hidden="true"></div>
-  <main class="contenidor pagina">
+  <main class="pagina">
     <p class="marca">{restaurant.nom}</p>
+    <div class="filet-doble pagina__filet" aria-hidden="true"></div>
     <h1 class="missatge" lang="ca">{textos404.ca.missatge}</h1>
-    <p><a href={ruta(RUTES.portada.ca)} lang="ca">{textos404.ca.enllac}</a></p>
+    <p><a class="enllac" href={ruta(RUTES.portada.ca)} lang="ca">{textos404.ca.enllac}</a></p>
+    <div class="filet-senzill pagina__separador" aria-hidden="true"></div>
     <p class="missatge" lang="es">{textos404.es.missatge}</p>
-    <p><a href={ruta(RUTES.portada.es)} lang="es">{textos404.es.enllac}</a></p>
+    <p><a class="enllac" href={ruta(RUTES.portada.es)} lang="es">{textos404.es.enllac}</a></p>
   </main>
 </Base>
 
 <style>
-  .franja {
-    height: var(--espai-4);
-    background: var(--cobalt);
-  }
-
   .pagina {
-    padding-block: var(--espai-7) var(--espai-9);
+    padding-block: var(--espai-8);
   }
 
   .marca {
-    font-weight: 700;
-    font-size: var(--mida-titol);
+    font-style: italic;
+    font-size: var(--mida-404-marca);
     line-height: var(--interlineat-titol);
-    color: var(--cobalt);
+    color: var(--vi);
   }
 
+  .pagina__filet {
+    margin-top: var(--espai-3);
+    margin-bottom: var(--espai-7);
+  }
+
+  .pagina__separador {
+    margin-block: var(--espai-7);
+  }
+
+  /* Els missatges van en rodona i tinta (EB Garamond), com diu el wireframe. */
   .missatge {
-    margin-top: var(--espai-7);
-    font-weight: 700;
-    font-size: var(--mida-plat);
-    line-height: var(--interlineat-plat);
+    font-style: normal;
+    font-size: var(--mida-404-missatge);
+    line-height: 1.3;
+    color: var(--tinta);
   }
 
-  .pagina a {
+  .enllac {
     display: inline-flex;
     align-items: center;
     min-height: 44px;
     font-family: var(--tipus-sans);
     font-weight: 500;
     font-size: var(--mida-ui);
+    line-height: var(--interlineat-ui);
+  }
+
+  @media (min-width: 900px) {
+    .pagina {
+      padding-block: var(--espai-10);
+    }
   }
 </style>

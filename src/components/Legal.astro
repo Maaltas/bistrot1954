@@ -35,11 +35,12 @@ const adrecaEstabliment = `${adreca.carrer}, ${adreca.codi_postal} ${adreca.muni
     <BarraSuperior lang={lang} pagina="legal" restaurant={restaurant} />
   </header>
   <main class="legal">
-    <div class="contenidor">
-      <div class="legal__cos">
-        <h1 class="legal__titol">{l.titol}</h1>
-        {demo && <p class="legal__avis" role="note">{t.avisDemostracio}</p>}
+    <div class="contenidor legal__dins">
+      <h1 class="legal__titol">{l.titol}</h1>
+      <div class="filet-doble legal__filet" aria-hidden="true"></div>
+      {demo && <p class="legal__avis" role="note">{t.avisDemostracio}</p>}
 
+      <div class="legal__cos">
         <h2>{l.titularTitol}</h2>
         <dl class="legal__dades">
           {
@@ -88,44 +89,51 @@ const adrecaEstabliment = `${adreca.carrer}, ${adreca.codi_postal} ${adreca.muni
     padding-block: var(--espai-7) var(--espai-9);
   }
 
-  .legal__cos {
-    max-width: var(--mesura);
-    font-size: var(--mida-text);
-    line-height: var(--interlineat-text);
-    overflow-wrap: anywhere;
+  .legal__dins {
+    max-width: calc(var(--mesura) + 2 * var(--marge));
   }
 
   .legal__titol {
-    font-weight: 700;
-    font-size: var(--mida-titol);
+    font-size: var(--mida-legal-titol);
     line-height: var(--interlineat-titol);
-    color: var(--cobalt);
+  }
+
+  .legal__filet {
+    margin-top: var(--espai-3);
   }
 
   .legal__avis {
-    margin-block: var(--espai-6);
+    margin-top: var(--espai-6);
     padding: var(--espai-4) var(--espai-5);
-    background: var(--aigualit);
-    border-left: 4px solid var(--cobalt);
-    border-radius: var(--radi-cap);
+    background: var(--vi-clar);
+    border: 1px solid var(--vi);
+    border-radius: var(--radi);
     font-family: var(--tipus-sans);
     font-weight: 500;
     font-size: var(--mida-ui);
-    line-height: var(--interlineat-ui);
+    line-height: var(--interlineat-ui-llarg);
     color: var(--tinta);
   }
 
-  .legal__cos h2 {
+  /* El text de l'avís legal és de consulta: va alineat a l'esquerra (només el títol i l'avís van centrats). */
+  .legal__cos {
     margin-top: var(--espai-8);
+    text-align: left;
+    overflow-wrap: anywhere;
+  }
+
+  .legal__cos h2 {
     margin-bottom: var(--espai-3);
-    font-weight: 700;
-    font-size: var(--mida-plat);
+    font-size: var(--mida-legal-h2);
     line-height: var(--interlineat-plat);
-    color: var(--cobalt);
+  }
+
+  .legal__cos h2:not(:first-child) {
+    margin-top: var(--espai-8);
   }
 
   .legal__cos p + p {
-    margin-top: 0.75em;
+    margin-top: 0.6em;
   }
 
   .legal__dades div + div {
@@ -133,23 +141,29 @@ const adrecaEstabliment = `${adreca.carrer}, ${adreca.codi_postal} ${adreca.muni
   }
 
   .legal__dades dt {
-    font-weight: 700;
+    font-family: var(--tipus-sans);
+    font-weight: 500;
+    font-size: var(--mida-ui);
+    line-height: var(--interlineat-ui);
+    color: var(--fum);
   }
 
   .legal__dades dd {
     margin: 0;
+    font-size: var(--mida-text);
+    line-height: var(--interlineat-text);
   }
 
   .legal__marca {
     font-family: var(--tipus-sans);
     font-weight: 500;
     font-size: var(--mida-ui);
-    color: var(--acer);
+    color: var(--fum);
   }
 
   @media (min-width: 900px) {
     .legal {
-      padding-top: calc(var(--barra-sup-alt) + var(--espai-8));
+      padding-top: calc(var(--barra-sup-alt) + var(--espai-9));
     }
   }
 </style>
