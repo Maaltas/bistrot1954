@@ -45,7 +45,7 @@ const jsonLd = jsonLdRestaurant(restaurant, lang, {
   <main>
     <section id="plats" class="plats" aria-labelledby="plats-titol">
       <div class="contenidor">
-        <h2 id="plats-titol" class="plats__titol">{t.titolPlats}</h2>
+        <h2 id="plats-titol" class="titol-filets">{t.titolPlats}</h2>
         <p class="plats__intro">{t.introPlats}</p>
         <div class="plats__llista">
           {plats.map((plat, i) => <Plat plat={plat} lang={lang} primera={i === 0} />)}
@@ -60,41 +60,35 @@ const jsonLd = jsonLdRestaurant(restaurant, lang, {
 
 <style>
   .plats {
-    padding-top: 28px;
-    padding-bottom: var(--separacio-plats);
-  }
-
-  .plats__titol {
-    font-weight: 700;
-    font-size: var(--mida-titol);
-    line-height: var(--interlineat-titol);
-    color: var(--cobalt);
+    padding-block: calc(var(--espai-4) + var(--espai-6)) 56px;
   }
 
   .plats__intro {
-    margin-top: var(--espai-3);
+    max-width: var(--mesura);
+    margin: var(--espai-3) auto 0;
     font-family: var(--tipus-sans);
     font-weight: 500;
     font-size: var(--mida-ui);
-    line-height: var(--interlineat-ui);
-    color: var(--acer);
+    line-height: var(--interlineat-ui-llarg);
+    color: var(--fum);
   }
 
   .plats__llista {
-    margin-top: var(--espai-6);
+    margin-top: calc(var(--espai-4) + var(--espai-6));
   }
 
   @media (min-width: 900px) {
     .plats {
-      padding-top: var(--espai-9);
+      padding-bottom: var(--espai-10);
     }
 
-    .plats__intro {
-      font-size: 1.25rem;
-    }
-
+    /* La carta oberta: dues columnes de 480 px centrades (60rem); les files s'alineen a dalt. */
     .plats__llista {
-      margin-top: var(--espai-8);
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, var(--columna-plat)));
+      justify-content: center;
+      align-items: start;
+      row-gap: var(--espai-10);
     }
   }
 </style>

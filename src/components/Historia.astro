@@ -1,7 +1,11 @@
 ---
-/** Història d'un plat (arq. §3.3 P1-P4, §4.5). El `lang` només es posa si difereix del de la pàgina. */
+/**
+ * Història d'un plat (arq. §3.3 P1-P4, §4.5). El `lang` només es posa si difereix del de la pàgina.
+ * Centrada; si passa de 500 caràcters (dis. §4.5), s'alinea a l'esquerra.
+ */
 import type { Historia } from '../lib/contingut';
 import type { Idioma } from '../lib/idioma';
+import { historiaEsLlarga } from '../lib/historia';
 import Paragrafs from './Paragrafs.astro';
 
 interface Props {
@@ -9,22 +13,39 @@ interface Props {
   paginaLang: Idioma;
 }
 const { historia, paginaLang } = Astro.props;
+const llarga = historiaEsLlarga(historia.paragrafs);
 ---
-<div class="historia" data-historia lang={historia.lang !== paginaLang ? historia.lang : undefined}>
+<div
+  class:list={['historia', { 'historia--llarga': llarga }]}
+  data-historia
+  lang={historia.lang !== paginaLang ? historia.lang : undefined}
+>
   <Paragrafs paragrafs={historia.paragrafs} />
 </div>
 
 <style>
   .historia {
-    max-width: var(--mesura);
+    max-width: var(--mesura-curta);
+    margin-inline: auto;
     font-size: var(--mida-text);
     line-height: var(--interlineat-text);
+    text-align: center;
     text-wrap: pretty;
     overflow-wrap: anywhere;
+  }
+
+  .historia--llarga {
     text-align: left;
   }
 
   .historia :global(p + p) {
-    margin-top: 0.75em;
+    margin-top: 0.6em;
+  }
+
+  /* ≥ 900 px: la columna del plat és de 400 px. */
+  @media (min-width: 900px) {
+    .historia {
+      max-width: none;
+    }
   }
 </style>
