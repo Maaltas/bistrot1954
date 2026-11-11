@@ -163,7 +163,7 @@ Definides a `docs/arquitectura.md`, versió 2 (abreujat "arq."), que incorpora l
 - [x] **B-30** · Comprovar els criteris d'arq. §11 (T, C, R, P, S, A) en el build local i, els marcats "publicació", en un build de publicació, abans de passar al QA. **Cal tornar-ho a mesurar després de B-33.** Anotar en aquesta tasca les puntuacions de Lighthouse i els pesos. Verificació: tots els criteris aplicables es compleixen.
   - **Fet (re-mesurat després de B-33, 2026-11-10):** tots els criteris locals aplicables es compleixen, també P-07 (`npm audit --omit=dev`: 0 vulnerabilitats; `astro` 7.4.10). Lighthouse mòbil amb Edge, build local, `/` i `/es/`: Performance 100, Accessibility 100, Best Practices 100, SEO 100; LCP 1,8 s, CLS 0, TBT 0 ms; càrrega inicial 190 KiB. Pesos: HTML 27 KB, CSS 11,7 KB (2 fitxers), JS 0, tipografies 60 KB (2 fitxers), imatge més gran 43 KB, `og.jpg` 37 KB. S-06 (`html-validate`): 0 errors, amb la regla `tel-non-breaking` desactivada a `.htmlvalidate.json` (D-18). Build sense cap avís `[contingut]`. Build de publicació (`CI=true`): canonical, `hreflang`, OG i JSON-LD amb `https://maaltas.github.io/bistrot1954/`, sense avís `[entorn]` i amb l'avís esperat de l'avís legal de demostració; sense GoatCounter si el codi és `null`. Els criteris "publicació" que depenen d'estar en línia (T-05 a producció, P-01, P-02 i P-08 en producció, S-01 a S-05 en producció) queden per a B-31.
 
-- [ ] **B-34** · **Redisseny P3 (D-19): paquets de `genera-og.mjs`.** Feina, segons arq. §2.1 i §6.6:
+- [x] **B-34** · **Redisseny P3 (D-19): paquets de `genera-og.mjs`.** Feina, segons arq. §2.1 i §6.6:
   - a `devDependencies`, substituir `@fontsource/alegreya` i `@fontsource/alegreya-sans` per `@fontsource/eb-garamond` i `@fontsource/jost`;
   - fer que `scripts/genera-og.mjs` carregui els fitxers locals d'EB Garamond 400 cursiva i Jost 500, sense xarxa.
 
@@ -171,13 +171,15 @@ Definides a `docs/arquitectura.md`, versió 2 (abreujat "arq."), que incorpora l
   - `npm ci` i `npm run og` funcionen sense cap petició de xarxa;
   - `package.json` ja no menciona Alegreya;
   - `public/og.jpg` fa 1200×630 px i ≤ 150 KB (R-07).
-- [ ] **B-35** · **Redisseny P3 (D-19): tornar a verificar els criteris tècnics que canvien.** Es fa després de F-24 a F-44. Criteris, a `http://localhost:4321/bistrot1954/`:
+  - Nota: Fet: `@fontsource/eb-garamond` i `@fontsource/jost` en lloc dels d'Alegreya; `genera-og.mjs` carrega EB Garamond 400 cursiva i Jost 500 dels fitxers locals. `npm run og` sense xarxa: `og.jpg` 1200×630 i 33 KB.
+- [x] **B-35** · **Redisseny P3 (D-19): tornar a verificar els criteris tècnics que canvien.** Es fa després de F-24 a F-44. Criteris, a `http://localhost:4321/bistrot1954/`:
   - T-08: sense `/propostes/` ni famílies tipogràfiques de més;
   - R-06b: tipografies ≤ 3 fitxers i ≤ 150 KB; entre 120 i 150 KB és una observació (arq. §6.7);
   - R-09: `sizes` = `(min-width: 900px) 338px, 293px`, i cap imatge més ampla que el fitxer de `currentSrc`;
   - R-06, R-07, R-08, P-05 (els hashes de la CSP canviaran amb el CSS nou) i C-01 a C-10.
 
   Anotar en aquesta tasca les puntuacions de Lighthouse i els pesos nous, com es va fer a B-30. Verificació: tots aquests criteris es compleixen, sense cap avís `[contingut]` ni `[entorn]`.
+  - Nota: Fet (2026-11-11, build local): T-08 (cap `dist/propostes/`, només EB Garamond i Jost), R-06b (3 fitxers, 59,7 KB; sota l'objectiu de 120 KB), R-07 (imatge més gran 43 KB, `og.jpg` 33 KB), R-08 i R-09 (`sizes` = `(min-width: 900px) 338px, 293px`, `srcset` amb 360w i l'ample real, cap imatge més ampla que el fitxer), P-05 (CSP nova, sense `unsafe-inline` ni `frame-ancestors`), C-01 a C-10, S-01 a S-08, T-07 i P-04, amb els meus checks sobre `dist/`. `html-validate`: 0 errors. `npm audit --omit=dev`: 0 vulnerabilitats. Lighthouse mòbil amb Edge, `/` i `/es/`: Performance 100, Accessibility 100, Best Practices 100, SEO 100; LCP 0,9 s, CLS 0, TBT 0 ms; càrrega inicial 245 KiB. Pesos: HTML 27 KB, CSS 11,3 KB (2 fitxers), JS 0. Cap avís `[contingut]` ni `[entorn]`; el build de publicació (`CI=true`) només avisa de l'avís legal de demostració.
 - [ ] **B-31** · **BLOQUEJADA (D-13 a `docs/dubtes.md`)** · Activar la publicació quan l'Oriol doni el vistiplau final, seguint els passos d'arq. §9.4:
   - crear el repositori públic `Maaltas/bistrot1954` i fer-hi `push`;
   - Pages amb Source = GitHub Actions;
@@ -232,15 +234,16 @@ Porten la web de `main` ("Pisa blava") a "La carta" (dis. versió 2) en totes le
 - Les tasques F-26, F-33 i F-42 depenen de D-19 a `docs/dubtes.md`. Mentrestant s'aplica el que diu el disseny.
 - Els criteris V-xx són els de dis. §10 versió 2. Els tests de `tests/qa/` que comproven valors de "Pisa blava" els ha d'actualitzar el QA, no el programador.
 
-- [ ] **F-24** · Preparar la feina sobre `main`, sense portar res de `src/propostes/` ni de `src/pages/propostes/`. Si es fusiona la branca `propostes-disseny`, esborrar aquestes dues carpetes i les famílies tipogràfiques de les propostes P1, P2, P4 i P5 a `astro.config.mjs` (dis. §11, supòsit 7). Verificació: V-32 (després de `npm run build`, no existeix `dist/propostes/`).
-- [ ] **F-25** · Reescriure `src/styles/tokens.css` amb els tokens de dis. §5:
+- [x] **F-24** · Preparar la feina sobre `main`, sense portar res de `src/propostes/` ni de `src/pages/propostes/`. Si es fusiona la branca `propostes-disseny`, esborrar aquestes dues carpetes i les famílies tipogràfiques de les propostes P1, P2, P4 i P5 a `astro.config.mjs` (dis. §11, supòsit 7). Verificació: V-32 (després de `npm run build`, no existeix `dist/propostes/`).
+  - Nota: Fet: treballat sobre `main`, que mai ha tingut `src/propostes/`, `src/pages/propostes/` ni les famílies de les maquetes (només es va copiar el que dona per bo el disseny). `dist/propostes/` no existeix (V-32).
+- [x] **F-25** · Reescriure `src/styles/tokens.css` amb els tokens de dis. §5:
   - colors (§5.1);
   - escala tipogràfica i interlineats (§5.2);
   - espaiat, mides, filets i radis (§5.3);
   - breakpoints (§5.5).
 
   Treure tots els tokens de "Pisa blava" i l'ombra de la barra. Verificació: cada token de dis. §5 hi és amb el valor exacte; cap altre fitxer CSS conté colors en hex; la cerca de `--cobalt`, `--porcellana`, `--aigualit`, `--acer` i `--ombra-barra` a `src/` no troba res.
-- [ ] **F-26** · Tipografies (dis. §5.2; D-19, punt 2):
+- [x] **F-26** · Tipografies (dis. §5.2; D-19, punt 2):
   - a `astro.config.mjs`, EB Garamond 400 `normal` i `italic` i Jost 500, en lloc d'Alegreya i Alegreya Sans;
   - `preload` només de l'EB Garamond 400 normal;
   - reserves Georgia / `system-ui`;
@@ -248,7 +251,8 @@ Porten la web de `main` ("Pisa blava") a "La carta" (dis. versió 2) en totes le
   - xifres de caixa alta a l'adreça d'"On som".
 
   Verificació: V-15 i V-16.
-- [ ] **F-27** · Estils base a `src/styles/global.css` (dis. §5.1, §7):
+  - Nota: Fet: 3 fitxers WOFF2, 59,7 KB en total (≤ 120 KB). `preload` només de l'EB Garamond 400 normal; `font-synthesis: none`.
+- [x] **F-27** · Estils base a `src/styles/global.css` (dis. §5.1, §7):
   - fons paper i text tinta;
   - centrat per defecte a la portada i a la 404, però no a l'avís legal;
   - enllaços vi subratllats;
@@ -258,22 +262,22 @@ Porten la web de `main` ("Pisa blava") a "La carta" (dis. versió 2) en totes le
   - `prefers-reduced-motion`.
 
   Verificació: V-18 i V-21; la cerca de la classe `sobre-cobalt` a `src/` no troba res.
-- [ ] **F-28** · `BarraInferior.astro` (dis. §3.1): fons paper, filet doble or a dalt, sense ombra, botons de 48 px amb radi 0, "Com arribar" secundari a l'esquerra i "Trucar" principal a la dreta. Es mantenen el comportament amb alçada < 480 px i l'espai reservat al peu. Verificació: V-02, V-22 i V-31 (barra).
-- [ ] **F-29** · `BarraSuperior.astro` (dis. §3.1, §3.7):
+- [x] **F-28** · `BarraInferior.astro` (dis. §3.1): fons paper, filet doble or a dalt, sense ombra, botons de 48 px amb radi 0, "Com arribar" secundari a l'esquerra i "Trucar" principal a la dreta. Es mantenen el comportament amb alçada < 480 px i l'espai reservat al peu. Verificació: V-02, V-22 i V-31 (barra).
+- [x] **F-29** · `BarraSuperior.astro` (dis. §3.1, §3.7):
   - fons paper de 64 px amb filet doble or a baix i contenidor de 68rem;
   - "Plats" i "On som" sense subratllar;
   - selector, "Com arribar" i "Trucar al 936 27 35 36" a 44 px;
   - a les pàgines legals, "Bistrot 1954" en cursiva a l'esquerra, i a < 900 px, la franja de 56 px no fixa amb filet doble.
 
   Verificació: V-03 i V-31 (barra superior); a `/avis-legal/` a 375 px es veu la franja amb el nom i "Castellano".
-- [ ] **F-30** · `Obertura.astro` (dis. §3.2):
+- [x] **F-30** · `Obertura.astro` (dis. §3.2):
   - ordre selector → `h1` → filet doble → cuina → presentació → horari → adreça → filet doble;
   - mides de dis. §5.2;
   - a ≥ 900 px, horari i adreça en una línia amb filet vertical doble i la coma visible només aquí.
 
   Verificació: V-05, V-06 (obertura), V-07, V-30 i V-29 (ordre de l'obertura).
-- [ ] **F-31** · Capçalera de `#plats` (dis. §3.3): `h2` en cursiva vi amb filets senzills or de 48 px a cada costat, i la frase d'introducció en Jost fum. Verificació: els textos coincideixen amb dis. §9.2 a `/` i `/es/`; els filets del `h2` fan 1 px (V-31).
-- [ ] **F-32** · `Plat.astro` amb foto (dis. §4.1, §4.2):
+- [x] **F-31** · Capçalera de `#plats` (dis. §3.3): `h2` en cursiva vi amb filets senzills or de 48 px a cada costat, i la frase d'introducció en Jost fum. Verificació: els textos coincideixen amb dis. §9.2 a `/` i `/es/`; els filets del `h2` fan 1 px (V-31).
+- [x] **F-32** · `Plat.astro` amb foto (dis. §4.1, §4.2):
   - ordre visual foto → nom → història → enllaç, sense canviar l'ordre del DOM;
   - tot centrat, amb els estils de nom, història (0,6 em entre paràgrafs) i enllaç;
   - al mòbil, separadors de 56 + 1 + 56 px;
@@ -281,26 +285,28 @@ Porten la web de `main` ("Pisa blava") a "La carta" (dis. versió 2) en totes le
   - marge de l'àncora de 16/88 px, **traient l'ajust de −72 px de D-18, punt 1**.
 
   Verificació: V-08, V-09 i V-14.
-- [ ] **F-33** · Finestra rodona de la foto (dis. §6.2, §6.3; D-19, punt 1):
+  - Nota: Fet: s'ha tret l'ajust de −72 px de D-18 (punt 1); el nom de plat-05 queda visible a 375×667 sense cap ajust (V-09).
+- [x] **F-33** · Finestra rodona de la foto (dis. §6.2, §6.3; D-19, punt 1):
   - cercle de 260/300 px amb fons vi clar;
   - `img` al 112,5 % amb un marge superior del −25 %;
   - `sizes` = `(min-width: 900px) 338px, 293px`;
   - `widths` sense canvis.
 
   Verificació: V-10, V-11 i V-12; R-08 d'arq. §11 continua complint-se.
-- [ ] **F-34** · Variants sense foto i sense història (dis. §4.3, §4.4): sense cap cercle buit, amb el nom sense marge superior i "Veure la foto a Instagram". Verificació: V-24 i V-25, amb un build temporal que no es versiona.
-- [ ] **F-35** · Història llarga (dis. §4.5): alineada a l'esquerra quan fa més de 500 caràcters (classe decidida pel component a partir del text), sense cap retall i amb `overflow-wrap: anywhere`. Treure la foto fixa de la versió 1. Verificació: V-26 amb E9, i un test unitari en què 500 caràcters donen una història centrada i 501, alineada a l'esquerra.
-- [ ] **F-36** · `OnSom.astro` (dis. §3.4):
+- [x] **F-34** · Variants sense foto i sense història (dis. §4.3, §4.4): sense cap cercle buit, amb el nom sense marge superior i "Veure la foto a Instagram". Verificació: V-24 i V-25, amb un build temporal que no es versiona.
+- [x] **F-35** · Història llarga (dis. §4.5): alineada a l'esquerra quan fa més de 500 caràcters (classe decidida pel component a partir del text), sense cap retall i amb `overflow-wrap: anywhere`. Treure la foto fixa de la versió 1. Verificació: V-26 amb E9, i un test unitari en què 500 caràcters donen una història centrada i 501, alineada a l'esquerra.
+  - Nota: Fet: `src/lib/historia.ts` (`historiaEsLlarga`, llindar de 500 caràcters, sumant totes les línies) amb test unitari (500 → centrada, 501 → esquerra). Amb E9 comprovat en un build temporal (revertit).
+- [x] **F-36** · `OnSom.astro` (dis. §3.4):
   - fons vi clar;
   - una columna centrada de 36rem;
   - `h2` amb filets, adreça en EB Garamond amb xifres de caixa alta, "Com arribar", `h3` "Horari" i "Telèfon", número en Jost 22 i "Trucar" / "Trucar al 936 27 35 36";
   - el `hover` del secundari amb fons paper.
 
   Verificació: V-04 i V-06 (on som); comprovació manual del `hover`.
-- [ ] **F-37** · `Peu.astro` (dis. §3.5): filet doble de 160 px, nom en cursiva vi, enllaços subratllats (un per línia a < 900 px i en una fila a ≥ 900 px) i l'espai de la barra inferior. Verificació: els tres enllaços hi són a `/` i `/es/`, fan ≥ 44 px d'alt i a 1280 px estan a la mateixa altura (±2 px).
-- [ ] **F-38** · Estats dels botons i enllaços (dis. §7), inclòs el secundari sobre vi clar, sense el desplaçament d'1 px en prémer. Verificació: V-18, V-20 i V-21.
-- [ ] **F-39** · Pàgina 404 (dis. §3.6): centrada, sense barres, amb els dos missatges, filets i enllaços absoluts. Verificació: V-28.
-- [ ] **F-40** · `Legal.astro` (dis. §3.7):
+- [x] **F-37** · `Peu.astro` (dis. §3.5): filet doble de 160 px, nom en cursiva vi, enllaços subratllats (un per línia a < 900 px i en una fila a ≥ 900 px) i l'espai de la barra inferior. Verificació: els tres enllaços hi són a `/` i `/es/`, fan ≥ 44 px d'alt i a 1280 px estan a la mateixa altura (±2 px).
+- [x] **F-38** · Estats dels botons i enllaços (dis. §7), inclòs el secundari sobre vi clar, sense el desplaçament d'1 px en prémer. Verificació: V-18, V-20 i V-21.
+- [x] **F-39** · Pàgina 404 (dis. §3.6): centrada, sense barres, amb els dos missatges, filets i enllaços absoluts. Verificació: V-28.
+- [x] **F-40** · `Legal.astro` (dis. §3.7):
   - capçalera de F-29;
   - `h1` centrat amb filet doble;
   - avís de demostració amb fons vi clar i vora vi d'1 px;
@@ -308,7 +314,8 @@ Porten la web de `main` ("Pisa blava") a "La carta" (dis. versió 2) en totes le
   - peu i barra inferior.
 
   Verificació: V-27, en tots dos idiomes.
-- [ ] **F-41** · Icones (dis. §6.5): canviar els colors de `scripts/genera-icones.mjs` (vi i paper) i regenerar `public/favicon.svg` i `public/apple-touch-icon.png`. Verificació: V-33 (icones) i P-03 d'arq. §11 (cap 404 a la consola).
-- [ ] **F-42** · Imatge per compartir (dis. §6.4; D-19, punt 3): adaptar la plantilla de `scripts/genera-og.mjs` (paper, EB Garamond cursiva i Jost) i regenerar `public/og.jpg`. Verificació: V-33 (`og.jpg`); `og:image` i les metadades no canvien.
-- [ ] **F-43** · Neteja de "Pisa blava": treure CSS, classes, comentaris i dependències que ja no es facin servir (per exemple `@fontsource/alegreya*`, si D-19 ho confirma). Verificació: la cerca de `cobalt`, `porcellana`, `aigualit` i `Alegreya` a `src/` i `scripts/` no troba res; `npm run comprova` acaba sense errors.
-- [ ] **F-44** · Revisió visual final de "La carta" a 320, 375, 768 i 1280 px: portada, avís legal i 404, en català i en castellà, amb captures a `tests/captures/` (dis. §10). Verificació: es compleixen V-01 a V-33; les captures coincideixen amb els wireframes de dis. §3.
+- [x] **F-41** · Icones (dis. §6.5): canviar els colors de `scripts/genera-icones.mjs` (vi i paper) i regenerar `public/favicon.svg` i `public/apple-touch-icon.png`. Verificació: V-33 (icones) i P-03 d'arq. §11 (cap 404 a la consola).
+- [x] **F-42** · Imatge per compartir (dis. §6.4; D-19, punt 3): adaptar la plantilla de `scripts/genera-og.mjs` (paper, EB Garamond cursiva i Jost) i regenerar `public/og.jpg`. Verificació: V-33 (`og.jpg`); `og:image` i les metadades no canvien.
+- [x] **F-43** · Neteja de "Pisa blava": treure CSS, classes, comentaris i dependències que ja no es facin servir (per exemple `@fontsource/alegreya*`, si D-19 ho confirma). Verificació: la cerca de `cobalt`, `porcellana`, `aigualit` i `Alegreya` a `src/` i `scripts/` no troba res; `npm run comprova` acaba sense errors.
+- [x] **F-44** · Revisió visual final de "La carta" a 320, 375, 768 i 1280 px: portada, avís legal i 404, en català i en castellà, amb captures a `tests/captures/` (dis. §10). Verificació: es compleixen V-01 a V-33; les captures coincideixen amb els wireframes de dis. §3.
+  - Nota: Fet: comprovacions automàtiques amb Edge a 320, 375, 768 i 1280 px a `/`, `/es/`, `/avis-legal/`, `/es/aviso-legal/` i la 404, amb V-01 a V-10, V-14 a V-22 i V-27 a V-31 en verd, i captures a `tests/captures/` (no versionades). Les variants sense foto, sense història i història llarga (V-24 a V-26) s'han provat amb un build temporal revertit. V-12 (fletxa i punts fora dels cercles) es compleix per construcció (retall 0-88,9 % × 16,7-83,3 %) i s'ha revisat a les captures; V-23 i axe queden per al QA.
