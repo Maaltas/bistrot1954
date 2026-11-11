@@ -160,3 +160,60 @@ export function netejaCaption(caption: string): Paragraf[] {
 export function paragrafsATextPla(paragrafs: readonly Paragraf[]): string {
   return paragrafs.map((p) => p.join('\n')).join('\n\n');
 }
+
+/** Normalització per comparar el nom (arq. §3.2): apòstrofs tipogràfics → ', espais col·lapsats, minúscules. */
+function normalitzaNom(text: string): string {
+  return text
+    .replace(/[’‘]/g, "'")
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toLowerCase();
+}
+
+/** Separadors forts després del nom (N8): . : ; ! ? … o un guió llarg o mitjà amb espais als dos costats. */
+const RE_SEPARADOR_NOM = /^(?:\s*[.:;!?…]+\s*|\s+[—–]\s+)/u;
+
+/**
+ * N8 · Treu el nom del plat quan encapçala la història (regla de l'Oriol, arq. §3.3).
+ *
+ * Només al començament de la primera línia del primer paràgraf i una sola vegada. El nom es treu si, just després,
+ * hi ha el final de la línia o un separador fort; si va seguit d'una paraula o d'una coma, forma part de la frase i es
+ * deixa. Si s'ha tret el nom i la primera lletra que queda és minúscula, es passa a majúscula (només aquesta).
+ * Retorna `[]` si no queda res. No modifica l'entrada.
+ */
+export function treuNomInicial(paragrafs: readonly Paragraf[], nom: string, lang: string): Paragraf[] {
+  const copia: Paragraf[] = paragrafs.map((p) => [...p]);
+  const nomNormalitzat = normalitzaNom(nom);
+  const primera = copia[0]?.[0];
+  if (nomNormalitzat === '' || primera === undefined) return copia;
+
+  const liniaNormalitzada = normalitzaNom(primera);
+  if (liniaNormalitzada.length !== primera.length || !liniaNormalitzada.startsWith(nomNormalitzat)) return copia;
+
+  const resta = primera.slice(nomNormalitzat.length);
+  let nova: string;
+  if (resta.trim() === '') {
+    nova = '';
+  } else {
+    const separador = RE_SEPARADOR_NOM.exec(resta);
+    if (!separador) return copia; // el nom forma part de la frase
+    nova = resta.slice(separador[0].length);
+  }
+
+  // Es treu el nom: la línia buida desapareix, i el paràgraf buit també.
+  if (nova === '') copia[0]!.shift();
+  else copia[0]![0] = nova;
+  if (copia[0]!.length === 0) copia.shift();
+  if (copia.length === 0) return [];
+
+  // Majúscula inicial (només el primer caràcter, amb la caixa de l'idioma de la història).
+  const inici = copia[0]![0]!;
+  const [primerCaracter] = [...inici];
+  if (primerCaracter !== undefined) {
+    const majuscula = primerCaracter.toLocaleUpperCase(lang);
+    if (majuscula !== primerCaracter && primerCaracter === primerCaracter.toLocaleLowerCase(lang)) {
+      copia[0]![0] = majuscula + inici.slice(primerCaracter.length);
+    }
+  }
+  return copia;
+}

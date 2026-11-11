@@ -12,7 +12,7 @@ import platsRaw from '../../contingut/plats.json?raw';
 import seleccioRaw from '../../contingut/seleccio.yaml?raw';
 import restaurantRaw from '../../contingut/restaurant.yaml?raw';
 import { assignaIdiomes, type Idioma } from './idioma';
-import { netejaCaption, type Paragraf } from './neteja';
+import { netejaCaption, treuNomInicial, type Paragraf } from './neteja';
 import { construeixContacte } from './contacte';
 import { esPublicacio } from './entorn';
 
@@ -398,8 +398,9 @@ export function construeixPlats(posts: readonly Post[], seleccio: Seleccio, imat
     let paragrafsEs: Paragraf[] = [];
     try {
       const idiomes = assignaIdiomes(netejat, entrada.idiomes);
-      paragrafsCa = idiomes.ca;
-      paragrafsEs = idiomes.es;
+      // N8: la història no repeteix el nom del plat (cada idioma, amb el seu nom o, si no en té, nom.ca).
+      paragrafsCa = treuNomInicial(idiomes.ca, entrada.nom.ca, 'ca');
+      paragrafsEs = treuNomInicial(idiomes.es, entrada.nom.es ?? entrada.nom.ca, 'es');
       for (const avis of idiomes.avisos) avisos.push(`[contingut] ${entrada.id}: ${avis}`);
     } catch (e) {
       throw new ContingutError(
