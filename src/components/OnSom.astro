@@ -1,5 +1,5 @@
 ---
-/** Secció "On som" (#on-som): adreça, com arribar, horari i telèfon (dis. §3.4, §8, §9.3). */
+/** Secció "On som" (#on-som): una columna centrada sobre vi clar (dis. §3.4, §8, §9.3). */
 import type { Restaurant } from '../lib/contingut';
 import type { Idioma } from '../lib/idioma';
 import { formataHorari, textos } from '../i18n/textos';
@@ -13,94 +13,81 @@ const t = textos[lang];
 const horari = formataHorari(restaurant.horari, lang);
 const { adreca } = restaurant;
 ---
-<section id="on-som" class="on-som sobre-cobalt" aria-labelledby="on-som-titol">
+<section id="on-som" class="on-som" aria-labelledby="on-som-titol">
   <div class="contenidor on-som__dins">
-    <div class="on-som__esquerra">
-      <h2 id="on-som-titol" class="on-som__titol">{t.titolOnSom}</h2>
-      <address class="on-som__adreca">
-        <span>{adreca.carrer}</span>
-        <span>{adreca.codi_postal} {adreca.municipi}</span>
-      </address>
-      <a class="boto boto--secundari on-som__boto" href={restaurant.mapaUrl}>{t.comArribar}</a>
-    </div>
-    <div class="on-som__dreta">
-      {
-        horari.length > 0 && (
-          <div class="on-som__bloc">
-            <h3 class="on-som__subtitol">{t.subtitolHorari}</h3>
-            {horari.map((linia) => <p class="on-som__dada">{linia}</p>)}
-          </div>
-        )
-      }
-      {
-        restaurant.telefonEnllac && restaurant.telefonVisible && (
-          <div class="on-som__bloc">
-            <h3 class="on-som__subtitol">{t.subtitolTelefon}</h3>
-            <p class="on-som__telefon">{restaurant.telefonVisible}</p>
-            <a class="boto boto--principal on-som__boto" href={restaurant.telefonEnllac}>
-              <span class="on-som__curt">{t.trucarCurt}</span>
-              <span class="on-som__llarg">{t.trucarLlarg(restaurant.telefonVisible)}</span>
-            </a>
-          </div>
-        )
-      }
-    </div>
+    <h2 id="on-som-titol" class="titol-filets">{t.titolOnSom}</h2>
+    <address class="on-som__adreca">
+      <span>{adreca.carrer}</span>
+      <span>{adreca.codi_postal} {adreca.municipi}</span>
+    </address>
+    <a class="boto boto--secundari boto--sobre-clar on-som__boto" href={restaurant.mapaUrl}>{t.comArribar}</a>
+    {
+      horari.length > 0 && (
+        <div class="on-som__bloc">
+          <h3 class="on-som__subtitol">{t.subtitolHorari}</h3>
+          {horari.map((linia) => <p class="on-som__dada">{linia}</p>)}
+        </div>
+      )
+    }
+    {
+      restaurant.telefonEnllac && restaurant.telefonVisible && (
+        <div class="on-som__bloc">
+          <h3 class="on-som__subtitol">{t.subtitolTelefon}</h3>
+          <p class="on-som__telefon">{restaurant.telefonVisible}</p>
+          <a class="boto boto--principal on-som__boto" href={restaurant.telefonEnllac}>
+            <span class="on-som__curt">{t.trucarCurt}</span>
+            <span class="on-som__llarg">{t.trucarLlarg(restaurant.telefonVisible)}</span>
+          </a>
+        </div>
+      )
+    }
   </div>
 </section>
 
 <style>
   .on-som {
     padding-block: 56px;
+    background: var(--vi-clar);
   }
 
-  .on-som__titol {
-    font-weight: 700;
-    font-size: var(--mida-titol);
-    line-height: var(--interlineat-titol);
+  .on-som__dins {
+    max-width: calc(var(--mesura) + 2 * var(--marge));
   }
 
   .on-som__adreca {
     margin-top: var(--espai-4);
     margin-bottom: var(--espai-5);
-    font-style: normal;
     font-size: var(--mida-adreca);
     line-height: var(--interlineat-adreca);
-    font-variant-numeric: lining-nums tabular-nums;
+    font-variant-numeric: lining-nums;
   }
 
   .on-som__adreca span {
     display: block;
   }
 
-  .on-som__boto {
-    width: 100%;
-  }
-
-  .on-som__dreta {
-    margin-top: 40px;
-  }
-
-  .on-som__bloc + .on-som__bloc {
+  .on-som__bloc {
     margin-top: var(--espai-7);
   }
 
   .on-som__subtitol {
-    font-weight: 700;
-    font-size: var(--mida-plat);
-    line-height: var(--interlineat-plat);
+    font-size: var(--mida-subtitol);
+    line-height: var(--interlineat-subtitol);
   }
 
   .on-som__dada {
     font-size: var(--mida-text);
     line-height: var(--interlineat-text);
-    font-variant-numeric: lining-nums tabular-nums;
+    font-variant-numeric: lining-nums;
+    text-wrap: balance;
   }
 
   .on-som__telefon {
-    margin-bottom: var(--espai-4);
-    font-size: var(--mida-adreca);
-    line-height: var(--interlineat-adreca);
-    font-variant-numeric: lining-nums tabular-nums;
+    margin-bottom: var(--espai-3);
+    font-family: var(--tipus-sans);
+    font-weight: 500;
+    font-size: var(--mida-telefon);
+    line-height: var(--interlineat-telefon);
   }
 
   .on-som__llarg {
@@ -109,22 +96,7 @@ const { adreca } = restaurant;
 
   @media (min-width: 900px) {
     .on-som {
-      padding-block: var(--espai-9);
-    }
-
-    .on-som__dins {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      column-gap: var(--espai-9);
-      align-items: start;
-    }
-
-    .on-som__dreta {
-      margin-top: 0;
-    }
-
-    .on-som__boto {
-      width: auto;
+      padding-block: 80px;
     }
 
     .on-som__curt {

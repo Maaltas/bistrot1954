@@ -1,5 +1,5 @@
 ---
-/** Peu: nom, Instagram, avís legal i selector d'idioma, amb la línia superior (dis. §3.5). */
+/** Peu (dis. §3.5): filet doble, nom en cursiva vi, Instagram, avís legal i selector d'idioma. */
 import type { Restaurant } from '../lib/contingut';
 import type { Idioma } from '../lib/idioma';
 import { ruta } from '../lib/entorn';
@@ -15,50 +15,45 @@ interface Props {
 const { lang, pagina, restaurant } = Astro.props;
 const t = textos[lang];
 ---
-<footer class="peu sobre-cobalt">
+<footer class="peu">
   <div class="contenidor">
-    <div class="peu__dins">
-      <p class="peu__nom">{restaurant.nom}</p>
-      <ul class="peu__enllacos">
-        <li><a class="peu__enllac" href={restaurant.instagram} rel="noopener">{t.instagram}</a></li>
-        <li><a class="peu__enllac" href={ruta(RUTES.legal[lang])}>{t.avisLegal}</a></li>
-      </ul>
-      <SelectorIdioma lang={lang} pagina={pagina} class="peu__idioma" />
-    </div>
+    <div class="filet-doble" aria-hidden="true"></div>
+    <p class="peu__nom">{restaurant.nom}</p>
+    <ul class="peu__enllacos">
+      <li><a class="peu__enllac" href={restaurant.instagram} rel="noopener">{t.instagram}</a></li>
+      <li><a class="peu__enllac" href={ruta(RUTES.legal[lang])}>{t.avisLegal}</a></li>
+      <li><SelectorIdioma lang={lang} pagina={pagina} /></li>
+    </ul>
   </div>
 </footer>
 
 <style>
   .peu {
-    padding-top: var(--espai-4);
-    padding-bottom: calc(var(--barra-alt) + var(--espai-4) + env(safe-area-inset-bottom));
-    font-family: var(--tipus-sans);
-    font-weight: 500;
-    font-size: var(--mida-petita);
-    line-height: var(--interlineat-petita);
-  }
-
-  .peu__dins {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--espai-1);
-    padding-top: var(--espai-4);
-    border-top: 1px solid var(--linia-peu);
+    padding-top: var(--espai-2);
+    /* Reserva l'espai de la barra inferior (72 px) perquè no tapi el peu. */
+    padding-bottom: calc(var(--barra-inf-alt) + var(--espai-4) + env(safe-area-inset-bottom));
   }
 
   .peu__nom {
-    font-family: var(--tipus-serif);
-    font-weight: 700;
+    margin-top: var(--espai-5);
+    font-style: italic;
+    font-size: var(--mida-peu-nom);
+    line-height: 1.3;
+    color: var(--vi);
+  }
+
+  .peu__enllacos {
+    font-family: var(--tipus-sans);
+    font-weight: 500;
     font-size: var(--mida-ui);
+    line-height: var(--interlineat-ui-llarg);
   }
 
   .peu__enllac,
-  .peu :global(.peu__idioma) {
+  .peu__enllacos :global(.idioma) {
     display: inline-flex;
     align-items: center;
     min-height: 44px;
-    font-size: var(--mida-petita);
   }
 
   /* Mòbil apaïsat: la barra inferior no és fixa i no cal reservar-li espai. */
@@ -73,11 +68,11 @@ const t = textos[lang];
       padding-bottom: var(--espai-7);
     }
 
-    .peu__dins {
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
-      gap: var(--espai-7);
+    /* Els tres enllaços, en una sola fila, centrats i separats 24 px. */
+    .peu__enllacos {
+      display: flex;
+      justify-content: center;
+      gap: var(--espai-6);
     }
   }
 </style>
