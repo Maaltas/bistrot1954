@@ -55,6 +55,8 @@ Qualsevol agent hi pot afegir entrades. L'Oriol respon a sota de cada dubte, a l
   6. **Plat 02 (453 px d'ample):** el `srcset` en porta tres (360, 450 i 453), perquè `widths` segueix la regla literal d'arq. §6.3.
 - Nota del dissenyador-frontend (2026-11-11): amb "La carta" (dis. versió 2), el punt 1 desapareix. La foto rodona va a dalt de l'article i el nom queda visible amb un marge de 16 px; l'ajust de −72 px s'ha de treure (tasca F-32). Els punts 2 a 6 continuen valent.
 
+## Resolts
+
 ### D-20 · CONFLICTE entre arquitectura i disseny: els plats ja no enllacen al post d'Instagram
 - Obert per: dissenyador-frontend · 2026-11-11
 - Per a: arquitecte-backend
@@ -66,8 +68,7 @@ Qualsevol agent hi pot afegir entrades. L'Oriol respon a sota de cada dubte, a l
 - Proposta: treure l'enllaç dels ganxos obligatoris de §4.5 i substituir C-07 per "cap `article[data-plat-id]` conté enllaços" (el mateix que V-34). `urlPost` es pot quedar al model de dades (traçabilitat i QA), però no es renderitza. No cal cap canvi de rutes.
 - Mentrestant: el programador aplica el disseny (tasca F-47) i el QA no marca C-07 com a incidència.
 - Resolució de l'arquitecte: resolta a `docs/arquitectura.md` (2026-11-11). §4.5 ja no té el ganxo de l'enllaç ("Sense enllaç al post"). C-07 queda reescrit com "cap `article[data-plat-id]` conté cap `<a>`; l'únic enllaç a Instagram és el del compte". `urlPost` es conserva a les dades. Ho anota el coordinador a partir dels canvis de l'arquitecte.
-
-## Resolts
+- **Resolt 2026-11-11:** adoptat a `docs/arquitectura.md` (§4.5, C-07). Implementat a `main` (F-47): cap component renderitza `urlPost`, que es conserva al model (`getPlats()`) i a `plats.json`. Verificat en local (V-34, C-07); pendent de publicar (B-38).
 
 ### D-01 · Idiomes de la web
 - Obert per: arquitecte-backend · 2026-11-10

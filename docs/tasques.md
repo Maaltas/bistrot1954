@@ -194,7 +194,7 @@ Definides a `docs/arquitectura.md`, versió 2 (abreujat "arq."), que incorpora l
   - 0 galetes (P-02);
   - la visita surt al tauler de GoatCounter;
   - la pàgina de privacitat menciona GoatCounter.
-- [ ] **B-36** · **Regla de l'Oriol (2026-11-11): treure el nom del plat a l'inici de la història (N8).** Feina (arq. §3.3, "Nom del plat a l'inici de la història"):
+- [x] **B-36** · **Regla de l'Oriol (2026-11-11): treure el nom del plat a l'inici de la història (N8).** Feina (arq. §3.3, "Nom del plat a l'inici de la història"):
   - implementar `treuNomInicial(paragrafs, nom, lang)` a `src/lib/neteja.ts`, com a funció pura, amb:
     - comparació sense majúscules i amb la normalització de §3.2;
     - només separadors forts: final de línia, `. : ; ! ? …` o un guió amb espais (ni espai ni coma);
@@ -206,7 +206,8 @@ Definides a `docs/arquitectura.md`, versió 2 (abreujat "arq."), que incorpora l
   Verificació:
   - els casos E16-E23 d'arq. §3.4.4 passen;
   - els casos E1-E15 continuen passant.
-- [ ] **B-37** · **Fixture i tests de N8** (arq. §3.4.3, §3.5). Feina:
+  - Nota: Fet: `treuNomInicial(paragrafs, nom, lang)` a `src/lib/neteja.ts` (funció pura, sense mutar l'entrada), cridada des de `contingut.ts` després d'`assignaIdiomes()` i abans del fallback P2, amb `nom.es ?? nom.ca` per a l'idioma castellà. E16-E23 i E1-E15 passen.
+- [x] **B-37** · **Fixture i tests de N8** (arq. §3.4.3, §3.5). Feina:
   - substituir `tests/fixtures/historia-esperada.json` copiant **literalment** la versió 2026-11-11 d'arq. §3.4.3; canvien plat-01, 02, 06 i 08;
   - fer que els tests per plat real comparin la cadena sencera (N1-N8, amb els noms de `seleccio.yaml`, p. ex. via `getPlats()`) amb la fixture;
   - adaptar l'invariant de paraules perquè la primera paraula de la història no distingeixi la caixa de la primera lletra (§3.5.2);
@@ -216,6 +217,7 @@ Definides a `docs/arquitectura.md`, versió 2 (abreujat "arq."), que incorpora l
   - plat-01 (ca) comença per "Pasta que s'acaba a la paella";
   - plat-02 (ca) comença per "Dolç, untuós";
   - plat-03 (ca) continua començant per "El pastís de formatge".
+  - Nota: Fet: `tests/fixtures/historia-esperada.json` copiada literalment d'arq. §3.4.3 (versió 2026-11-11); tests per plat real amb N1-N8 i els noms de `seleccio.yaml`; invariant de paraules amb la primera lletra sense distingir la caixa; comprovació "no comença pel nom". A `getPlats()`: plat-01 (ca) comença per "Pasta que s'acaba a la paella", plat-02 per "Dolç, untuós" i plat-03 per "El pastís de formatge". 167 tests en verd.
 - [ ] **B-38** · **Comprovar i publicar la regla N8 i la retirada de l'enllaç al post** (arq. §4.4, §4.5, §9.5). Es fa després de B-36, de B-37 i de les tasques de Frontend que treuen l'enllaç del component.
   - `Plat.urlPost` es conserva al model i a `getPlats()` (no s'esborra del codi ni de `plats.json`), però cap component el renderitza.
   - El JSON-LD no canvia: mai no ha inclòs URL de posts.
@@ -224,7 +226,7 @@ Definides a `docs/arquitectura.md`, versió 2 (abreujat "arq."), que incorpora l
   - C-01 a C-11 i T-07;
   - S-04 sense canvis;
   - build sense avisos `[contingut]`.
-
+  - **Verificat, pendent de publicar (no marcada: no s'ha fet cap `git push`).** En local, `npm run comprova` en verd (167 tests, 0 errors a `astro check`, cap avís `[contingut]` ni `[entorn]`), `html-validate` 0 errors, `npm audit --omit=dev` 0 vulnerabilitats i els checks sobre `dist/` en verd: C-01 a C-11 (C-07: cap `<a>` dins dels articles i l'únic enllaç a Instagram és el del perfil; C-11: les històries són les de la fixture i cap comença pel nom), T-07 i S-04 (el JSON-LD no canvia i no porta URL de posts). El build de publicació (`CI=true`) només avisa de l'avís legal de demostració. Falta fer `git push` i comprovar-ho a `https://maaltas.github.io/bistrot1954/`.
 ## Frontend
 
 Definides a `docs/disseny-frontend.md` (abreujat "dis."). Es fan després de B-16 (les pàgines ja renderitzen els plats amb els ganxos d'arq. §4.5). Els criteris V-xx són a dis. §10. Les tasques F-12, F-20 i F-22 depenen de D-11 a `docs/dubtes.md`: mentrestant s'aplica el que diu el disseny.
@@ -354,14 +356,19 @@ Porten la web de `main` ("Pisa blava") a "La carta" (dis. versió 2) en totes le
 
 Canvis de l'Oriol a la secció de plats, amb la web ja publicada (dis. versió 2.1). S'han de fer en ordre. F-47 depèn de D-20 a `docs/dubtes.md`: l'arquitectura encara demana l'enllaç al post a cada plat. Mentrestant s'aplica el disseny. La història sense el nom repetit és feina de l'arquitecte i del backend (dis. §4.8): aquí només es comprova a F-49.
 
-- [ ] **F-45** · Textos de la secció de plats a `src/i18n/textos.ts` (dis. §9.2):
+- [x] **F-45** · Textos de la secció de plats a `src/i18n/textos.ts` (dis. §9.2):
   - títol: "Els nostres plats" / "Nuestros platos";
   - subtítol: "Un recull de l'experiència que et trobaràs." / "Una muestra de la experiencia que te encontrarás.";
   - treure les claus `enllacPlat` i `enllacPlatSenseFoto`;
   - l'enllaç de la barra superior continua dient "Plats" / "Platos".
 
   Verificació: V-35 (textos), i la cerca de `enllacPlat` a `src/` no troba res.
-- [ ] **F-46** · Filet dels `h2` a < 600 px (dis. §3.3, §3.4): a "Els nostres plats" i "On som", el filet senzill de 48 px va a sota del títol (12 px), centrat, en lloc dels costats; a ≥ 600 px no canvia. Verificació: V-35 (filet i cap scroll horitzontal a 320 i 375 px), V-01 i V-31.
-- [ ] **F-47** · Treure l'enllaç al post de `Plat.astro`, en totes les variants (amb foto, sense foto, sense història i sense res), amb el text per a lectors de pantalla inclòs. L'article acaba en la història o en el nom, sense cap espai buit a sota (dis. §4.1, §4.3, §4.4). L'enllaç al perfil del peu no es toca. Verificació: V-34, V-24 i V-25 (les dues últimes amb un build temporal que no es versiona).
-- [ ] **F-48** · Revisar el `README.md` i els comentaris de `src/` que diguin que cada plat enllaça al seu post, i deixar-los d'acord amb el disseny. Verificació: la cerca de "Veure la publicació" i "Ver la publicación" a `src/` i `README.md` no troba res.
-- [ ] **F-49** · Revisió visual de la secció de plats a 320, 375, 768 i 1280 px, a `/` i `/es/`, amb captures a `tests/captures/`. Quan l'arquitecte hagi publicat la neteja nova, comprovar que les històries de plat-01, 06 i 08 ja no comencen pel nom (dis. §4.8). Verificació: V-08, V-34 i V-35 en verd; la història de plat-01 a `/` comença per "Pasta que s'acaba a la paella".
+  - Nota: Fet: textos a `src/i18n/textos.ts`, sense les claus `enllacPlat` i `enllacPlatSenseFoto`; la barra superior continua dient Plats / Platos. Test unitari (V-35, textos).
+- [x] **F-46** · Filet dels `h2` a < 600 px (dis. §3.3, §3.4): a "Els nostres plats" i "On som", el filet senzill de 48 px va a sota del títol (12 px), centrat, en lloc dels costats; a ≥ 600 px no canvia. Verificació: V-35 (filet i cap scroll horitzontal a 320 i 375 px), V-01 i V-31.
+  - Nota: Fet: `.titol-filets` a `global.css`. A < 600 px, el filet va sota el títol (12 px per sota de la línia de text) i, a ≥ 600 px, als costats. Comprovat a 320 i 375 px: sense scroll horitzontal.
+- [x] **F-47** · Treure l'enllaç al post de `Plat.astro`, en totes les variants (amb foto, sense foto, sense història i sense res), amb el text per a lectors de pantalla inclòs. L'article acaba en la història o en el nom, sense cap espai buit a sota (dis. §4.1, §4.3, §4.4). L'enllaç al perfil del peu no es toca. Verificació: V-34, V-24 i V-25 (les dues últimes amb un build temporal que no es versiona).
+  - Nota: Fet: `Plat.astro` ja no renderitza cap enllaç (`urlPost` es conserva al model i a `getPlats()`). Les variants sense foto i sense història (V-24, V-25) es proven amb tests de `renderToString`, no amb un build temporal.
+- [x] **F-48** · Revisar el `README.md` i els comentaris de `src/` que diguin que cada plat enllaça al seu post, i deixar-los d'acord amb el disseny. Verificació: la cerca de "Veure la publicació" i "Ver la publicación" a `src/` i `README.md` no troba res.
+  - Nota: Fet: `README.md` (els plats no enllacen al post; regla N8). A `src/` ni al README ja no queda cap "Veure la publicació" ni "Ver la publicación".
+- [x] **F-49** · Revisió visual de la secció de plats a 320, 375, 768 i 1280 px, a `/` i `/es/`, amb captures a `tests/captures/`. Quan l'arquitecte hagi publicat la neteja nova, comprovar que les històries de plat-01, 06 i 08 ja no comencen pel nom (dis. §4.8). Verificació: V-08, V-34 i V-35 en verd; la història de plat-01 a `/` comença per "Pasta que s'acaba a la paella".
+  - Nota: Fet: comprovació automàtica amb Edge a 320, 375, 768 i 1280 px a `/` i `/es/` (182 comprovacions en verd: V-01 a V-10, V-14 a V-22, V-27 a V-31, V-34 i V-35) i captures a `tests/captures/` (no versionades). La història de plat-01 a `/` comença per "Pasta que s'acaba a la paella, amb el color del safrà i la tonyina per sobre."; plat-01, 02, 06 i 08 ja no comencen pel nom.
