@@ -1,6 +1,14 @@
 # Disseny frontend · Web del Bistrot 1954
 
-Versió 2 · 2026-11-11 · autor: dissenyador-frontend
+Versió 2.1 · 2026-11-11 · autor: dissenyador-frontend
+
+> **Canvis de l'Oriol a la secció de plats (versió 2.1, 2026-11-11), amb la web ja publicada:**
+> - el títol passa a ser "Els nostres plats" / "Nuestros platos";
+> - el subtítol passa a ser "Un recull de l'experiència que et trobaràs." / "Una muestra de la experiencia que te encontrarás.";
+> - els plats ja no enllacen al post d'Instagram (§4.1, §4.3, §4.4, §8);
+> - la història ja no repeteix el nom del plat (§4.8, canvi de la neteja que fa l'arquitecte).
+>
+> En conseqüència, a < 600 px el filet dels `h2` va a sota del títol (§3.3). Criteris nous: V-34 i V-35. Tasques: F-45 en endavant.
 
 > **Aquest document substitueix "Pisa blava" (versió 1) per "La carta" (proposta P3 de `docs/propostes-disseny.md`), per decisió de l'Oriol del 2026-11-11.** És el disseny vigent i mana sobre l'aspecte i la distribució de totes les pàgines, dins del marc tècnic de `docs/arquitectura.md` (abreujat "arq."). No conté codi: conté especificacions, tokens i wireframes. Les tasques per passar de "Pisa blava" a "La carta" són a `docs/tasques.md`, subsecció "Redisseny P3" (F-24 en endavant). Els canvis d'arquitectura que necessita són a `docs/dubtes.md` (D-19).
 >
@@ -65,7 +73,7 @@ Una sola pàgina per idioma: `/` en català i `/es/` en castellà, amb el `base`
 | 0 | Enllaç per saltar | "Vés als plats" (visible només amb el focus) | Accés directe als plats amb el teclat. |
 | 1 | Barra superior (només ≥ 900 px) | "Plats", "On som", selector d'idioma, "Com arribar", "Trucar al 936 27 35 36" | Tenir trucar i arribar sempre a mà a l'escriptori. |
 | 2 | Obertura (`#inici`) | Selector d'idioma (< 900 px), `h1` "Bistrot 1954", filet doble, cuina, presentació (`div[data-presentacio]`), horari i adreça, filet doble | La capçalera de la carta: qui som, com som, quan obrim i on som. |
-| 3 | Els plats (`#plats`) | `h2` amb filets, frase d'introducció i un article per plat (`#plat-NN`) | La carta: foto rodona, nom, història i enllaç al post. |
+| 3 | Els nostres plats (`#plats`) | `h2` amb filets, subtítol i un article per plat (`#plat-NN`) | La carta: foto rodona, nom i història. Sense enllaç al post (canvi del 2026-11-11). |
 | 4 | On som (`#on-som`) | `h2`, adreça, "Com arribar", `h3` "Horari", `h3` "Telèfon", número i "Trucar" | Convertir la visita en una trucada o en una visita al local. Fons vi clar. |
 | 5 | Peu | filet doble, nom, Instagram, "Avís legal i privacitat", selector d'idioma | Tancament i enllaços secundaris. |
 | fix | Barra d'accions inferior (només < 900 px) | "Com arribar" (secundari) + "Trucar" (principal) | Les dues accions sempre a la vista al mòbil. |
@@ -77,7 +85,7 @@ Pàgines secundàries:
 | `/404.html` | Bilingüe, centrada, sense barres ni fotos (§3.6). GitHub Pages la serveix per a qualsevol ruta inexistent dins de `/bistrot1954/`, i per això els seus enllaços són absoluts. |
 | `/avis-legal/`, `/es/aviso-legal/` | Avís legal i privacitat de demostració, amb l'avís de dades fictícies ben visible (§3.7). |
 
-Encapçalaments: un sol `h1` per pàgina (a la portada, el nom del restaurant). `h2` per a "Els plats" i "On som"; `h3` per a cada plat i per a "Horari" i "Telèfon". Regions: `header` (barra superior i obertura), `main` (plats i on som), `footer` (peu), i la barra inferior com a `nav` amb el nom accessible "Accions".
+Encapçalaments: un sol `h1` per pàgina (a la portada, el nom del restaurant). `h2` per a "Els nostres plats" i "On som"; `h3` per a cada plat i per a "Horari" i "Telèfon". Regions: `header` (barra superior i obertura), `main` (plats i on som), `footer` (peu), i la barra inferior com a `nav` amb el nom accessible "Accions".
 
 ---
 
@@ -185,24 +193,27 @@ Convencions:
 - Entre 600 i 899 px, igual que al mòbil, amb marges de 32 px.
 - Alçada aproximada a 1280 px: 540 px, barra inclosa.
 
-### 3.3 Els plats (`#plats`)
+### 3.3 Els nostres plats (`#plats`)
 
 **Capçalera de la secció**
 
 ```
 375 px                                           1280 px
 │ 40                                    │        │ 40                                                     │
-│     ─────  Els plats  ─────           │        │                ─────  Els plats  ─────                 │
+│           Els nostres plats           │        │            ─────  Els nostres plats  ─────             │
 │ 12                                    │        │ 12                                                     │
-│  Cada plat, amb la foto i el text que │        │   Cada plat, amb la foto i el text que en vam publicar │
-│      en vam publicar a Instagram.     │        │                    a Instagram.                        │
-│ 40                                    │        │ 40                                                     │
-  h2 EB Garamond cursiva 36/1,1 vi, amb un         h2 a 48 px; mateixos filets i introducció
-  filet senzill or de 48 px a cada costat
-  (16 px de separació); intro Jost 500 16 fum
+│                ─────                  │        │       Un recull de l'experiència que et trobaràs.      │
+│ 12                                    │        │ 40                                                     │
+│  Un recull de l'experiència que et    │          h2 a 48 px amb un filet senzill or de 48 px a cada
+│              trobaràs.                │          costat (16 px de separació); subtítol Jost 500 16 fum
+│ 40                                    │
+  h2 EB Garamond cursiva 36/1,1 vi; a < 600 px, el filet senzill or de 48 px va SOTA el títol
+  (12 px), no als costats; subtítol Jost 500 16 fum
 ```
 
-**Plat amb foto i història**
+- **Filets dels `h2` (canvi del 2026-11-11):** a < 600 px, "Els nostres plats" (o "Nuestros platos") amb un filet a cada costat no hi cap a 375 px: farien uns 385 px, i n'hi ha 327. Per això, **a < 600 px tots els `h2` (també "On som") porten el filet senzill de 48 px a sota**, centrat i 12 px per sota del text. A ≥ 600 px van als costats, com abans. El títol pot ocupar dues línies (`text-wrap: balance`) i mai provoca scroll horitzontal.
+
+**Plat amb foto i història** (la història d'exemple ja no repeteix el nom: vegeu §4.8)
 
 ```
 375 px                                          1280 px: carta oberta, 2 columnes de 480 px (960 px centrats)
@@ -215,22 +226,21 @@ Convencions:
 │               ╰──────────╯            │       │  20                          ║                             │
 │ 20                                    │       │    Tagliatelle amb safrà,    ║        Figues i foie        │ h3 30
 │       Tagliatelle amb safrà,          │       │      mantega i tonyina       ║                             │
-│         mantega i tonyina             │       │  12                          ║   Figues i foie: dolç,      │
-│ 12                                    │       │   Tagliatelle amb safrà,     ║  untuós i amb una brillan-  │ història 21/1,55
-│  Tagliatelle amb safrà, mantega i     │       │   mantega i tonyina          ║  tor que atrau totes les …  │ centrada
-│               tonyina                 │       │  Pasta que s'acaba a la …    ║                             │
-│ Pasta que s'acaba a la paella, amb el │       │  16                          ║  Veure la publicació a      │
-│ color del safrà i la tonyina per sobre│       │  Veure la publicació a       ║        Instagram            │
-│ Una explosió de tardor a la taula de  │       │        Instagram             ║                             │
+│         mantega i tonyina             │       │  12                          ║   (història de plat-02,     │
+│ 12                                    │       │  Pasta que s'acaba a la      ║   centrada)                 │ història 21/1,55
+│ Pasta que s'acaba a la paella, amb el │       │  paella, amb el color del    ║                             │ centrada
+│ color del safrà i la tonyina per sobre│       │  safrà i la tonyina per …    ║                             │
+│ Una explosió de tardor a la taula de  │       │                              ║                             │
 │            Bistrot 1954               │       └──────────────────────────────┴╨─────────────────────────────┘
-│ 16                                    │         farciment lateral de cada article: 40 px (text de 400 px com a màxim);
-│   Veure la publicació a Instagram     │         filet vertical doble or a l'esquerra de cada plat parell;
+│ 56                                    │         farciment lateral de cada article: 40 px (text de 400 px com a màxim);
+│                ─────                  │         filet vertical doble or a l'esquerra de cada plat parell;
 │ 56                                    │         plats en ordre per files (1 | 2, 3 | 4…), 96 px entre files,
-│                ─────                  │         i cap filet horitzontal
-│ 56                                    │
-│               ╭──────────╮            │         h3: EB Garamond cursiva 26/1,2 vi (mòbil), 30 (≥ 900)
-│               │ plat-02… │            │         enllaç: Jost 500 16 vi, subratllat, zona de 44 px
+│               ╭──────────╮            │         i cap filet horitzontal
+│               │ plat-02… │            │
+                                                  h3: EB Garamond cursiva 26/1,2 vi (mòbil), 30 (≥ 900)
 ```
+
+- **Sense enllaç al post (canvi del 2026-11-11):** els plats ja no porten "Veure la publicació a Instagram". L'article acaba en la història, o en el nom si no n'hi ha. L'únic enllaç a Instagram de la pàgina és el del perfil, al peu (§3.5).
 
 - Al mòbil, entre plat i plat hi ha 56 px, un filet senzill or de 48 px centrat i 56 px més. Després de l'últim plat no hi ha filet.
 - Entre 600 i 899 px, igual que al mòbil, amb marges de 32 px.
@@ -244,7 +254,8 @@ Convencions:
 ┌───────────────────────────────────────┐       ┌──────────────────────────────────────────────────────┐
 │ fons vi clar, a sang                  │       │ fons vi clar, a sang; 80 px a dalt i a baix          │
 │ 56                                    │       │                 ─────  On som  ─────                 │ h2 48
-│        ─────  On som  ─────           │       │ 16                                                   │
+│                On som                 │       │ 16                                                   │
+│                ─────                  │       │                                                      │
 │ 16                                    │       │                 Carrer Sant Bru, 48                  │ adreça EB Garamond 30/1,3
 │          Carrer Sant Bru, 48          │       │                   08911 Badalona                     │
 │            08911 Badalona             │       │ 20                                                   │
@@ -263,7 +274,7 @@ Convencions:
 └───────────────────────────────────────┘
 ```
 
-- `h2` com el de "Els plats" (cursiva vi amb filets senzills). Adreça en EB Garamond 400, 24 px (mòbil) / 30 px (≥ 900), interlineat 1,3, tinta, xifres de caixa alta, en dues línies. `h3` en EB Garamond cursiva 24 px vi. Horari en EB Garamond 400, 20/21 px, tinta. Telèfon en Jost 500 de 22 px, tinta, amb xifres de caixa alta.
+- `h2` com el de "Els nostres plats": cursiva vi, amb el filet senzill a sota a < 600 px i als costats a ≥ 600 px (§3.3). Adreça en EB Garamond 400, 24 px (mòbil) / 30 px (≥ 900), interlineat 1,3, tinta, xifres de caixa alta, en dues línies. `h3` en EB Garamond cursiva 24 px vi. Horari en EB Garamond 400, 20/21 px, tinta. Telèfon en Jost 500 de 22 px, tinta, amb xifres de caixa alta.
 - Els botons mantenen la seva amplada natural (farciment de 24 px), centrats; no ocupen tota l'amplada.
 - **`hover` del botó secundari sobre vi clar (corregeix la maqueta):** el fons passa a paper, no a vi clar, que seria invisible.
 - A l'escriptori, la secció continua sent una sola columna centrada (com a la maqueta), amb una amplada màxima de 36rem.
@@ -358,16 +369,14 @@ Convencions:
 
 ### 4.1 Anatomia
 
-Cada plat és un `article` amb els ganxos d'arq. §4.5. **Ordre al DOM (no es canvia): nom (`h3`) → finestra de la foto (`picture`) → història → enllaç.** L'ordre visual és foto → nom → història → enllaç, i es fa amb l'ordre de flex o de graella, sense alterar l'ordre de lectura ni el del focus (l'únic element enfocable és l'enllaç).
+Cada plat és un `article` amb els ganxos d'arq. §4.5, **excepte l'enllaç al post, que des del 2026-11-11 no es renderitza** (decisió de l'Oriol; vegeu D-20). **Ordre al DOM (no es canvia): nom (`h3`) → finestra de la foto (`picture`) → història.** L'ordre visual és foto → nom → història, i es fa amb l'ordre de flex o de graella, sense alterar l'ordre de lectura. L'article no té cap element enfocable.
 
 | Part | Element | Estil | Present |
 |---|---|---|---|
 | Foto | `picture` dins d'una finestra rodona | §6: cercle de 260 px (< 900) o 300 px (≥ 900), centrat | només si `imatge` ≠ `null` |
 | Nom | `h3`, amb `lang` si difereix de la pàgina | EB Garamond cursiva 400, 26 px / 1,2 (< 900) o 30 px (≥ 900), vi, centrat, `text-wrap: balance`, `overflow-wrap: anywhere`; 20 px per sobre (0 si no hi ha foto) | sempre |
 | Història | `div[data-historia]`, amb `lang` si difereix; un `p` per paràgraf i `br` entre línies | EB Garamond 400, 20 px / 1,55 (< 900) o 21 px / 1,55 (≥ 900), tinta, centrada, `text-wrap: pretty`, `overflow-wrap: anywhere`; amplada màxima 28em (< 900) i 400 px (la columna, ≥ 900); 0,6 em entre paràgrafs; 12 px per sobre | només si hi ha història |
-| Enllaç | `a` al `urlPost`, `rel="noopener"`, sense `target` | Jost 500, 16 px / 1,4, vi, subratllat (separat 0,2 em), zona tàctil de 44 px d'alt; 16 px per sobre | sempre |
-
-- **Text de l'enllaç:** "Veure la publicació a Instagram" (amb foto) o "Veure la foto a Instagram" (sense foto). Darrere hi ha, només per a lectors de pantalla, ": " i el nom del plat, perquè cap parell d'enllaços tingui el mateix nom accessible.
+- **Sense enllaç al post:** no hi ha "Veure la publicació a Instagram" ni "Veure la foto a Instagram", tampoc a les variants. `urlPost` continua al model de dades, però no es mostra. El perfil d'Instagram s'enllaça des del peu.
 - **Espai entre paràgrafs (corregeix la maqueta):** 0,6 em, no 0,4 em. En un text centrat, 0,4 em no deixa veure on comença un paràgraf nou.
 - Sense cap altre element: ni preu, ni etiquetes, ni icones, ni data (arq. P5), ni número d'ordre.
 
@@ -385,15 +394,15 @@ Cada plat és un `article` amb els ganxos d'arq. §4.5. **Ordre al DOM (no es ca
 
 Avui tots els plats tenen foto, però els futurs podrien no tenir-ne (arq. §6.2).
 
-- **És una entrada de carta sense imatge:** nom (sense marge superior), història i enllaç. **No hi ha cap cercle buit**, cap requadre ni cap icona.
-- L'enllaç diu "Veure la foto a Instagram".
+- **És una entrada de carta sense imatge:** el nom (sense marge superior) i la història a sota. **No hi ha cap cercle buit**, cap requadre ni cap icona.
+- Fins ara, aquesta variant enviava a la foto real amb "Veure la foto a Instagram". Sense l'enllaç, es queda com una línia de la carta sense foto, i ja està bé: no se substitueix per cap altre element ni cap text.
 - A l'escriptori, l'entrada ocupa la seva columna com qualsevol altra i comença a dalt de la fila. Si l'altre plat de la fila té foto, aquesta columna té menys alçada; no s'omple.
 - No hi ha `img` dins de l'article (arq. C-08).
 
 ### 4.4 Plat sense història
 
-- No es renderitza `div[data-historia]` ni cap text en el seu lloc (arq. P1): foto, nom i, 16 px per sota, l'enllaç.
-- Sense foto ni història: nom i enllaç. No s'omple res.
+- No es renderitza `div[data-historia]` ni cap text en el seu lloc (arq. P1): la foto i el nom, i l'article acaba aquí.
+- Sense foto ni història: només el nom, com una línia de la carta. No s'omple res.
 
 ### 4.5 Història llarga
 
@@ -406,15 +415,15 @@ Avui les històries fan entre 100 i 350 caràcters. El màxim realista és d'uns
 
 ### 4.6 Vista de detall
 
-**No n'hi ha**, ni pàgina pròpia ni modal (arq. §5.2). Les històries es llegeixen senceres a la carta. Cada plat té la seva àncora estable (`/bistrot1954/#plat-05`, `/bistrot1954/es/#plat-05`) per compartir-lo. L'únic "detall" és la publicació original, a la qual porta l'enllaç.
+**No n'hi ha**, ni pàgina pròpia ni modal (arq. §5.2). Les històries es llegeixen senceres a la carta. Cada plat té la seva àncora estable (`/bistrot1954/#plat-05`, `/bistrot1954/es/#plat-05`) per compartir-lo. Des del 2026-11-11 no hi ha enllaç a la publicació original de cada plat.
 
 ### 4.7 Idioma del nom i de la història
 
 A `/` es mostren el nom i la història en català, i a `/es/`, en castellà. Si en falta un, es mostra el de l'altre idioma tal qual, amb `lang` al `h3` o al `div[data-historia]` (arq. P2). No es marca de cap altra manera.
 
-### 4.8 Nom repetit a l'inici de la història
+### 4.8 La història no repeteix el nom
 
-A plat-01, plat-06 i plat-08 la història comença amb el mateix text que el nom (arq. §3.4.1), i no es treu. A la carta es llegeix com a la carta d'un restaurant: el nom en cursiva i vi, i la descripció en rodona i tinta, que el repeteix i hi afegeix el detall.
+L'arquitecte està canviant la neteja (canvi del 2026-11-11, decisió de l'Oriol) perquè la història d'un plat no comenci repetint el nom. Per exemple, la de plat-01 començarà per "Pasta que s'acaba a la paella…". El disseny no depèn d'aquest canvi: el nom en cursiva vi i la història en rodona tinta es llegeixen igual en tots dos casos. Els wireframes ja mostren la història sense el nom. El text exacte de cada història el fixa la fixture d'arq. §3.4.3, no aquest document.
 
 ---
 
@@ -475,7 +484,7 @@ Dues famílies de Google Fonts, autoallotjades amb l'API de tipografies d'Astro 
 | Token | < 900 px | ≥ 900 px | Interlineat | Ús |
 |---|---|---|---|---|
 | `--mida-marca` | 3.5rem (56 px) | 6rem (96 px) | 1 | `h1` "Bistrot 1954", EB Garamond cursiva |
-| `--mida-titol` | 2.25rem (36 px) | 3rem (48 px) | 1,1 | `h2` "Els plats" i "On som" |
+| `--mida-titol` | 2.25rem (36 px) | 3rem (48 px) | 1,1 | `h2` "Els nostres plats" i "On som" |
 | `--mida-plat` | 1.625rem (26 px) | 1.875rem (30 px) | 1,2 | `h3` nom del plat |
 | `--mida-subtitol` | 1.5rem (24 px) | 1.5rem (24 px) | 1,2 | `h3` "Horari" i "Telèfon"; "Bistrot 1954" a la franja i a la barra de les pàgines legals |
 | `--mida-adreca` | 1.5rem (24 px) | 1.875rem (30 px) | 1,3 | adreça d'"On som" |
@@ -506,7 +515,7 @@ Cap text visible fa menys de 16 px.
 | `--cercle` | 260 px (< 900), 300 px (≥ 900) | diàmetre de la foto |
 | `--barra-inf-alt` / `--barra-sup-alt` | 72 px / 64 px | barres fixes |
 | `--filet-doble` | 3 px, estil doble (1 + 1 + 1 px), or | sota l'`h1` (160 px; 220 px a ≥ 900), vora superior de la barra inferior, vora inferior de la barra superior, a dalt del peu (160 px), entre columnes de plats (vertical), a les dades de l'obertura (vertical, ≥ 900), a la 404 i a l'avís legal |
-| `--filet-senzill` | 1 px, sòlid, or | als costats dels `h2` (48 px), entre plats al mòbil (48 px), a la 404 (48 px) |
+| `--filet-senzill` | 1 px, sòlid, or | als `h2` (48 px; a sota a < 600 px, als costats a ≥ 600 px), entre plats al mòbil (48 px), a la 404 (48 px) |
 | `--radi` | 0 | botons, avís de demostració, tot |
 | `--radi-foto` | 50 % | només la finestra de la foto |
 | `--focus` | contorn de 3 px vi, separat 3 px de l'element, seguint-ne la forma | anell de focus |
@@ -594,7 +603,7 @@ La web és estàtica i **no necessita JavaScript** per a res del que es descriu 
 | Botó principal | fons vi, vora vi d'1 px, text paper | fons i vora vi fosc | anell vi de 3 px a 3 px | fons vi fosc |
 | Botó secundari sobre paper | transparent, vora vi d'1 px, text vi | fons vi clar | anell vi | fons vi clar |
 | Botó secundari sobre vi clar ("On som") | transparent, vora vi, text vi | **fons paper** | anell vi | fons paper |
-| Enllaç dins de text, peu, selector, enllaç del plat | vi, subratllat d'1 px separat 0,2 em | subratllat de 2 px | anell vi | — |
+| Enllaç dins de text, peu, selector | vi, subratllat d'1 px separat 0,2 em | subratllat de 2 px | anell vi | — |
 | Enllaços de navegació de la barra superior | vi, sense subratllar | subratllat d'1 px | anell vi i subratllat | — |
 | Enllaç per saltar ("Vés als plats") | fora de la vista | — | apareix a dalt a l'esquerra, fons paper, text vi, anell vi | — |
 
@@ -613,7 +622,6 @@ La web és estàtica i **no necessita JavaScript** per a res del que es descriu 
 |---|---|---|---|---|
 | **Trucar** | "Trucar" (barra inferior; "On som" a < 900); "Trucar al 936 27 35 36" (barra superior; "On som" a ≥ 900) | barra inferior, barra superior, "On som" | `tel:+34936273536` | principal |
 | **Com arribar** | "Com arribar" | barra inferior, barra superior, "On som" | `https://maps.app.goo.gl/UHYpDrqhtGuyBX5SA`, a la mateixa pestanya | secundari |
-| Publicació del plat | "Veure la publicació a Instagram" / "Veure la foto a Instagram" (+ nom del plat per a lectors de pantalla) | cada plat | `urlPost` | enllaç |
 | Compte d'Instagram | "@bistrot1954 a Instagram" | peu | `https://www.instagram.com/bistrot1954/` | enllaç |
 | Idioma | "Castellano" (pàgines ca) / "Català" (pàgines es), amb `lang` i `hreflang` | obertura (< 900), barra superior (≥ 900), peu, franja o barra de les pàgines legals | pàgina equivalent de l'altre idioma (`/` ↔ `/es/`, `/avis-legal/` ↔ `/es/aviso-legal/`, amb `base`) | enllaç |
 | Seccions | "Plats", "On som" | barra superior de la portada | `#plats`, `#on-som` | enllaç de navegació |
@@ -639,20 +647,20 @@ La web és **bilingüe: català a `/` (per defecte) i castellà a `/es/`**, amb 
 
 ### 9.2 Textos
 
-Són els mateixos de la versió 1 (ja implementats). El redisseny no n'afegeix ni en canvia cap.
+Són els de la versió 1, excepte el títol i el subtítol de la secció de plats, que canvien, i els dos textos de l'enllaç del plat, que desapareixen. Tots tres canvis són del 2026-11-11.
 
 | Clau | Català | Castellà |
 |---|---|---|
 | Saltar | Vés als plats | Ir a los platos |
 | Navegació: nom accessible | Seccions | Secciones |
-| Navegació: plats | Plats | Platos |
+| Navegació: plats | Plats | Platos (es manté curt: és l'etiqueta de la barra, i porta al títol "Els nostres plats" / "Nuestros platos") |
 | Navegació: on som | On som | Dónde estamos |
 | Barra inferior: nom accessible | Accions | Acciones |
 | Selector d'idioma | Castellano (amb `lang="es"`) | Català (amb `lang="ca"`) |
-| Títol de la secció de plats | Els plats | Los platos |
-| Introducció dels plats | Cada plat, amb la foto i el text que en vam publicar a Instagram. | Cada plato, con la foto y el texto que publicamos en Instagram. |
-| Enllaç del plat | Veure la publicació a Instagram | Ver la publicación en Instagram |
-| Enllaç del plat sense foto | Veure la foto a Instagram | Ver la foto en Instagram |
+| Títol de la secció de plats (canvi del 2026-11-11) | Els nostres plats | Nuestros platos |
+| Subtítol de la secció de plats (canvi del 2026-11-11; text de l'Oriol) | Un recull de l'experiència que et trobaràs. | Una muestra de la experiencia que te encontrarás. |
+| ~~Enllaç del plat~~ (eliminat el 2026-11-11) | — | — |
+| ~~Enllaç del plat sense foto~~ (eliminat el 2026-11-11) | — | — |
 | Com arribar | Com arribar | Cómo llegar |
 | Trucar (curt) | Trucar | Llamar |
 | Trucar (llarg) | Trucar al 936 27 35 36 | Llamar al 936 27 35 36 |
@@ -692,7 +700,7 @@ Es comproven sobre `npm run preview` (`http://localhost:4321/bistrot1954/` i `/b
 | V-05 | A 375×667, sense scroll i per sobre de la barra inferior (y < 595), es veuen sencers l'`h1`, la cuina, el bloc `[data-presentacio]`, l'horari i l'adreça. La vora superior de la primera foto és a y < 900. A 1280×800, es veuen sense scroll l'`h1`, la presentació, l'horari i l'adreça, i la vora superior de la primera foto és a y < 800. |
 | V-06 | L'horari "De dilluns a dissabte, de 20:00 a 23:00" (a `/es/`: "De lunes a sábado, de 20:00 a 23:00") es veu a l'obertura sense scroll a 375×667, i també a "On som". |
 | V-07 | A 375×667, el selector d'idioma és visible sense scroll: a `/` diu "Castellano" (`lang="es"`, porta a `/bistrot1954/es/`); a `/es/`, "Català" (`lang="ca"`, porta a `/bistrot1954/`). |
-| V-08 | A < 900 px, el centre horitzontal del cercle, del nom i de l'enllaç de cada plat coincideix amb el centre de la finestra (±2 px). A 1280 px, els plats formen dues columnes de 480 px (±2) centrades: el plat 1 a l'esquerra, el 2 a la dreta, el 3 a l'esquerra… Els plats parells tenen un filet vertical doble or a l'esquerra i els senars no en tenen cap. |
+| V-08 | A < 900 px, el centre horitzontal del cercle, del nom i de la història de cada plat coincideix amb el centre de la finestra (±2 px). A 1280 px, els plats formen dues columnes de 480 px (±2) centrades: el plat 1 a l'esquerra, el 2 a la dreta, el 3 a l'esquerra… Els plats parells tenen un filet vertical doble or a l'esquerra i els senars no en tenen cap. |
 | V-09 | En obrir `/bistrot1954/#plat-05`, el nom de plat-05 és visible: a 1280×800, la seva vora superior és a ≥ 64 px; a 375×667, és a y < 595. |
 
 ### Fotos
@@ -712,7 +720,7 @@ Es comproven sobre `npm run preview` (`http://localhost:4321/bistrot1954/` i `/b
 | V-15 | Només es carreguen EB Garamond (normal i cursiva) i Jost: ≤ 3 fitxers WOFF2 i ≤ 120 KB en total. |
 | V-16 | Cap text visible fa menys de 16 px; cap element té `text-transform: uppercase`; els `h1`, `h2` i `h3` tenen `font-weight` 400 i `font-style` italic, i `font-synthesis` és `none`. |
 | V-17 | axe a 375 i 1280 px: 0 violacions de `color-contrast`. Els colors calculats coincideixen amb §5.1: fons `rgb(255, 255, 255)`, `h1` `rgb(110, 31, 43)`, història `rgb(43, 36, 34)`, fons d'"On som" `rgb(245, 233, 234)`. |
-| V-31 | Els filets dobles (sota l'`h1`, a dalt de la barra inferior, a baix de la barra superior, a dalt del peu, entre columnes i entre les dades de l'obertura) tenen 3 px d'estil `double` de color `rgb(168, 138, 74)`. Els senzills (als costats dels `h2`, entre plats al mòbil i a la 404) són d'1 px. Cap filet or té cap funció interactiva. |
+| V-31 | Els filets dobles (sota l'`h1`, a dalt de la barra inferior, a baix de la barra superior, a dalt del peu, entre columnes i entre les dades de l'obertura) tenen 3 px d'estil `double` de color `rgb(168, 138, 74)`. Els senzills (als `h2`, a sota a < 600 px i als costats a ≥ 600 px; entre plats al mòbil; a la 404) són d'1 px. Cap filet or té cap funció interactiva. |
 
 ### Accessibilitat d'interacció
 
@@ -731,8 +739,8 @@ Es comproven amb un build temporal que no es versiona: traient la foto d'un plat
 
 | ID | Criteri |
 |---|---|
-| V-24 | Plat sense foto: l'article no té `img` ni cap element circular buit; el nom té 0 px de marge superior; l'enllaç diu "Veure la foto a Instagram". |
-| V-25 | Plat sense història (E2): no hi ha `[data-historia]` ni cap text en el seu lloc; l'enllaç ve just després del nom. |
+| V-24 | Plat sense foto: l'article no té `img`, ni cap element circular buit, ni cap enllaç; el nom té 0 px de marge superior i va seguit de la història. |
+| V-25 | Plat sense història (E2): no hi ha `[data-historia]` ni cap text en el seu lloc; l'article acaba en el nom. Sense foto ni història, l'article només conté el `h3`. |
 | V-26 | Història llarga (E9): es veu sencera (cap retall, cap "llegir-ne més", `scrollHeight` = `clientHeight`), amb `text-align` `start`/`left` perquè té > 500 caràcters, i sense scroll horitzontal. A 1280 px, l'altre plat de la fila queda alineat a dalt. |
 
 ### Altres pàgines
@@ -741,6 +749,8 @@ Es comproven amb un build temporal que no es versiona: traient la foto d'un plat
 |---|---|
 | V-27 | `/avis-legal/` i `/es/aviso-legal/`: l'avís de demostració és visible sense scroll a 375×667, abans de qualsevol dada del titular. Cada dada fictícia porta "(dada fictícia)" / "(dato ficticio)". El text (`h2`, `dl` i paràgrafs) va alineat a l'esquerra, i el títol, centrat. El peu de la portada hi enllaça. |
 | V-28 | 404 a `/bistrot1954/no-existeix/` i `/bistrot1954/es/no-existeix/`: es veuen el missatge en català (`h1`) i en castellà, centrats, i els enllaços porten a `/bistrot1954/` i `/bistrot1954/es/`. No hi ha barres ni fotos. |
+| V-34 | (2026-11-11) Cap `article[data-plat-id]` conté cap element `a`. A `/` i `/es/` no hi ha cap enllaç a `instagram.com/p/` ni a `instagram.com/reel/`. L'únic enllaç a Instagram és el del perfil al peu (`https://www.instagram.com/bistrot1954/`), amb el text "@bistrot1954 a Instagram" / "@bistrot1954 en Instagram". |
+| V-35 | (2026-11-11) L'`h2` de `#plats` diu exactament "Els nostres plats" a `/` i "Nuestros platos" a `/es/`. El subtítol diu exactament "Un recull de l'experiència que et trobaràs." / "Una muestra de la experiencia que te encontrarás.", en Jost 500 16 px fum. A 320 i 375 px, el títol no provoca scroll horitzontal i el filet senzill és a sota (la seva vora superior queda ≥ 8 px per sota de la vora inferior del text). A 1280 px, els filets són als costats. A la barra superior, l'enllaç continua dient "Plats" / "Platos". |
 | V-29 | El QA desa captures de `/` i `/es/` a 375 i 1280 px (pàgina sencera), de l'avís legal i de la 404 a `tests/captures/`, i les compara amb els wireframes de §3. Ha de coincidir l'ordre de l'obertura: selector, nom, filet, cuina, presentació, horari, adreça, filet. |
 | V-30 | Presentació (`[data-presentacio]`, dins de `#inici`): EB Garamond 400 normal, 20 px a 375 px i 22 px a 1280 px, interlineat 1,55, color `rgb(43, 36, 34)`, centrada, amplada ≤ 28em a 375 px i ≤ 36em a 1280 px. Al DOM i a la pantalla va després de la cuina i abans de l'horari. |
 | V-32 | La web final no té pàgines `/propostes/` (cap fitxer a `dist/propostes/`), i `dist/` no conté tipografies de cap altra família que EB Garamond i Jost. |
@@ -760,3 +770,5 @@ Es comproven amb un build temporal que no es versiona: traient la foto d'un plat
 8. **Una sola pàgina per idioma**, sense vista de detall ni modal, i tots els textos d'interfície ja existents.
 9. **Visitants.** La majoria entren amb el mòbil des del navegador intern d'Instagram, amb una àrea visible d'uns 375×600 px.
 10. **"1954".** No s'explica ni s'insinua cap origen del nom. L'estètica de carta clàssica no vol suggerir antiguitat: no hi ha cap "des de" ni cap data.
+11. **Sense enllaç al post (2026-11-11).** Els plats no porten enllaç a la seva publicació, per decisió de l'Oriol. L'enllaç al perfil del peu es manté. Si un plat futur no té ni foto ni història, es mostra només el nom: és una línia de carta acceptable i no s'omple amb res.
+12. **Títol a la barra.** L'enllaç de la barra superior continua dient "Plats" / "Platos", perquè és una etiqueta de navegació curta i paral·lela a "On som". El títol llarg és el de la secció.

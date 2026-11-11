@@ -8,6 +8,8 @@ Versió 2 · 2026-11-10 · autor: arquitecte-backend
 >
 > **Actualització (2026-11-10, D-13):** no hi ha domini propi. La web es publica a l'adreça per defecte de GitHub Pages, `https://maaltas.github.io/bistrot1954/` (usuari `Maaltas`, repositori `bistrot1954`), i Astro treballa amb `base: '/bistrot1954'`. En local es prova a `http://localhost:4321/bistrot1954/`. **Totes les rutes d'aquest document i de `docs/disseny-frontend.md` (`/`, `/es/`, `/avis-legal/`…) són relatives a aquesta base**: `/es/` vol dir `/bistrot1954/es/`.
 >
+> **Actualització (2026-11-11, regla de l'Oriol):** la història no repeteix el nom del plat quan l'encapçala (pas N8, §3.3; fixture §3.4.3 actualitzada; criteris §3.5 i C-11). Els plats ja no enllacen al seu post d'Instagram (§4.5, C-07); `urlPost` es conserva a les dades.
+>
 > **Actualització (2026-11-11, D-19):** el disseny vigent és `docs/disseny-frontend.md` v2, "La carta" (P3). Canvis d'arquitectura: finestra de foto rodona i `sizes` nou (§6.3, R-09); tipografies EB Garamond (normal i cursiva) i Jost 500, amb un límit de 150 KB (§2.4, §6.7, R-06b); `genera-og.mjs` amb els paquets nous (§2.1, §6.6); i cap maqueta `/propostes/` a la web final (§5.1, T-08). El model de dades, les rutes i la regla de contingut no canvien.
 
 ## 0. Decisions clau
@@ -146,7 +148,7 @@ La migració té poc impacte, segons la guia oficial de pas a la v7:
 - `fonts`: **només** les dues famílies del disseny vigent (`docs/disseny-frontend.md` v2, §5.2): EB Garamond (400 `normal` i 400 `italic`) i Jost (500 `normal`). Proveïdor Google i `subsets: ['latin']` (§6.7). Cap altra família, tampoc les de les maquetes de la branca `propostes-disseny` (D-19).
 - `base` segons la taula anterior, i `trailingSlash: 'ignore'`. Amb `base`, Astro continua generant els fitxers a l'arrel de `dist/` (`dist/index.html`, `dist/es/index.html`…); és GitHub Pages qui els serveix sota `/bistrot1954/`.
 - `prefetch` i *view transitions* desactivats (són JS que no necessitem).
-- `compressHTML: true`, explícit. És el comportament d'Astro 6: conserva un espai entre elements en línia, com ara "Veure la publicació a Instagram" i el text afegit per a lectors de pantalla (§2.1).
+- `compressHTML: true`, explícit. És el comportament d'Astro 6: conserva un espai entre elements en línia, per exemple entre un enllaç i el text que el segueix (§2.1).
 - No s'activa cap opció `experimental` que no calgui. Si Astro 7 ja té estable alguna API que l'arquitectura feia servir com a experimental (tipografies, CSP), es fa servir la forma estable.
 
 ---
@@ -250,9 +252,16 @@ plats:
 
 ### 3.3 Regla de contingut aplicada: neteja i idioma
 
-La història de cada plat surt **exclusivament** del caption. La neteja només **treu** coses de les categories permeses: hashtags, @mencions, emojis decoratius, espais i salts de línia sobrants, i frases purament promocionals (incloent-hi el bloc fix de signatura). Mai afegeix, reordena dins d'un paràgraf, corregeix, tradueix ni resumeix.
+La història de cada plat surt **exclusivament** del caption. La neteja només **treu** coses de les categories permeses:
+- hashtags i @mencions;
+- emojis decoratius;
+- espais i salts de línia sobrants;
+- frases purament promocionals, incloent-hi el bloc fix de signatura;
+- **el nom del plat quan encapçala la història** (N8). És una regla de l'Oriol, que decideix el contingut (2026-11-11).
 
-Implementació: dues funcions pures, sense accés a fitxers, testejades amb Vitest.
+Mai afegeix, reordena dins d'un paràgraf, corregeix, tradueix ni resumeix. L'única modificació que no és treure és posar en majúscula la primera lletra de la història quan N8 n'ha tret el nom. És el mateix canvi de caixa que §3.2 admet per al nom.
+
+Implementació: tres funcions pures, sense accés a fitxers, testejades amb Vitest.
 
 ```ts
 type Idioma = 'ca' | 'es';
@@ -261,7 +270,11 @@ type Paragraf = string[];                          // línies d'un paràgraf
 netejaCaption(caption: string): Paragraf[];        // passos N1-N7
 assignaIdiomes(paragrafs: Paragraf[], override?: Idioma[]):
   { ca: Paragraf[]; es: Paragraf[]; avisos: string[] };   // passos I1-I5
+treuNomInicial(paragrafs: Paragraf[], nom: string, lang: Idioma):
+  Paragraf[];                                      // pas N8; [] = sense història
 ```
+
+Ordre: N1-N7 → I1-I5 → N8 (per a cada idioma) → fallback P2. `src/lib/contingut.ts` és qui crida N8, perquè és qui té el `nom` de `seleccio.yaml`.
 
 #### Neteja (en aquest ordre)
 
@@ -346,6 +359,43 @@ Les paraules comunes als dos idiomes (el, la, de, que, en, es, un, una, a…) no
 
 Resultat: `historia.ca` són els paràgrafs `ca` en l'ordre original, i `historia.es`, els `es`. Si un idioma no té cap paràgraf, val `null`.
 
+#### Nom del plat a l'inici de la història (N8, després de l'idioma)
+
+**N8 · Treure el nom inicial.** Regla de l'Oriol (2026-11-11): la història no repeteix el nom del plat. S'aplica a `historia.ca` i a `historia.es` per separat, abans del fallback P2.
+
+- **Nom que es busca:** `nom.<idioma de la història>` de `seleccio.yaml`. Si aquell idioma no en té (`nom.es` és opcional), es busca `nom.ca`. Val també per als noms amb `nom_confirmat: true`.
+- **On:** només al començament de la primera línia del primer paràgraf de la història d'aquell idioma, i una sola vegada.
+- **Comparació:** sense distingir majúscules, amb la normalització de §3.2 (apòstrofs `’` → `'`, espais col·lapsats). Els diacrítics han de coincidir.
+- **Quan es treu:** només si, just després del nom (i d'espais opcionals), hi ha:
+  - el **final de la línia**. És el cas de plat-01: l'emoji que separava el nom del text, N6 l'ha convertit en un salt de línia;
+  - o un **signe de separació**: `.`, `:`, `;`, `!`, `?`, `…`, o un guió llarg o mitjà (`—`, `–`) amb espais als dos costats.
+- **Què es treu:** el nom, el signe de separació i els espais que el segueixen.
+  - Si la línia queda buida, s'elimina la línia.
+  - Si el paràgraf queda buit, s'elimina el paràgraf.
+  - Si no queda res, la història d'aquell idioma val `null` i s'aplica P1.
+- **Majúscula inicial.** Si s'ha tret el nom i el primer caràcter que queda és una lletra minúscula, es passa a majúscula amb `toLocaleUpperCase` de l'idioma de la història. Només aquest caràcter. Cas real: plat-02, "dolç, untuós…" → "Dolç, untuós…".
+- **Quan no es treu:**
+  - Si el nom va seguit d'una paraula o d'una coma, perquè és part de la frase. Per exemple, "Croqueta de sípia en la seva tinta és…" quedaria "és…".
+  - Si el nom apareix més endavant: "El pastís de formatge és…" (plat-03), "El nostre steak tartar…" (plat-05), "…Ous ferrats amb bolets o amb pernil: sembla fàcil…" (plat-07).
+
+  En tots dos casos, treure'l trencaria la frase.
+- **Limitació coneguda.** Si entre el nom i una paraula en minúscula hi ha un emoji ("Figues i foie 🍂 dolç…"), N6 el converteix en un espai i el nom no es treu. No passa en cap dels captions actuals. Si passés, l'Oriol pot editar el post.
+
+Resultat per als 8 plats actuals. N8 afecta plat-01, 02, 06 i 08, en tots dos idiomes:
+
+| id | Història abans de N8 (ca / es, començament) | Història publicada (començament) |
+|---|---|---|
+| plat-01 | "Tagliatelle amb safrà, mantega i tonyina" / "Tagliatelle con azafrán, mantequilla y atún", soles a la primera línia (l'emoji 🍝 és un salt de línia) | "Pasta que s'acaba a la paella, amb el color del safrà i la tonyina per sobre." / "Pasta que se termina en la sartén, con el color del azafrán y el atún por encima." |
+| plat-02 | "Figues i foie: dolç, untuós…" / "Higos y foie: dulce, untuoso…" | "Dolç, untuós…" / "Dulce, untuoso…" (majúscula inicial) |
+| plat-03 | "El pastís de formatge és…" / "El pastel de queso es…" | sense canvis (el nom no és al començament) |
+| plat-04 | "Es demanen per compartir…" / "Se piden para compartir…" | sense canvis |
+| plat-05 | "El nostre steak tartar…" / "Nuestro steak tartar…" | sense canvis |
+| plat-06 | "Croqueta de sípia en la seva tinta. Sovint…" / "Croqueta de sepia en su tinta. A menudo…" | "Sovint la diferència…" / "A menudo, la diferencia…" |
+| plat-07 | "Fregir un ou bé…" / "Freír un huevo bien…" | sense canvis (el nom és a la tercera frase) |
+| plat-08 | "Pa de full, mantega fumada, anxova '000'. Tres coses…" / "Hojaldre, mantequilla ahumada, anchoa '000'. Tres cosas…" | "Tres coses ben triades…" / "Tres cosas bien elegidas…" |
+
+El text sencer de cada història és a la fixture de §3.4.3.
+
 #### Presentació (obligatori per a qualsevol disseny)
 
 - **P1 · Sense història.** Si `historia.ca` i `historia.es` són `null`, el plat es mostra sense història. No es posa cap text substitut.
@@ -381,19 +431,18 @@ Una explosión de otoño en la mesa de Bistrot 1954 🧡🍂\n
 | N6 | "tonyina 🍝 Pasta": l'emoji va seguit de majúscula i passa a ser un salt de línia. "1954 🧡🍂": el grup és al final de la línia i s'elimina. Igual en castellà. |
 | N7 | Els paràgrafs 3 i 4 queden buits i s'eliminen. |
 | I1-I3 | Paràgraf 1: "amb", "i", "per", "à"… = ca. Paràgraf 2: "con", "y", "por", "á", "ñ"… = es. Les línies "Una explosió/explosión…" són indeterminades i segueixen el seu paràgraf. |
+| N8 | La primera línia de cada idioma és exactament el nom (`nom.ca` / `nom.es` de `seleccio.yaml`) i després hi ha el final de la línia: es treu la línia sencera. La línia següent ja comença en majúscula. |
 
 Sortida:
 
 ```
-historia.ca = [["Tagliatelle amb safrà, mantega i tonyina",
-                "Pasta que s'acaba a la paella, amb el color del safrà i la tonyina per sobre.",
+historia.ca = [["Pasta que s'acaba a la paella, amb el color del safrà i la tonyina per sobre.",
                 "Una explosió de tardor a la taula de Bistrot 1954"]]
-historia.es = [["Tagliatelle con azafrán, mantequilla y atún",
-                "Pasta que se termina en la sartén, con el color del azafrán y el atún por encima.",
+historia.es = [["Pasta que se termina en la sartén, con el color del azafrán y el atún por encima.",
                 "Una explosión de otoño en la mesa de Bistrot 1954"]]
 ```
 
-Nota per al disseny: en plat-01, plat-06 i plat-08 la història comença amb el mateix text que el nom del plat. És el text del caption i no es treu.
+Abans de N8, la sortida de N1-N7 i I1-I5 encara té una primera línia amb el nom ("Tagliatelle amb safrà, mantega i tonyina" / "Tagliatelle con azafrán, mantequilla y atún"). Els tests de cada plat real comparen la cadena sencera (N1-N8, amb els noms de `seleccio.yaml`) amb la fixture de §3.4.3. Si hi ha tests de `netejaCaption()` sola, han d'esperar la sortida intermèdia, amb el nom.
 
 #### 3.4.2 Ordre d'idiomes detectat als captions actuals
 
@@ -412,17 +461,19 @@ Cap dels 8 necessita `idiomes` a `seleccio.yaml`.
 
 #### 3.4.3 Fixture de referència: `tests/fixtures/historia-esperada.json`
 
-Sortida esperada per als 8 captions actuals. El programador la copia **literalment** d'aquí (no la genera amb el seu codi, perquè seria circular). Els paràgrafs s'uneixen amb `\n\n` i les línies amb `\n`. La fan servir els tests unitaris i el QA.
+Història **publicada** (després de N8) per als 8 captions actuals, amb els noms de `seleccio.yaml`. El programador la copia **literalment** d'aquí (no la genera amb el seu codi, perquè seria circular). Els paràgrafs s'uneixen amb `\n\n` i les línies amb `\n`. La fan servir els tests unitaris de la cadena sencera (`getPlats()`) i el QA.
+
+Versió 2026-11-11 (N8): canvien plat-01, 02, 06 i 08. La resta és idèntica a la versió anterior.
 
 ```json
 {
   "plat-01": {
-    "ca": "Tagliatelle amb safrà, mantega i tonyina\nPasta que s'acaba a la paella, amb el color del safrà i la tonyina per sobre.\nUna explosió de tardor a la taula de Bistrot 1954",
-    "es": "Tagliatelle con azafrán, mantequilla y atún\nPasta que se termina en la sartén, con el color del azafrán y el atún por encima.\nUna explosión de otoño en la mesa de Bistrot 1954"
+    "ca": "Pasta que s'acaba a la paella, amb el color del safrà i la tonyina per sobre.\nUna explosió de tardor a la taula de Bistrot 1954",
+    "es": "Pasta que se termina en la sartén, con el color del azafrán y el atún por encima.\nUna explosión de otoño en la mesa de Bistrot 1954"
   },
   "plat-02": {
-    "ca": "Figues i foie: dolç, untuós i amb una brillantor que atrau totes les mirades a la taula\nUn entrant de temporada que enamora.",
-    "es": "Higos y foie: dulce, untuoso y con un brillo que atrae todas las miradas en la mesa\nUn entrante de temporada que enamora."
+    "ca": "Dolç, untuós i amb una brillantor que atrau totes les mirades a la taula\nUn entrant de temporada que enamora.",
+    "es": "Dulce, untuoso y con un brillo que atrae todas las miradas en la mesa\nUn entrante de temporada que enamora."
   },
   "plat-03": {
     "ca": "El pastís de formatge és un clàssic que tothom coneix. Per això no es pot dissimular: o està fet amb calma i bons ingredients, o es nota. El nostre, amb melmelada de fruits vermells casolana, porta conquistant als nostres clients des de que vam obrir.",
@@ -437,16 +488,16 @@ Sortida esperada per als 8 captions actuals. El programador la copia **literalme
     "es": "Nuestro steak tartar es histórico. Carne de Cal Tomàs, cortada a cuchillo, con patatas fritas. Hay cosas que no hay que tocar."
   },
   "plat-06": {
-    "ca": "Croqueta de sípia en la seva tinta. Sovint la diferència entre una croqueta i una bona croqueta és la matèria primera. I unes bones mans a la cuina.",
-    "es": "Croqueta de sepia en su tinta. A menudo, la diferencia entre una croqueta y una buena croqueta es la materia prima. Y buenas manos en la cocina."
+    "ca": "Sovint la diferència entre una croqueta i una bona croqueta és la matèria primera. I unes bones mans a la cuina.",
+    "es": "A menudo, la diferencia entre una croqueta y una buena croqueta es la materia prima. Y buenas manos en la cocina."
   },
   "plat-07": {
     "ca": "Fregir un ou bé té la seva ciència. Afegir-hi els ingredients adequats, també. Ous ferrats amb bolets o amb pernil: sembla fàcil fins que el proves fet amb ofici.",
     "es": "Freír un huevo bien tiene su ciencia. Añadirle los ingredientes adecuados, también. Huevos fritos con setas o con jamón: parece fácil hasta que lo pruebas hecho con oficio."
   },
   "plat-08": {
-    "ca": "Pa de full, mantega fumada, anxova '000'. Tres coses ben triades que fan un plat perfecte per començar.",
-    "es": "Hojaldre, mantequilla ahumada, anchoa '000'. Tres cosas bien elegidas que hacen un plato perfecto para empezar."
+    "ca": "Tres coses ben triades que fan un plat perfecte per començar.",
+    "es": "Tres cosas bien elegidas que hacen un plato perfecto para empezar."
   }
 }
 ```
@@ -473,13 +524,28 @@ Sortida esperada per als 8 captions actuals. El programador la copia **literalme
 | E14 | `"Pa amb tomàquet i oli.\n\nPan con tomate y aceite."` amb override `idiomes: [es, ca]` | ca `"Pan con tomate y aceite."`, es `"Pa amb tomàquet i oli."` (I5 mana) |
 | E15 | Override `idiomes: [ca]` amb 2 paràgrafs | Error de validació |
 
+Casos de N8 (amb un `nom` sintètic, també només per a tests):
+
+| # | Entrada | `nom.ca` | Sortida esperada (ca) |
+|---|---|---|---|
+| E16 | `"Pa amb tomàquet 🍅 Fet a casa amb tomàquet de l'hort."` | `"Pa amb tomàquet"` | `"Fet a casa amb tomàquet de l'hort."`: l'emoji seguit de majúscula és un salt de línia i la primera línia és el nom |
+| E17 | `"Figues i foie: dolç i untuós."` | `"Figues i foie"` | `"Dolç i untuós."` (majúscula inicial) |
+| E18 | `"Figues i foie 🍂"` | `"Figues i foie"` | `null`: no queda res, i el plat es mostra sense història (P1) |
+| E19 | `"Croqueta de sípia en la seva tinta és la reina de la casa."` | `"Croqueta de sípia en la seva tinta"` | igual que l'entrada: el nom va seguit d'una paraula |
+| E20 | `"FIGUES I FOIE. Un entrant de temporada."` | `"Figues i foie"` | `"Un entrant de temporada."` (no distingeix majúscules) |
+| E21 | `"Figues i foies amb mel."` | `"Figues i foie"` | igual que l'entrada: després del nom hi ha una lletra, no un separador |
+| E22 | `"Steak tartar, tallat a ganivet."` | `"Steak tartar"` | igual que l'entrada: la coma no és un separador |
+| E23 | `"El pastís de formatge és un clàssic."` | `"Pastís de formatge"` | igual que l'entrada: el nom no és al començament |
+
 ### 3.5 Com es verifica la regla (programador i QA)
 
-Tres comprovacions independents. El QA les ha d'automatitzar sense reutilitzar el codi de `src/lib/neteja.ts`, perquè seria provar el codi amb ell mateix.
+Quatre comprovacions independents. El QA les ha d'automatitzar sense reutilitzar el codi de `src/lib/neteja.ts`, perquè seria provar el codi amb ell mateix.
 
 1. **Igualtat amb la fixture.** Per a cada plat de la fixture i cada pàgina (`/`, `/es/`), el text del contenidor `[data-historia]`, amb tots els espais en blanc col·lapsats a un sol espai, és idèntic al de `tests/fixtures/historia-esperada.json` en l'idioma de la pàgina, amb els espais col·lapsats igual.
 2. **Invariant de paraules (per a tots els plats, també els futurs).** Siguin `P(s)` les paraules d'un text (`/[\p{L}\p{N}]+(?:['’·-][\p{L}\p{N}]+)*/gu`, sensible a majúscules). La seqüència `P(història publicada)` ha de ser una **subseqüència ordenada** de `P(caption original)`. Qualsevol paraula que no hi encaixi és una incidència crítica: vol dir que s'ha afegit o canviat text.
+   - **Única excepció (N8):** la **primera paraula** de la història es compara sense tenir en compte la caixa de la seva primera lletra. Així "Dolç" de plat-02 encaixa amb "dolç" del caption. La resta de paraules, inclosa la resta de lletres de la primera, es comparen exactament.
 3. **Nom.** `nom`, normalitzat com a §3.2, és una subcadena del caption normalitzat, o el plat porta `nom_confirmat: true` (i el QA ho llista).
+4. **La història no comença pel nom (N8).** Per a cada plat i idioma, el text de `[data-historia]` (normalitzat com a §3.2 i sense distingir majúscules) no comença pel `nom` d'aquell idioma seguit de final de línia o d'un separador de N8.
 
 ### 3.6 Com s'incorpora un plat nou
 
@@ -499,7 +565,7 @@ Cap pas toca codi:
          ca: ""
          es: ""
    ```
-4. **Seleccionar.** Enganxar el bloc a `contingut/seleccio.yaml` a la posició on ha de sortir el plat i omplir `nom` copiant-lo del caption. Si el nom queda buit, el build falla expressament.
+4. **Seleccionar.** Enganxar el bloc a `contingut/seleccio.yaml` a la posició on ha de sortir el plat i omplir `nom` copiant-lo del caption. Si el nom queda buit, el build falla expressament. Si el caption comença pel nom, la web el traurà de la història (N8, §3.3).
 5. **Comprovar:** `npm run comprova` (pendents + tests + build). Si un nom no surt al caption, el missatge diu quin.
 6. **Publicar:** `git add contingut` → `git commit -m "Plat nou: …"` → `git push`. Quan la publicació estigui activada (§9.4), GitHub Actions comprova, construeix i publica la web en uns 2-3 minuts (§9.5).
 
@@ -678,7 +744,7 @@ interface Plat {
   nom: Record<Idioma, TextLocalitzat>;           // ja resolt amb el fallback de P2
   historia: Record<Idioma, Historia | null>;     // ja resolt amb el fallback de P2; null = sense història
   imatge: ImageMetadata | null;                  // d'astro:assets; null = sense foto (§6.2)
-  urlPost: string;                               // enllaç al post original
+  urlPost: string;                               // URL del post original: NO es mostra (2026-11-11); es conserva per traçabilitat i per al QA
   captionOriginal: string;                       // caption literal i sencer, sense tocar (per al QA)
   dataPublicacio: string | null;                 // no es mostra mai (P5)
 }
@@ -703,13 +769,13 @@ Sigui quin sigui el disseny, cada plat es renderitza així (estructura mínima; 
   <h3 lang="…si difereix de la pàgina…">Nom del plat</h3>       <!-- nivell de títol: el decideix el disseny -->
   <picture>…</picture>                                          <!-- absent si imatge = null -->
   <div data-historia lang="…si difereix…"><p>línia<br>línia</p><p>…</p></div>   <!-- absent si no hi ha història -->
-  <a href="https://www.instagram.com/p/…/" rel="noopener">…</a> <!-- sempre: enllaç al post original -->
 </article>
 ```
 
 - `alt` de la imatge = `nom` en l'idioma de la pàgina. És text del caption, no una descripció inventada.
 - Només hi ha un `[data-historia]` per article, i conté exclusivament el text de la història.
 - El `<picture>` va dins d'un contenidor que fa de finestra rodona (§6.3).
+- **Sense enllaç al post** (decisió de l'Oriol, 2026-11-11). Cap article de plat conté un enllaç a Instagram ni a cap altre lloc. `urlPost` només és a les dades (§4.4), per a la traçabilitat de la història i per al QA. L'únic enllaç a Instagram de la web és el del compte (`instagram`, al peu, §8).
 
 Altres ganxos obligatoris:
 
@@ -892,7 +958,7 @@ Per a cada plat seleccionat:
 2. si no, es busca `contingut/imatges/<id>.{jpg,jpeg,png,webp}` (avui, és el cas dels 8 plats: `imatge` és `""` a `plats.json`);
 3. si no n'hi ha cap, `imatge = null` i es mostra l'avís de §3.1. **El build no falla.**
 
-**Plat sense foto** (avui cap, però pot passar en plats futurs). El plat es mostra igualment, en la variant sense foto del disseny (§4.3 del disseny), amb nom, història i enllaç al post original. No s'hi posa cap imatge de farciment, foto d'arxiu, il·lustració de menjar ni imatge generada, perquè suggeriria un plat que no és el real.
+**Plat sense foto** (avui cap, però pot passar en plats futurs). El plat es mostra igualment, en la variant sense foto del disseny (§4.3 del disseny), amb el nom i la història. No hi ha enllaç al post (§4.5), de manera que, si tampoc no té història, només se'n veu el nom. No s'hi posa cap imatge de farciment, foto d'arxiu, il·lustració de menjar ni imatge generada, perquè suggeriria un plat que no és el real.
 
 ### 6.3 Finestra rodona, formats i mides (resol D-11 i D-19)
 
@@ -1333,10 +1399,11 @@ Condicions de mesura:
 | C-04 | Cada `nom` compleix §3.5.3. Els plats amb `nom_confirmat: true` es llisten a l'informe. |
 | C-05 | Un plat sense història no té `[data-historia]`. Quan una història o un nom es mostra en un idioma diferent del de la pàgina, porta l'atribut `lang` d'aquell idioma. |
 | C-06 | No es veu cap data de publicació ni cap any (el "1954" del nom no compta). No apareix cap dada del restaurant que no sigui a `restaurant.yaml` amb valor no nul. Avui hi han de sortir el telèfon ("936 27 35 36") i l'horari, i no hi ha de sortir cap preu. |
-| C-07 | Cada plat enllaça exactament al seu `url_post`. |
+| C-07 | Cap `article[data-plat-id]` conté cap element `<a>`. A `/` i `/es/` no hi ha cap enllaç a `instagram.com/p/` ni a `instagram.com/reel/`; l'únic enllaç a Instagram és el del compte, `https://www.instagram.com/bistrot1954/` (§4.5). Substitueix el criteri anterior, "cada plat enllaça al seu `url_post`" (2026-11-11). |
 | C-08 | Cap plat sense foto mostra una imatge de farciment: no té `<img>` dins de l'article. |
 | C-09 | Presentació: a `/` i `/es/` hi ha exactament un `[data-presentacio]` dins de `#inici`, sense cap emoji. Comprovacions: (a) el seu text (espais col·lapsats) és idèntic al de `tests/fixtures/presentacio-esperada.json` en l'idioma de la pàgina; (b) compleix l'invariant de paraules de §3.5.2 respecte del text literal de `restaurant.yaml`. |
 | C-10 | Avís legal a `/avis-legal/` i `/es/aviso-legal/`: els quatre valors d'`avis_legal` surten dins d'elements `[data-dada-ficticia]`, cadascun seguit de "(dada fictícia)" / "(dato ficticio)". El NIF és `B00000000`; el correu acaba en `@example.com` i no és un enllaç `mailto:`. Les dues pàgines porten `noindex`. |
+| C-11 | N8: cap història publicada comença pel nom del plat (§3.5.4). Les històries de plat-01, 02, 06 i 08 són exactament les de la fixture de §3.4.3. Plat-02 comença per "Dolç" / "Dulce", i l'invariant de paraules admet aquesta majúscula inicial (§3.5.2). Plat-03, 05 i 07 conserven el nom on és a mitja frase. |
 
 ### Rendiment (Lighthouse mòbil)
 
@@ -1417,11 +1484,11 @@ Condicions de mesura:
 
 - **Pàgines:** `/` i `/es/` (pàgina única per idioma), `/avis-legal/` i `/es/aviso-legal/` (demostració, §5.4) i la 404 bilingüe. Cada plat té l'àncora `#plat-NN`. Si es vol pàgina de detall o modal, cal demanar-ho a `docs/dubtes.md`.
 - **`base`:** totes aquestes rutes viuen sota `/bistrot1954/` (§2.4, §5.2). Els "enllaços absoluts a `/` i `/es/`" del disseny (404, selector d'idioma) són `/bistrot1954/` i `/bistrot1954/es/`, fets amb `ruta()`. Això no canvia res visual.
-- **Dades per plat:** `nom`, `historia` (paràgrafs → línies), `imatge` (o `null`) i `urlPost`. No hi ha preu, categoria, ingredients separats ni data. Si se'n vol algun, ha de ser una dada confirmada per l'Oriol i s'ha de demanar a dubtes.
+- **Dades per plat:** `nom`, `historia` (paràgrafs → línies) i `imatge` (o `null`). `urlPost` és a les dades, però no es mostra ni s'hi enllaça (2026-11-11, §4.5). No hi ha preu, categoria, ingredients separats ni data. Si se'n vol algun, ha de ser una dada confirmada per l'Oriol i s'ha de demanar a dubtes.
 - **Text de presentació (nou):** `[data-presentacio]` dins de `#inici`. És un paràgraf de dues línies, d'uns 190 caràcters per idioma (§4.3.2). La posició i l'estil estan pendents del disseny (D-15).
 - **Fotos:** finestra rodona del disseny v2, feta amb CSS: imatge al 112,5 % i `margin-top: -25%`, sense retall en el build. `widths` i `sizes` segons §6.3.
 - **Variant sense foto:** necessària per als plats futurs (avui, cap). Sense imatges de farciment (§6.2).
-- **Nom repetit:** en plat-01, plat-06 i plat-08 la història comença amb el mateix text que el nom.
+- **Nom repetit:** ja no passa. N8 (§3.3) treu el nom quan encapçala la història, i plat-02 passa a començar en majúscula ("Dolç…"). On el nom és a mitja frase (plat-03, 05 i 07), es manté.
 - **Longitud de les històries:** avui fan entre 100 i 350 caràcters per idioma; el màxim teòric és d'uns 1.100. El text sencer ha de ser al DOM (P3).
 - **Crides a l'acció:** "Trucar" (`tel:+34936273536`), "Com arribar" (fitxa de Google Maps) i Instagram. No hi ha WhatsApp, plataforma de reserves ni correu (§8).
 - **Imatge per compartir:** `public/og.jpg` tipogràfica, sempre. Es genera amb `npm run og` (§6.6).

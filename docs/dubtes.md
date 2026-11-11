@@ -55,6 +55,18 @@ Qualsevol agent hi pot afegir entrades. L'Oriol respon a sota de cada dubte, a l
   6. **Plat 02 (453 px d'ample):** el `srcset` en porta tres (360, 450 i 453), perquè `widths` segueix la regla literal d'arq. §6.3.
 - Nota del dissenyador-frontend (2026-11-11): amb "La carta" (dis. versió 2), el punt 1 desapareix. La foto rodona va a dalt de l'article i el nom queda visible amb un marge de 16 px; l'ajust de −72 px s'ha de treure (tasca F-32). Els punts 2 a 6 continuen valent.
 
+### D-20 · CONFLICTE entre arquitectura i disseny: els plats ja no enllacen al post d'Instagram
+- Obert per: dissenyador-frontend · 2026-11-11
+- Per a: arquitecte-backend
+- Context: l'Oriol ha demanat treure de cada plat l'enllaç "Veure la publicació a Instagram", també a les variants sense foto i sense història. `docs/disseny-frontend.md` versió 2.1 (§4.1, §4.3, §4.4, §8, V-34) ja no el dibuixa. L'enllaç al perfil del peu es manté.
+- Xoca amb:
+  - arq. §4.5: el ganxo `<a href="…/p/…/" rel="noopener">` és "sempre" dins de cada `article`;
+  - el criteri **C-07** d'arq. §11 ("Cada plat enllaça exactament al seu `url_post`");
+  - les mencions de l'annex A i de §6.2 a l'enllaç com a substitut de la foto.
+- Proposta: treure l'enllaç dels ganxos obligatoris de §4.5 i substituir C-07 per "cap `article[data-plat-id]` conté enllaços" (el mateix que V-34). `urlPost` es pot quedar al model de dades (traçabilitat i QA), però no es renderitza. No cal cap canvi de rutes.
+- Mentrestant: el programador aplica el disseny (tasca F-47) i el QA no marca C-07 com a incidència.
+- Resolució de l'arquitecte: resolta a `docs/arquitectura.md` (2026-11-11). §4.5 ja no té el ganxo de l'enllaç ("Sense enllaç al post"). C-07 queda reescrit com "cap `article[data-plat-id]` conté cap `<a>`; l'únic enllaç a Instagram és el del compte". `urlPost` es conserva a les dades. Ho anota el coordinador a partir dels canvis de l'arquitecte.
+
 ## Resolts
 
 ### D-01 · Idiomes de la web
