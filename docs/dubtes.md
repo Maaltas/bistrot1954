@@ -53,6 +53,7 @@ Qualsevol agent hi pot afegir entrades. L'Oriol respon a sota de cada dubte, a l
   4. **Per al QA (V-11):** amb `srcset` de descriptors `w`, `img.naturalWidth` no és l'ample del fitxer sinó l'ample de la mida triada (p. ex. 421 a 375 px). Per comprovar "no més gran que la font", cal comparar amb l'ample real del fitxer de `currentSrc`. Les imatges `lazy` que encara no s'han carregat donen `naturalWidth` 0.
   5. **P-06:** `git grep` troba `id-token: write` al workflow (és el permís OIDC d'arq. §9.2, no un secret).
   6. **Plat 02 (453 px d'ample):** el `srcset` en porta tres (360, 450 i 453), perquè `widths` segueix la regla literal d'arq. §6.3.
+- Nota del dissenyador-frontend (2026-11-11): amb "La carta" (dis. versió 2), el punt 1 desapareix. La foto rodona va a dalt de l'article i el nom queda visible amb un marge de 16 px; l'ajust de −72 px s'ha de treure (tasca F-32). Els punts 2 a 6 continuen valent.
 
 ## Resolts
 
@@ -186,3 +187,25 @@ Qualsevol agent hi pot afegir entrades. L'Oriol respon a sota de cada dubte, a l
   - Node ≥ 22.23.4, que el Node 26 local i el de GitHub Actions ja compleixen.
 
   La guia no indica canvis a les tipografies, la CSP, les imatges, `base`, i18n ni sitemap; ho confirmen els tests. La baixa d'`esbuild` s'accepta com a observació, i l'`override` de `sharp` es treu si deixa de caldre. Canvis a `docs/arquitectura.md`: §0, §2.1, §2.4, §5.3, §10.4 i P-07. La implementació és la tasca nova **B-33**, i B-30 s'ha de tornar a mesurar després.
+
+### D-19 · CONFLICTE entre arquitectura i disseny: el redisseny "La carta" (P3)
+- Obert per: dissenyador-frontend · 2026-11-11
+- Per a: arquitecte-backend
+- Context: l'Oriol ha triat la proposta P3, "La carta", com a disseny nou (2026-11-11). `docs/disseny-frontend.md` versió 2 la descriu sencera, i les tasques F-24 a F-44 de `docs/tasques.md` porten la web de `main` cap a aquest disseny. No canvien el model de dades, ni les rutes, ni la regla de contingut. Sí que xoquen amb aquests punts de `docs/arquitectura.md`:
+  1. **Finestra de la foto** (arq. §0, §4.5, §5.1, §6.3, R-09 de §11 i annex A). Ara és una finestra 5:7 ancorada a dalt a l'esquerra, amb `sizes` = `(min-width: 400px) 450px, 112.5vw`. El disseny nou (dis. §6.2-§6.3) demana:
+     - un **cercle**: proporció `1 / 1`, `border-radius: 50%`, `overflow: hidden`, de 260 px de diàmetre a < 900 px i de 300 px a ≥ 900 px;
+     - la `img` al **112,5 %** de l'amplada, sense `object-fit` i desplaçada cap amunt amb **`margin-top: -25%`**. La part visible de la captura és x 0-88,9 % i y 16,7-83,3 %, i la fletxa i els punts continuen fora;
+     - **`sizes` = `(min-width: 900px) 338px, 293px`**.
+
+     `widths` no canvia (`[360, ample real]`). **Proposta:** substituir "finestra 5:7 ancorada a dalt a l'esquerra" per aquest contracte a §6.3, §4.5, §5.1 i a l'annex A, i actualitzar el `sizes` de R-09. La imatge renderitzada fa com a màxim 338 px CSS, sempre per sota de la font, i per tant desapareix l'observació sobre les fonts de 400-449 px ampliades.
+  2. **Tipografies** (arq. §2.4, §6.7 i tasca B-22). El disseny nou fa servir **EB Garamond 400 `normal` i `italic`, i Jost 500**, en lloc d'Alegreya i Alegreya Sans: són 3 fitxers, el màxim actual. `preload` només de l'EB Garamond 400 normal. **Proposta:** canviar §2.4 i §6.7 i mantenir el límit de 3 fitxers i 120 KB. Si en mesurar-ho (V-15) l'EB Garamond (rodona i cursiva) i la Jost superen els 120 KB, proposo pujar el límit de tipografies a 150 KB, en lloc de treure la cursiva, que és la veu dels noms dels plats. El pes total de la pàgina (R-06) continuaria per sota de 600 KB, perquè les fotos són petites.
+  3. **Imatge per compartir** (arq. §2.1 i §6.6). `scripts/genera-og.mjs` carrega `@fontsource/alegreya` i `@fontsource/alegreya-sans`. El disseny nou de l'`og.jpg` (dis. §6.4) necessita **`@fontsource/eb-garamond`** (400 cursiva) i **`@fontsource/jost`** (500) com a dependències de desenvolupament, en lloc de les d'Alegreya. **Proposta:** canviar els paquets de la taula de §2.1 i el pas 2 de §6.6. La resta de §6.6 (mida, pes, metadades i `og:image:alt`) no canvia.
+  4. **Maquetes de propostes.** La branca `propostes-disseny` té `src/propostes/`, `src/pages/propostes/` i set famílies tipogràfiques més a `astro.config.mjs`. **No formen part de la web final** (decisió del coordinador). **Proposta:** que arq. §5.1 i §2.4 diguin explícitament que `astro.config.mjs` només declara les dues famílies del disseny vigent, i que no hi ha cap ruta `/propostes/`. Ho comprova V-32.
+- Mentrestant: el programador aplica el disseny en els punts 1 a 4 (tasques F-24, F-26, F-33 i F-42), com es va fer amb D-11.
+- **Resolt 2026-11-11 (arquitecte): s'adopten les quatre propostes a `docs/arquitectura.md`, amb un ajust al punt 2.**
+  1. **Finestra rodona** (§6.3, §4.5, §5.1, §0 i annex A). És el mateix mètode CSS sobre la imatge sencera, amb `aspect-ratio: 1 / 1`, `border-radius: 50%`, `width: 112.5%` i `margin-top: -25%`. `sizes` = `(min-width: 900px) 338px, 293px` (R-09 actualitzat). `widths` no canvia. Desapareix l'observació de les fonts de 400-449 px.
+  2. **Tipografies** (§2.4, §6.7, R-06b): EB Garamond 400 normal i cursiva i Jost 500, en 3 fitxers com a màxim. **Ajust:** l'objectiu és ≤ 120 KB (V-15), i el límit, ≤ 150 KB. Entre 120 i 150 KB s'accepta com a observació i no es treu la cursiva. Convé que el dissenyador hi alineï el text de V-15.
+  3. **`og.jpg`** (§2.1, §6.6): `@fontsource/eb-garamond` i `@fontsource/jost` en lloc dels d'Alegreya. Feina: tasca nova **B-34**, abans de F-42 o juntament amb ella.
+  4. **Propostes** (§2.4, §5.1, §5.2): `astro.config.mjs` només declara les dues famílies vigents, i a `main` no hi ha `src/propostes/`, `src/pages/propostes/` ni cap ruta `/propostes/`. Criteri nou **T-08**, equivalent a V-32.
+
+  Les tasques F-24, F-26, F-33 i F-42 es mantenen tal com estan. **B-35** torna a verificar T-08, R-06, R-06b, R-07, R-08, R-09, P-05 i C-01 a C-10 quan s'acabi el redisseny.

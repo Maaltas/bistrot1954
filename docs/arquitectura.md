@@ -7,6 +7,8 @@ Versió 2 · 2026-11-10 · autor: arquitecte-backend
 > **Canvis de la versió 2.** Incorpora les respostes de l'Oriol a D-01..D-12: web bilingüe confirmada, telèfon i horari, publicació a GitHub Pages, avís legal de demostració, estadístiques sense galetes, fotos definitives, fitxa de Google Maps i text de presentació. També resol el conflicte D-11 amb `docs/disseny-frontend.md`: retall de les fotos, `srcset`, `og.jpg` i avisos del build. Cloudflare deixa de formar part del projecte.
 >
 > **Actualització (2026-11-10, D-13):** no hi ha domini propi. La web es publica a l'adreça per defecte de GitHub Pages, `https://maaltas.github.io/bistrot1954/` (usuari `Maaltas`, repositori `bistrot1954`), i Astro treballa amb `base: '/bistrot1954'`. En local es prova a `http://localhost:4321/bistrot1954/`. **Totes les rutes d'aquest document i de `docs/disseny-frontend.md` (`/`, `/es/`, `/avis-legal/`…) són relatives a aquesta base**: `/es/` vol dir `/bistrot1954/es/`.
+>
+> **Actualització (2026-11-11, D-19):** el disseny vigent és `docs/disseny-frontend.md` v2, "La carta" (P3). Canvis d'arquitectura: finestra de foto rodona i `sizes` nou (§6.3, R-09); tipografies EB Garamond (normal i cursiva) i Jost 500, amb un límit de 150 KB (§2.4, §6.7, R-06b); `genera-og.mjs` amb els paquets nous (§2.1, §6.6); i cap maqueta `/propostes/` a la web final (§5.1, T-08). El model de dades, les rutes i la regla de contingut no canvien.
 
 ## 0. Decisions clau
 
@@ -17,7 +19,7 @@ Versió 2 · 2026-11-10 · autor: arquitecte-backend
 | Fonts de contingut | `contingut/plats.json` (recopilador) + `contingut/seleccio.yaml` (Oriol) + `contingut/restaurant.yaml` (Oriol) + `contingut/imatges/`. |
 | Idiomes | Català a `/` (per defecte) i castellà a `/es/` (confirmat, D-01). Cada història es mostra en l'idioma original del caption; **mai es tradueix**. |
 | Regla de contingut | Neteja automàtica, determinista i testejada (§3.3). S'aplica també al text de presentació de l'Oriol (§4.3.2). Cap text escrit a mà ni generat amb IA. |
-| Imatges | Les 8 captures de ~450×600 px són definitives (D-09). sharp genera AVIF + WebP + JPEG a 360 px i a l'ample real de la font. La finestra 5:7 ancorada a dalt a l'esquerra es fa amb CSS, sense retall en el build (§6.3). La primera foto és prioritària i la resta es carreguen en diferit. |
+| Imatges | Les 8 captures de ~450×600 px són definitives (D-09). sharp genera AVIF + WebP + JPEG a 360 px i a l'ample real de la font. La finestra rodona (disseny v2 "La carta") es fa amb CSS, sense retall en el build (§6.3). La primera foto és prioritària i la resta es carreguen en diferit. |
 | Imatge per compartir | Sempre `public/og.jpg`, tipogràfica, de 1200×630 px (§6.6). Mai una foto de plat. |
 | Contacte | "Trucar" (`tel:+34936273536`) és l'única crida de reserva. "Com arribar" porta a la fitxa de Google Maps, i també hi ha l'enllaç a Instagram (§8). |
 | Hosting | GitHub Pages, publicat amb GitHub Actions en fer `git push` a `main`, des del repositori públic `Maaltas/bistrot1954`. Adreça: `https://maaltas.github.io/bistrot1954/`, amb `base: '/bistrot1954'` i sense domini propi (D-13). **La publicació està bloquejada** fins que l'Oriol doni el vistiplau final; fins aleshores no es crea el repositori (§9.4, D-13). |
@@ -74,7 +76,7 @@ flowchart LR
 | `@astrojs/check` + `typescript` | dev | `astro check` abans de cada build. |
 | Vitest | dev, `^5` | Tests unitaris de la neteja i de la detecció d'idioma. Ha de ser una versió que accepti Vite 8 (el d'Astro 7). |
 | `@playwright/test`, `@axe-core/playwright`, `html-validate` | dev | Infraestructura per al QA (el programador les instal·la; el QA només escriu tests a `tests/qa/`). Lighthouse s'executa amb `npx`. |
-| `@fontsource/alegreya`, `@fontsource/alegreya-sans` | dev | Només per generar `public/og.jpg` en local (§6.6). La web fa servir les tipografies que descarrega l'API d'Astro, no aquests paquets. |
+| `@fontsource/eb-garamond`, `@fontsource/jost` | dev | Només per generar `public/og.jpg` en local (§6.6). La web fa servir les tipografies que descarrega l'API d'Astro, no aquests paquets. Substitueixen els d'Alegreya (D-19). |
 | CSS | propi | Fitxers CSS i estils d'Astro amb custom properties que reprodueixen els tokens de `docs/disseny-frontend.md`. Sense Tailwind ni biblioteques de components. |
 | Framework de UI | cap | No hi ha React, Vue ni similars. Si el disseny necessita alguna interacció, JS vanilla dins del pressupost de §11. |
 
@@ -141,7 +143,7 @@ La migració té poc impacte, segons la guia oficial de pas a la v7:
 - `i18n`: `locales: ['ca', 'es']`, `defaultLocale: 'ca'`, `routing: { prefixDefaultLocale: false }`.
 - Integració `@astrojs/sitemap` (§7.4).
 - `security.csp` activat (§10.3). L'excepció de les estadístiques només s'hi afegeix en un build de publicació (§10.6).
-- `fonts`: Alegreya (400 i 700) i Alegreya Sans (500), segons `docs/disseny-frontend.md` §5.2, amb proveïdor Google, `subsets: ['latin']` (§6.7).
+- `fonts`: **només** les dues famílies del disseny vigent (`docs/disseny-frontend.md` v2, §5.2): EB Garamond (400 `normal` i 400 `italic`) i Jost (500 `normal`). Proveïdor Google i `subsets: ['latin']` (§6.7). Cap altra família, tampoc les de les maquetes de la branca `propostes-disseny` (D-19).
 - `base` segons la taula anterior, i `trailingSlash: 'ignore'`. Amb `base`, Astro continua generant els fitxers a l'arrel de `dist/` (`dist/index.html`, `dist/es/index.html`…); és GitHub Pages qui els serveix sota `/bistrot1954/`.
 - `prefetch` i *view transitions* desactivats (són JS que no necessitem).
 - `compressHTML: true`, explícit. És el comportament d'Astro 6: conserva un espai entre elements en línia, com ara "Veure la publicació a Instagram" i el text afegit per a lectors de pantalla (§2.1).
@@ -489,7 +491,7 @@ Cap pas toca codi:
    - JPEG, PNG o WebP (no HEIC);
    - com a mínim 400 px d'ample.
 
-   Pot ser una captura de pantalla del post, com les actuals, però **només de la foto**: sense la capçalera amb el nom del compte i sense els botons de sota. La web amaga sola la franja dreta i la inferior, on Instagram posa la fletxa i els punts del carrusel (§6.3).
+   Pot ser una captura de pantalla del post, com les actuals, però **només de la foto**: sense la capçalera amb el nom del compte i sense els botons de sota. La web en mostra sola un quadrat central dins d'un cercle, i deixa fora la fletxa i els punts del carrusel (§6.3). Cal que el plat sigui a la meitat central de la captura (entre el 17 % i el 83 % de l'alçada).
 3. **Veure què falta:** `npm run pendents`. Llista els posts que no són a `seleccio.yaml` (amb el caption, perquè es pugui copiar el nom), els plats sense foto i els fitxers d'imatge mal anomenats. També mostra un bloc YAML a punt per enganxar:
    ```yaml
      - id: plat-09
@@ -707,7 +709,7 @@ Sigui quin sigui el disseny, cada plat es renderitza així (estructura mínima; 
 
 - `alt` de la imatge = `nom` en l'idioma de la pàgina. És text del caption, no una descripció inventada.
 - Només hi ha un `[data-historia]` per article, i conté exclusivament el text de la història.
-- El `<picture>` va dins d'un contenidor que fa de finestra 5:7 (§6.3).
+- El `<picture>` va dins d'un contenidor que fa de finestra rodona (§6.3).
 
 Altres ganxos obligatoris:
 
@@ -769,7 +771,7 @@ D:\TESTING1212\
 │  │  ├─ Seo.astro                <head>: meta, canonical, hreflang, OG, referrer (§7)
 │  │  ├─ JsonLd.astro             dades estructurades (§7.3)
 │  │  ├─ Estadistiques.astro      script de GoatCounter, o res (§10.6)
-│  │  ├─ ImatgePlat.astro         <Picture> responsive dins de la finestra 5:7, o res (§6)
+│  │  ├─ ImatgePlat.astro         <Picture> responsive dins de la finestra rodona, o res (§6)
 │  │  ├─ Paragrafs.astro          <p> + <br> amb text escapat (§3.3 P4); el fan servir els dos següents
 │  │  ├─ Historia.astro           data-historia + lang (§3.3 P, §4.5)
 │  │  ├─ Presentacio.astro        data-presentacio + lang (§4.3.2)
@@ -803,6 +805,8 @@ D:\TESTING1212\
 └─ README.md                      arrencar, afegir un plat, publicar
 ```
 
+**Maquetes de propostes (D-19).** `src/propostes/`, `src/pages/propostes/` i les tipografies de les altres propostes viuen **només** a la branca `propostes-disseny`. La branca `main` (la web final) no en té cap: ni fitxers, ni rutes, ni famílies a `astro.config.mjs`.
+
 ### 5.2 Rutes
 
 Ruta = ruta lògica (com la fan servir aquest document i el disseny). URL real = `base` + ruta; a producció, precedida de `https://maaltas.github.io`, i en local, de `http://localhost:4321`.
@@ -823,6 +827,7 @@ Ruta = ruta lògica (com la fan servir aquest document i el disseny). URL real =
 - **Una sola pàgina per idioma.** Amb 8-30 plats i històries de 100-350 caràcters, una pàgina de detall per plat seria contingut massa prim (no ajuda al SEO) i obligaria a navegar més des del mòbil. Cada plat té una **àncora estable** `#plat-NN` per compartir-lo. Si el disseny necessita pàgina de detall o modal, s'ha de demanar a `docs/dubtes.md`.
 - **Barra final.** Els enllaços interns i els canonicals acaben sempre amb `/`. GitHub Pages redirigeix `/bistrot1954` → `/bistrot1954/` i `/bistrot1954/es` → `/bistrot1954/es/` sol. No admet redireccions pròpies, però no en cal cap.
 - **Selector d'idioma.** És un enllaç normal a l'altra pàgina (`/` ↔ `/es/`, `/avis-legal/` ↔ `/es/aviso-legal/`, sempre amb `base`). No hi ha redirecció automàtica per `Accept-Language`, que perjudica els cercadors i els usuaris.
+- **Cap altra ruta.** En concret, no hi ha cap ruta `/propostes/` a la web final (§5.1, T-08).
 
 ### 5.3 Scripts npm
 
@@ -876,7 +881,7 @@ Les pàgines legals no tenen JSON-LD. Porten les estadístiques en les mateixes 
 
   La finestra de §6.3 les amaga.
 - **Mínim:** 400 px d'ample. Per sota, el build avisa (§3.1), perquè la foto es mostraria ampliada.
-- **Plats futurs:** captures semblants (només la foto, sense la capçalera del post) o, si n'hi ha, la foto original. Una foto original més gran també funciona: la finestra només en retalla un 11 % a la dreta i un 7 % a baix.
+- **Plats futurs:** captures semblants (només la foto, sense la capçalera del post) o, si n'hi ha, la foto original. Una foto original més gran també funciona: la finestra rodona en mostra el quadrat central-esquerre (§6.3). El plat ha de ser entre el 17 % i el 83 % de l'alçada.
 - **Versionat:** les fotos es versionen al repositori (són la font). Mai es publiquen sense processar.
 
 ### 6.2 Resolució i absència
@@ -889,17 +894,21 @@ Per a cada plat seleccionat:
 
 **Plat sense foto** (avui cap, però pot passar en plats futurs). El plat es mostra igualment, en la variant sense foto del disseny (§4.3 del disseny), amb nom, història i enllaç al post original. No s'hi posa cap imatge de farciment, foto d'arxiu, il·lustració de menjar ni imatge generada, perquè suggeriria un plat que no és el real.
 
-### 6.3 Finestra 5:7, formats i mides (resol D-11, punts 1 i 2)
+### 6.3 Finestra rodona, formats i mides (resol D-11 i D-19)
 
-**Decisió: l'opció A del disseny, una finestra feta amb CSS.** La imatge es genera sencera, sense retall en el build. Es mostra al 112,5 % de l'amplada d'una finestra de proporció 5:7, ancorada a dalt a l'esquerra, que amaga el que en sobresurt. Així es veu el rectangle que va de la cantonada superior esquerra fins al 88,9 % de l'amplada i el 93,3 % de l'alçada (els 400×560 px de dalt a l'esquerra d'una captura de 450×600), sense la fletxa ni els punts.
+**Decisió: finestra rodona feta amb CSS, sense retall en el build** (disseny v2 "La carta", §6.2-§6.3; D-19).
+- La imatge es genera sencera.
+- Es mostra al 112,5 % de l'amplada d'una finestra circular (proporció 1:1), ancorada a l'esquerra i desplaçada cap amunt un 25 % de l'amplada de la finestra.
+- La part visible és el quadrat que va del 0 % al 88,9 % de l'amplada i del 16,7 % a l'83,3 % de l'alçada: els píxels x 0-400 i y 100-500 d'una captura de 450×600. El cercle en talla les cantonades.
+- La fletxa del carrusel (a partir del 91,8 % de l'amplada) i els punts (a partir del 96 % de l'alçada) queden fora.
+- **Historial:** substitueix la finestra 5:7 ancorada a dalt a l'esquerra del disseny v1 (D-11). El mètode és el mateix (CSS sobre la imatge sencera); canvien la forma, la proporció, l'ancoratge vertical i el `sizes`.
 
 Per què no les altres opcions:
 
 | Opció | Per què no |
 |---|---|
-| `fit: 'cover'` + `position: 'center'` (versió 1) | Centra el retall i deixa a la vista la fletxa i els punts. |
-| `fit: 'cover'` + `position: 'left top'` a 400×560 | `cover` escala la imatge (×0,93) abans de retallar i només retalla en una direcció: es veuria part de la fletxa. |
-| Opció B del disseny: `extract` de sharp en el build | Estalviaria un 17 % dels píxels, uns 4-7 KB per foto en AVIF. Però el servei d'imatges d'Astro no té cap opció d'`extract`: caldria un servei d'imatges propi o un pas previ que generés fitxers intermedis, i tots dos s'haurien de mantenir a cada versió d'Astro. No compensa per a una web de 8-30 fotos. Es pot reconsiderar si R-06 o R-07 (§11) fallen per culpa de les imatges. |
+| `fit: 'cover'` + `position` | `cover` escala la imatge abans de retallar i centra o ancora el retall en una sola direcció. No pot donar el quadrat descentrat (fins al 88,9 % en horitzontal, del 16,7 % a l'83,3 % en vertical) sense deixar a la vista part de la fletxa. |
+| `extract` de sharp en el build | Estalviaria un 40 % dels píxels de cada foto, uns 8-15 KB per foto en AVIF. Però el servei d'imatges d'Astro no té cap opció d'`extract`: caldria un servei d'imatges propi o un pas previ que generés fitxers intermedis, i tots dos s'haurien de mantenir a cada versió d'Astro. Amb fotos de 20-50 KB i el pressupost de §11 ben lluny del límit, no compensa. Es pot reconsiderar si R-06 o R-07 (§11) fallen per culpa de les imatges. |
 
 Contracte tècnic de `ImatgePlat.astro` (`<Picture>` d'`astro:assets`):
 
@@ -913,14 +922,14 @@ Contracte tècnic de `ImatgePlat.astro` (`<Picture>` d'`astro:assets`):
   | 446 px | `[360, 446]` |
   | 1080 px | `[360, 450, 720, 900]` |
 
-  Així el `srcset` sempre té una variant a l'ample real de la font, o a 900 px, que és el màxim útil (450 px CSS a densitat 2×). Mai en té cap de més ampla que la font, perquè Astro no amplia.
-- **`sizes`** = `(min-width: 400px) 450px, 112.5vw` (disseny §6.3).
-- **`width` i `height` de l'`<img>`:** les mides reals de la font, que és el que fa Astro per defecte. La finestra reserva l'espai amb `aspect-ratio: 5 / 7` i no hi ha salts de maquetació (CLS).
-- **CSS mínim que ha de complir la implementació** (l'aspecte el decideix el disseny):
-  - la finestra porta `aspect-ratio: 5 / 7` i `overflow: hidden`;
-  - l'`img` porta `display: block`, `width: 112.5%`, `max-width: none` i `height: auto`, i queda ancorada a dalt a l'esquerra;
+  La regla no canvia amb el disseny v2. El `srcset` sempre té una variant a l'ample real de la font (o a 900 px, que cobreix de sobres la imatge renderitzada més gran, 338 px, a densitat 2×). Mai en té cap de més ampla que la font, perquè Astro no amplia. Amb plat-02 (453 px) dona `[360, 450, 453]`, i és correcte (D-18).
+- **`sizes`** = `(min-width: 900px) 338px, 293px` (disseny §6.3). Correspon a la imatge al 112,5 % de cercles de 300 i 260 px.
+- **`width` i `height` de l'`<img>`:** les mides reals de la font, que és el que fa Astro per defecte. La finestra reserva l'espai amb `aspect-ratio: 1 / 1` i no hi ha salts de maquetació (CLS).
+- **CSS mínim que ha de complir la implementació** (l'aspecte, incloses les mides del cercle, el decideix el disseny):
+  - la finestra porta `aspect-ratio: 1 / 1`, `border-radius: 50%` i `overflow: hidden`;
+  - l'`img` porta `display: block`, `width: 112.5%`, `max-width: none`, `height: auto` i `margin-top: -25%`, i queda ancorada a l'esquerra. El percentatge del marge es calcula sobre l'amplada de la finestra;
   - no es fa servir `object-fit`.
-- Si una font fa entre 400 i 449 px d'ample, a pantalles de 400 px o més es mostra fins a un 12 % ampliada. És el límit de la font, no un error de la web (§11, R-09).
+- **Mai ampliada.** La imatge renderitzada fa com a màxim 338 px CSS, menys que la variant més petita (360) i que qualsevol font ≥ 400 px (§6.1). Per tant, ja no hi ha el cas de "font de 400-449 px lleugerament ampliada" del disseny v1.
 
 ### 6.4 Compressió
 
@@ -945,7 +954,7 @@ Contracte tècnic de `ImatgePlat.astro` (`<Picture>` d'`astro:assets`):
 - Si `public/og.jpg` no existeix, no s'emet `og:image`, `twitter:card` val `summary` i el build avisa (§3.1).
 - **Com es genera (tasca F-22).** `npm run og` executa `scripts/genera-og.mjs`, que:
   1. obre amb el Chromium de Playwright (ja és dependència de dev) una plantilla HTML de 1200×630 px, amb el disseny del §6.4 del disseny i les dades de `restaurant.yaml` (nom, cuina en català i adreça);
-  2. hi carrega les tipografies dels paquets `@fontsource/alegreya` i `@fontsource/alegreya-sans`, amb fitxers locals i sense xarxa;
+  2. hi carrega les tipografies dels paquets `@fontsource/eb-garamond` (400 cursiva) i `@fontsource/jost` (500), amb fitxers locals i sense xarxa (D-19);
   3. espera `document.fonts.ready`;
   4. en desa una captura JPEG (qualitat 85) a `public/og.jpg`.
 
@@ -954,8 +963,13 @@ Contracte tècnic de `ImatgePlat.astro` (`<Picture>` d'`astro:assets`):
 
 ### 6.7 Tipografies (també és pes)
 
-- Alegreya (400 i 700) i Alegreya Sans (500), segons el disseny. S'autoallotgen amb l'API de tipografies d'Astro (es descarreguen en el build i se serveixen des del nostre domini). **Cap petició a `fonts.googleapis.com` ni `fonts.gstatic.com`.**
-- WOFF2, subconjunt `latin` (inclou à, ç, ñ, ·), només aquests pesos. Màxim **3 fitxers** i 120 KB en total (disseny V-15). `font-display: swap`. Només es fa `preload` de l'Alegreya 400.
+- **Famílies:** EB Garamond (400 `normal` i 400 `italic`) i Jost (500), segons el disseny v2 (D-19). S'autoallotgen amb l'API de tipografies d'Astro (es descarreguen en el build i se serveixen des del nostre domini). **Cap petició a `fonts.googleapis.com` ni `fonts.gstatic.com`.**
+- **Format:** WOFF2, subconjunt `latin` (inclou à, ç, ñ, ·), només aquests tres estils. `font-display: swap`. Només es fa `preload` de l'EB Garamond 400 `normal`.
+- **Pressupost:** màxim **3 fitxers**.
+  - **Objectiu: ≤ 120 KB** en total (disseny V-15).
+  - **Límit: ≤ 150 KB** en total (R-06b). Si els tres fitxers fan entre 120 i 150 KB, s'accepta: no es treu la cursiva, que és la veu dels noms dels plats, i el QA ho anota com a observació a V-15, no com a incidència.
+
+  El marge no posa en risc el pes total: la càrrega inicial mesurada amb el disseny v1 era de 217 KiB, i el límit R-06 és de 500 KB.
 
 ---
 
@@ -1307,6 +1321,7 @@ Condicions de mesura:
 | T-05 | En el build local i en el de publicació, canonicals, `hreflang`, `og:url`, `og:image`, sitemap, robots i JSON-LD fan servir `https://maaltas.github.io/bistrot1954/`. No hi ha `dist/CNAME`. Amb `$env:GITHUB_REPOSITORY_OWNER="Maaltas"; $env:GITHUB_REPOSITORY="Maaltas/bistrot1954"` i `CI` definit, el resultat és el mateix i sense cap avís `[entorn]`. |
 | T-06 | `.github/workflows/publica.yml` existeix i és YAML vàlid. A més: el job `deploy` té la condició `vars.PUBLICAR == 'si'`; els permisos són els de §9.2; no fa servir cap `secrets.*`; el repositori local no té cap remot configurat. |
 | T-07 | `base` aplicat a tot. A tots els fitxers `dist/**/*.html`, cap atribut `href`, `src`, `srcset`, `content` (de metes amb URL) ni `action` comença per `/` sense continuar amb `bistrot1954/`. Les úniques excepcions són els enllaços externs (`https://…`, `tel:`). En navegar per totes les pàgines de `http://localhost:4321/bistrot1954/`, hi ha 0 respostes 404, excepte les rutes inexistents provades a T-04. |
+| T-08 | Sense maquetes de propostes (D-19): a `main` no existeixen `src/propostes/` ni `src/pages/propostes/`; no hi ha `dist/propostes/`; `astro.config.mjs` només declara EB Garamond i Jost; i `dist/` no conté tipografies de cap altra família (disseny V-32). |
 
 ### Contingut (el més important)
 
@@ -1333,10 +1348,10 @@ Condicions de mesura:
 | R-04 | SEO | ≥ 95 |
 | R-05 | LCP / CLS / TBT | ≤ 2,5 s / ≤ 0,05 / ≤ 150 ms |
 | R-06 | Pes de la càrrega inicial (`total-byte-weight`) | ≤ 500 KB |
-| R-06b | HTML de cada pàgina (sense comprimir) / CSS total / JS total / tipografies | ≤ 50 KB / ≤ 30 KB / ≤ 20 KB (avui 0 en local; uns 3,5 KB amb estadístiques) / ≤ 120 KB i ≤ 3 fitxers |
+| R-06b | HTML de cada pàgina (sense comprimir) / CSS total / JS total / tipografies | ≤ 50 KB / ≤ 30 KB / ≤ 20 KB (avui 0 en local; uns 3,5 KB amb estadístiques) / ≤ 150 KB i ≤ 3 fitxers (objectiu ≤ 120 KB; entre 120 i 150, observació, §6.7) |
 | R-07 | Cada fitxer d'imatge de plat servit / `og.jpg` / pàgina sencera després de fer scroll fins al final a 375 px | ≤ 100 KB / ≤ 150 KB / ≤ 1 MB |
 | R-08 | Primera `<img>` amb `fetchpriority="high"` i sense `loading="lazy"`; totes les altres amb `loading="lazy"`; totes amb `width` i `height` iguals a les mides de la font; cada `<picture>` amb `source` `image/avif` i `image/webp` | 100 % |
-| R-09 | `srcset` de cada `<picture>`: inclou `360w` i una variant a l'ample real de la font (avui `450w`, o el que faci la captura); cap variant més ampla que la font; `sizes` = `(min-width: 400px) 450px, 112.5vw` (§6.3). Si una font fa menys de 450 px i es mostra lleugerament ampliada (disseny V-11), és una observació, no una incidència. | 100 % |
+| R-09 | Comprovacions de cada `<picture>`: (a) el `srcset` inclou `360w` i una variant a l'ample real de la font (avui `450w`, i `453w` a plat-02); (b) cap variant és més ampla que la font; (c) `sizes` = `(min-width: 900px) 338px, 293px` (§6.3); (d) cap imatge es mostra més ampla que l'ample real del fitxer de `currentSrc` (disseny V-11). | 100 % |
 
 ### Privacitat i seguretat
 
@@ -1404,13 +1419,13 @@ Condicions de mesura:
 - **`base`:** totes aquestes rutes viuen sota `/bistrot1954/` (§2.4, §5.2). Els "enllaços absoluts a `/` i `/es/`" del disseny (404, selector d'idioma) són `/bistrot1954/` i `/bistrot1954/es/`, fets amb `ruta()`. Això no canvia res visual.
 - **Dades per plat:** `nom`, `historia` (paràgrafs → línies), `imatge` (o `null`) i `urlPost`. No hi ha preu, categoria, ingredients separats ni data. Si se'n vol algun, ha de ser una dada confirmada per l'Oriol i s'ha de demanar a dubtes.
 - **Text de presentació (nou):** `[data-presentacio]` dins de `#inici`. És un paràgraf de dues línies, d'uns 190 caràcters per idioma (§4.3.2). La posició i l'estil estan pendents del disseny (D-15).
-- **Fotos:** s'adopta l'opció A del disseny (finestra CSS 5:7, imatge al 112,5 %). `widths` i `sizes` segons §6.3.
+- **Fotos:** finestra rodona del disseny v2, feta amb CSS: imatge al 112,5 % i `margin-top: -25%`, sense retall en el build. `widths` i `sizes` segons §6.3.
 - **Variant sense foto:** necessària per als plats futurs (avui, cap). Sense imatges de farciment (§6.2).
 - **Nom repetit:** en plat-01, plat-06 i plat-08 la història comença amb el mateix text que el nom.
 - **Longitud de les històries:** avui fan entre 100 i 350 caràcters per idioma; el màxim teòric és d'uns 1.100. El text sencer ha de ser al DOM (P3).
 - **Crides a l'acció:** "Trucar" (`tel:+34936273536`), "Com arribar" (fitxa de Google Maps) i Instagram. No hi ha WhatsApp, plataforma de reserves ni correu (§8).
 - **Imatge per compartir:** `public/og.jpg` tipogràfica, sempre. Es genera amb `npm run og` (§6.6).
 - **Estadístiques:** GoatCounter, sense cap element visual ni bàner (§10.6).
-- **Pressupost:** JS ≤ 20 KB i sense frameworks (les estadístiques, uns 3,5 KB, només en producció); 2 famílies tipogràfiques, autoallotjades, en ≤ 3 fitxers; animacions en CSS.
+- **Pressupost:** JS ≤ 20 KB i sense frameworks (les estadístiques, uns 3,5 KB, només en producció); 2 famílies tipogràfiques (EB Garamond i Jost), autoallotjades, en ≤ 3 fitxers i ≤ 150 KB (objectiu 120); animacions en CSS.
 - **Favicon i apple-touch-icon:** necessaris (sense ells, hi hauria un 404 a la consola).
 - **Textos d'interfície:** a `src/i18n/textos.ts`, i els de l'avís legal a `src/i18n/legal.ts`, en català i castellà.
