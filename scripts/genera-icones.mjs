@@ -3,8 +3,8 @@
 import sharp from 'sharp';
 
 const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="180" height="180" viewBox="0 0 180 180">
-  <rect width="180" height="180" fill="#1F3C99"/>
-  <circle cx="90" cy="90" r="48" fill="none" stroke="#F3F5F7" stroke-width="8"/>
+  <rect width="180" height="180" fill="#6E1F2B"/>
+  <circle cx="90" cy="90" r="48" fill="none" stroke="#FFFFFF" stroke-width="8"/>
 </svg>`;
 
 await sharp(Buffer.from(svg)).png().toFile(new URL('../public/apple-touch-icon.png', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1'));
