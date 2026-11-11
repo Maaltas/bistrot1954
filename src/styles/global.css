@@ -1,6 +1,6 @@
 /*
- * Estils base (docs/disseny-frontend.md §5, §7): fons, text, enllaços, focus, botons, selecció,
- * classe només per a lectors de pantalla i regles de moviment.
+ * Estils base "La carta" (docs/disseny-frontend.md §5, §7): fons paper, text tinta, enllaços vi,
+ * focus, filets, botons, selecció, text només per a lectors de pantalla i moviment.
  * Cap color en hexadecimal: tot surt de tokens.css.
  */
 
@@ -34,21 +34,32 @@ html {
 
 body {
   margin: 0;
-  background: var(--porcellana);
+  background: var(--paper);
   color: var(--tinta);
   font-family: var(--tipus-serif);
   font-weight: 400;
   font-size: var(--mida-text);
   line-height: var(--interlineat-text);
+  text-align: center;
   text-transform: none;
+  /* Sense negretes ni cursives sintètiques: els títols són cursiva 400 real. */
+  font-synthesis: none;
 }
 
 h1,
 h2,
-h3,
+h3 {
+  margin: 0;
+  font-weight: 400;
+  font-style: italic;
+  color: var(--vi);
+}
+
 p,
 ul,
-ol {
+ol,
+dl,
+dd {
   margin: 0;
 }
 
@@ -64,14 +75,18 @@ picture {
   max-width: 100%;
 }
 
-::selection {
-  background: var(--cobalt);
-  color: var(--porcellana);
+address {
+  font-style: normal;
 }
 
-/* Enllaços: sempre subratllats (cap informació depèn només del color). */
+::selection {
+  background: var(--vi);
+  color: var(--paper);
+}
+
+/* Enllaços: vi i subratllats (cap informació depèn només del color). */
 a {
-  color: var(--cobalt);
+  color: var(--vi);
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 0.2em;
@@ -84,20 +99,10 @@ a {
   }
 }
 
-/* Anell de focus: 3 px, separat 3 px, seguint la forma de l'element. */
+/* Anell de focus: 3 px vi, separat 3 px, seguint la forma de l'element. */
 :focus-visible {
-  outline: var(--focus-gruix) solid var(--color-focus);
+  outline: var(--focus-gruix) solid var(--vi);
   outline-offset: var(--focus-separacio);
-}
-
-.sobre-cobalt {
-  --color-focus: var(--porcellana);
-  background: var(--cobalt);
-  color: var(--porcellana);
-}
-
-.sobre-cobalt a {
-  color: var(--porcellana);
 }
 
 /* Text només per a lectors de pantalla. */
@@ -128,8 +133,8 @@ a {
   left: 0;
   z-index: 100;
   padding: var(--espai-3) var(--espai-5);
-  background: var(--porcellana);
-  color: var(--cobalt);
+  background: var(--paper);
+  color: var(--vi);
   font-family: var(--tipus-sans);
   font-weight: 500;
   font-size: var(--mida-ui);
@@ -139,12 +144,50 @@ a {
 
 .salta:focus-visible {
   transform: none;
-  outline-color: var(--cobalt);
   outline-offset: -3px;
 }
 
 /* ---------------------------------------------------------------------------
- * Botons (§7, §8). Forma de càpsula, mínim 44 px d'alt.
+ * Filets or (§5.3): decoratius. Doble = 3 px d'estil doble (línia, aire, línia); senzill = 1 px.
+ * ------------------------------------------------------------------------- */
+.filet-doble {
+  width: 160px;
+  max-width: 100%;
+  height: 0;
+  margin-inline: auto;
+  border: 0;
+  border-top: var(--filet-doble);
+}
+
+.filet-senzill {
+  width: 48px;
+  height: 0;
+  margin-inline: auto;
+  border: 0;
+  border-top: var(--filet-senzill);
+}
+
+/* Títol de secció amb un filet senzill de 48 px a cada costat. */
+.titol-filets {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espai-4);
+  font-size: var(--mida-titol);
+  line-height: var(--interlineat-titol);
+}
+
+.titol-filets::before,
+.titol-filets::after {
+  content: '';
+  flex: none;
+  width: 48px;
+  height: 0;
+  border-top: var(--filet-senzill);
+}
+
+/* ---------------------------------------------------------------------------
+ * Botons (§7, §8). Radi 0, mínim 44 px d'alt.
  * Principal: "Trucar". Secundari: "Com arribar".
  * ------------------------------------------------------------------------- */
 .boto {
@@ -153,8 +196,8 @@ a {
   justify-content: center;
   min-height: 48px;
   padding: 0 var(--espai-6);
-  border: 2px solid transparent;
-  border-radius: var(--radi-boto);
+  border: 1px solid transparent;
+  border-radius: var(--radi);
   font-family: var(--tipus-sans);
   font-weight: 500;
   font-size: var(--mida-ui);
@@ -169,55 +212,44 @@ a {
     color var(--transicio);
 }
 
-.boto:active {
-  transform: translateY(1px);
-}
-
-/* Sobre porcellana */
 .boto--principal {
-  background: var(--cobalt);
-  border-color: var(--cobalt);
-  color: var(--porcellana);
+  background: var(--vi);
+  border-color: var(--vi);
+  color: var(--paper);
 }
 
 .boto--secundari {
   background: transparent;
-  border-color: var(--cobalt);
-  color: var(--cobalt);
+  border-color: var(--vi);
+  color: var(--vi);
+}
+
+.boto--principal:active {
+  background: var(--vi-fosc);
+  border-color: var(--vi-fosc);
+}
+
+.boto--secundari:active {
+  background: var(--vi-clar);
+}
+
+/* El secundari sobre vi clar ("On som"): el fons passa a paper (vi clar seria invisible). */
+.boto--sobre-clar:active {
+  background: var(--paper);
 }
 
 @media (hover: hover) {
   .boto--principal:hover {
-    background: var(--cobalt-fosc);
-    border-color: var(--cobalt-fosc);
+    background: var(--vi-fosc);
+    border-color: var(--vi-fosc);
   }
 
   .boto--secundari:hover {
-    background: var(--aigualit);
-  }
-}
-
-/* Sobre cobalt */
-.sobre-cobalt .boto--principal {
-  background: var(--porcellana);
-  border-color: var(--porcellana);
-  color: var(--cobalt);
-}
-
-.sobre-cobalt .boto--secundari {
-  background: transparent;
-  border-color: var(--porcellana);
-  color: var(--porcellana);
-}
-
-@media (hover: hover) {
-  .sobre-cobalt .boto--principal:hover {
-    background: var(--aigualit);
-    border-color: var(--aigualit);
+    background: var(--vi-clar);
   }
 
-  .sobre-cobalt .boto--secundari:hover {
-    background: var(--cobalt-fosc);
+  .boto--sobre-clar:hover {
+    background: var(--paper);
   }
 }
 
@@ -233,7 +265,7 @@ a {
 }
 
 /* ---------------------------------------------------------------------------
- * Moviment reduït (§7): sense transicions, sense desplaçament en prémer.
+ * Moviment reduït (§7): sense transicions.
  * ------------------------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -242,9 +274,5 @@ a {
     transition-duration: 0s !important;
     animation-duration: 0s !important;
     scroll-behavior: auto !important;
-  }
-
-  .boto:active {
-    transform: none;
   }
 }
