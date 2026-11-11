@@ -1,8 +1,8 @@
-// Genera public/og.jpg (1200x630) amb la imatge tipogràfica del disseny (dis. §6.4, arq. §6.6).
+// Genera public/og.jpg (1200x630) amb la imatge tipogràfica del disseny "La carta" (dis. §6.4, arq. §6.6).
 // Ús: npm run og   (només quan canvien el nom, la cuina o l'adreça; el fitxer es versiona).
 //
 // 1. Obre amb Chromium (el de Playwright; si no hi és, Chrome o Edge instal·lats) una plantilla de 1200x630.
-// 2. Hi carrega Alegreya i Alegreya Sans dels paquets @fontsource, sense xarxa.
+// 2. Hi carrega EB Garamond (400 cursiva) i Jost (500) dels paquets @fontsource, sense xarxa.
 // 3. Espera document.fonts.ready i desa una captura JPEG (qualitat 85).
 import { readFileSync, writeFileSync, statSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -19,24 +19,28 @@ const adreca = `${restaurant.adreca.carrer}, ${restaurant.adreca.municipi}`;
 
 const font = (paquet, fitxer) =>
   `data:font/woff2;base64,${readFileSync(ruta(`node_modules/@fontsource/${paquet}/files/${fitxer}`)).toString('base64')}`;
-const alegreya700 = font('alegreya', 'alegreya-latin-700-normal.woff2');
-const alegreyaSans500 = font('alegreya-sans', 'alegreya-sans-latin-500-normal.woff2');
+const garamondCursiva = font('eb-garamond', 'eb-garamond-latin-400-italic.woff2');
+const jost500 = font('jost', 'jost-latin-500-normal.woff2');
 
 const escapa = (text) => text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
+// Colors del disseny (dis. §5.1): paper, vi, tinta, fum i or. Filet doble or de 240 px i 6 px (2 + 2 + 2).
 const html = `<!doctype html>
 <html lang="ca"><head><meta charset="utf-8"><style>
-@font-face { font-family: 'Alegreya'; font-weight: 700; src: url(${alegreya700}) format('woff2'); }
-@font-face { font-family: 'Alegreya Sans'; font-weight: 500; src: url(${alegreyaSans500}) format('woff2'); }
+@font-face { font-family: 'EB Garamond'; font-style: italic; font-weight: 400; src: url(${garamondCursiva}) format('woff2'); }
+@font-face { font-family: 'Jost'; font-style: normal; font-weight: 500; src: url(${jost500}) format('woff2'); }
 html, body { margin: 0; width: 1200px; height: 630px; }
-body { display: flex; flex-direction: column; justify-content: center; padding-left: 96px; box-sizing: border-box;
-  background: #1F3C99; color: #F3F5F7; }
-h1 { margin: 0; font-family: 'Alegreya', serif; font-weight: 700; font-size: 160px; line-height: 1; font-variant-numeric: oldstyle-nums; letter-spacing: -0.01em; }
-p { margin: 0; font-family: 'Alegreya Sans', sans-serif; font-weight: 500; font-size: 40px; line-height: 1.3; }
+body { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; box-sizing: border-box;
+  background: #FFFFFF; color: #2B2422; }
+h1 { margin: 0; font-family: 'EB Garamond', Georgia, serif; font-style: italic; font-weight: 400; font-size: 140px; line-height: 1; color: #6E1F2B; }
+.filet { width: 240px; height: 0; margin-top: 24px; border-top: 6px double #A88A4A; }
 .dades { margin-top: 32px; }
+p { margin: 0; font-family: 'Jost', system-ui, sans-serif; font-weight: 500; font-size: 36px; line-height: 1.35; }
+.cuina { color: #6B5F5A; }
 </style></head><body>
 <h1>${escapa(nom)}</h1>
-<div class="dades">${cuina ? `<p>${escapa(cuina)}</p>` : ''}<p>${escapa(adreca)}</p></div>
+<div class="filet"></div>
+<div class="dades">${cuina ? `<p class="cuina">${escapa(cuina)}</p>` : ''}<p>${escapa(adreca)}</p></div>
 </body></html>`;
 
 async function obreNavegador() {
