@@ -16,8 +16,6 @@ export interface Textos {
   idiomaAlternatiu: string;
   titolPlats: string;
   introPlats: string;
-  enllacPlat: string;
-  enllacPlatSenseFoto: string;
   comArribar: string;
   trucarCurt: string;
   trucarLlarg: (telefon: string) => string;
@@ -38,10 +36,8 @@ export const textos: Record<Idioma, Textos> = {
     navOnSom: 'On som',
     accionsNom: 'Accions',
     idiomaAlternatiu: 'Castellano',
-    titolPlats: 'Els plats',
-    introPlats: 'Cada plat, amb la foto i el text que en vam publicar a Instagram.',
-    enllacPlat: 'Veure la publicació a Instagram',
-    enllacPlatSenseFoto: 'Veure la foto a Instagram',
+    titolPlats: 'Els nostres plats',
+    introPlats: "Un recull de l'experiència que et trobaràs.",
     comArribar: 'Com arribar',
     trucarCurt: 'Trucar',
     trucarLlarg: (telefon) => `Trucar al ${telefon}`,
@@ -61,10 +57,8 @@ export const textos: Record<Idioma, Textos> = {
     navOnSom: 'Dónde estamos',
     accionsNom: 'Acciones',
     idiomaAlternatiu: 'Català',
-    titolPlats: 'Los platos',
-    introPlats: 'Cada plato, con la foto y el texto que publicamos en Instagram.',
-    enllacPlat: 'Ver la publicación en Instagram',
-    enllacPlatSenseFoto: 'Ver la foto en Instagram',
+    titolPlats: 'Nuestros platos',
+    introPlats: 'Una muestra de la experiencia que te encontrarás.',
     comArribar: 'Cómo llegar',
     trucarCurt: 'Llamar',
     trucarLlarg: (telefon) => `Llamar al ${telefon}`,

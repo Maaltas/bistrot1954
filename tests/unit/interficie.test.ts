@@ -31,6 +31,22 @@ describe('horari i telèfon (F-04)', () => {
   });
 });
 
+describe('textos de la secció de plats (F-45, V-35)', () => {
+  it('títol i subtítol exactes en tots dos idiomes; la barra continua dient Plats / Platos', () => {
+    expect(textos.ca.titolPlats).toBe('Els nostres plats');
+    expect(textos.ca.introPlats).toBe("Un recull de l'experiència que et trobaràs.");
+    expect(textos.es.titolPlats).toBe('Nuestros platos');
+    expect(textos.es.introPlats).toBe('Una muestra de la experiencia que te encontrarás.');
+    expect(textos.ca.navPlats).toBe('Plats');
+    expect(textos.es.navPlats).toBe('Platos');
+  });
+
+  it("ja no hi ha els textos de l'enllaç al post", () => {
+    expect(Object.keys(textos.ca)).not.toContain('enllacPlat');
+    expect(Object.keys(textos.es)).not.toContain('enllacPlatSenseFoto');
+  });
+});
+
 describe('amples del srcset (B-14)', () => {
   it('segueix la taula d\'arq. §6.3', () => {
     expect(calculaWidths(450)).toEqual([360, 450]);
